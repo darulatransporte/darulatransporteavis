@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darula Transporte | Avisierungs-Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --bg-dark: #000000;
+            --bg-panel: #0a0a0a;
+            --neon-cyan: #00f2ff;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            letter-spacing: -0.02em;
+        }
+
+        .holo-ambient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 10% 10%, rgba(0, 242, 255, 0.07) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 90%, rgba(255, 255, 255, 0.03) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .panel { 
+            background: var(--bg-panel); 
+            border: 1px solid var(--border-color); 
+            border-radius: 20px;
+        }
+
+        input { 
+            background: #111 !important; 
+            border: 1px solid var(--border-color) !important; 
+            color: #fff;
+        }
+        input:focus { 
+            border-color: var(--neon-cyan) !important; 
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1) !important; 
+            outline: none;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .day-card { 
+            border: 1px solid var(--border-color); 
+            background: rgba(255,255,255,0.01);
+        }
+        .day-card.full { border-color: #ef4444; background: rgba(239, 68, 68, 0.03); }
+        .day-card.available { border-color: var(--neon-cyan); }
+
+        @keyframes slideUp { from { transform: translate(-50%, 30px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .animate-toast { animation: slideUp 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+    <div class="holo-ambient"></div>
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16">
+            <div>
+                <h1 class="text-5xl font-black tracking-tighter uppercase italic leading-none">
+                    Darula <span class="text-cyan-400">Transporte</span>
+                </h1>
+                <p class="text-gray-500 text-[10px] tracking-[0.6em] mt-2 uppercase">Official Avisierung Gateway</p>
+            </div>
+            <div class="mt-6 md:mt-0 panel px-5 py-2 border-dashed flex items-center gap-4">
+                <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                <span class="text-xs font-mono text-gray-400" id="currentWeekLabel">Woche lädt...</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 md:grid-cols-7 gap-3 mb-16" id="weekDisplay">
+            </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-4">
+                <div class="panel p-8 sticky top-10">
+                    <h3 class="text-white font-bold uppercase text-[10px] mb-8 tracking-[0.2em] border-b border-white/5 pb-4">Anlieferungs-Richtlinien</h3>
+                    <div class="space-y-8">
+                        <div>
+                            <p class="text-cyan-400 font-bold text-sm uppercase mb-1">Sattelzüge / LKW</p>
+                            <p class="text-gray-400 text-sm leading-relaxed">Sendungen <span class="text-white">ab 10 Paletten</span>. Pro Tag sind strikt maximal <span class="text-white">3 Slots</span> verfügbar.</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 font-bold text-sm uppercase mb-1">Kleinanlieferung</p>
+                            <p class="text-gray-400 text-sm leading-relaxed">Sendungen <span class="text-white">unter 10 Paletten</span> können ohne Slot-Beschränkung angemeldet werden.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8">
+                <form id="avisForm" class="panel p-8 md:p-12 space-y-10">
+                    <div class="space-y-2">
+                        <h2 class="text-3xl font-bold italic tracking-tight uppercase">Sendung <span class="text-cyan-400">avisieren</span></h2>
+                        <p class="text-gray-500 text-sm font-light">Bitte geben Sie die korrekten Frachtdaten für die Planung ein.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase text-gray-400 tracking-widest font-bold">Spedition / Firma</label>
+                            <input type="text" id="firma" required class="w-full rounded-xl px-5 py-4 text-lg" placeholder="Name des Frachtführers">
+                        </div>
+                        <div class="space-y-3">
+                            <label class="text-[10px] uppercase text-gray-400 tracking-widest font-bold">Lieferdatum</label>
+                            <input type="date" id="datum" required class="w-full rounded-xl px-5 py-4 text-lg">
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <label class="text-[10px] uppercase text-gray-400 tracking-widest font-bold">Anzahl Paletten</label>
+                        <input type="number" id="paletten" required min="1" class="w-full rounded-xl px-5 py-4 text-lg" placeholder="Menge der Packstücke">
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" id="submitBtn" class="w-full btn-primary py-5 rounded-xl text-sm active:scale-[0.98]">
+                            Avisierung an Darula senden
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <footer class="mt-24 pb-12 text-center">
+            <p class="text-[9px] text-gray-600 uppercase tracking-[0.5em]">Internal Portal • Darula Transporte Distribution Center</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 p-6 rounded-2xl border-2 backdrop-blur-3xl z-50 transition-all duration-300 opacity-0 min-w-[340px] shadow-2xl pointer-events-none">
+        <div class="flex items-center gap-4">
+            <div id="toastIcon" class="text-3xl"></div>
+            <div>
+                <p id="toastTitle" class="font-black uppercase text-[11px] tracking-widest"></p>
+                <p id="toastMsg" class="text-xs opacity-70 mt-1"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SUPABASE KONFIGURATION
+        const SB_URL = 'DEINE_SUPABASE_URL'; 
+        const SB_KEY = 'DEIN_ANON_KEY';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        const weekDisplay = document.getElementById('weekDisplay');
+        const form = document.getElementById('avisForm');
+
+        function getWeekDates() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(now.setDate(diff));
+            return Array.from({length: 7}, (_, i) => {
+                const d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                return d.toISOString().split('T')[0];
+            });
+        }
+
+        async function loadWeekStatus() {
+            const dates = getWeekDates();
+            weekDisplay.innerHTML = '';
+            
+            const start = new Date(dates[0]).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'});
+            const end = new Date(dates[6]).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric'});
+            document.getElementById('currentWeekLabel').innerText = `${start} - ${end}`;
+
+            for (const date of dates) {
+                const { data } = await supabaseClient
+                    .from('avisierungen')
+                    .select('id')
+                    .eq('datum', date)
+                    .gte('paletten_anzahl', 10);
+
+                const count = data ? data.length : 0;
+                const isFull = count >= 3;
+                const dObj = new Date(date);
+                const dayName = dObj.toLocaleDateString('de-DE', {weekday: 'short'});
+
+                weekDisplay.innerHTML += `
+                    <div class="day-card ${isFull ? 'full' : 'available'} panel p-4 text-center">
+                        <p class="text-[9px] text-gray-600 uppercase font-black tracking-tighter">${dayName}</p>
+                        <p class="text-xs font-bold text-gray-400 mb-2">${date.split('-').reverse().slice(0,2).join('.')}</p>
+                        <p class="text-xl font-black ${isFull ? 'text-red-500' : 'text-cyan-400'}">${isFull ? 'VOLL' : (3 - count)}</p>
+                        <p class="text-[8px] text-gray-700 uppercase mb-3">Slots frei</p>
+                        <div class="flex justify-center gap-1">
+                            ${Array.from({length: 3}, (_, i) => `
+                                <div class="w-full h-1 rounded-full ${i < count ? (isFull ? 'bg-red-500' : 'bg-white') : 'bg-white/10'}"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showToast(title, msg, type) {
+            const t = document.getElementById('toast');
+            t.className = `fixed bottom-10 left-1/2 -translate-x-1/2 p-6 rounded-2xl border-2 backdrop-blur-3xl z-50 transition-all duration-300 opacity-100 animate-toast min-w-[340px] shadow-2xl pointer-events-auto ${type === 'success' ? 'border-green-500/40 bg-green-950/20 text-green-400' : 'border-red-500/40 bg-red-950/20 text-red-400'}`;
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMsg').innerText = msg;
+            document.getElementById('toastIcon').innerText = type === 'success' ? '✓' : '✕';
+            setTimeout(() => { t.classList.remove('opacity-100'); t.classList.add('opacity-0'); }, 5000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const firma = document.getElementById('firma').value;
+            const datum = document.getElementById('datum').value;
+            const paletten = parseInt(document.getElementById('paletten').value);
+
+            btn.disabled = true;
+            btn.innerText = "Daten werden geprüft...";
+
+            if (paletten >= 10) {
+                const { data } = await supabaseClient.from('avisierungen').select('id').eq('datum', datum).gte('paletten_anzahl', 10);
+                if (data && data.length >= 3) {
+                    showToast('Slot Kapazität voll', `Am ${datum} sind bereits 3 LKWs gemeldet. Bitte weichen Sie aus.`, 'error');
+                    btn.disabled = false; btn.innerText = "Avisierung an Darula senden";
+                    return;
+                }
+            }
+
+            const { error } = await supabaseClient.from('avisierungen').insert([{ firma, datum, paletten_anzahl: paletten }]);
+
+            if (error) {
+                showToast('Fehler', 'Verbindung zur Datenbank fehlgeschlagen.', 'error');
+            } else {
+                showToast('Erfolgreich gebucht', `Die Sendung für ${firma} wurde registriert.`, 'success');
+                form.reset();
+                loadWeekStatus();
+            }
+            btn.disabled = false; btn.innerText = "Avisierung an Darula senden";
+        });
+
+        loadWeekStatus();
+    </script>
+</body>
+</html>
