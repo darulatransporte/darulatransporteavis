@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Intern | Darula Transporte Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
+        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-12 flex justify-between items-center border-b border-white/5 pb-8">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Darula <span class="text-cyan-400">Admin</span></h1>
+                <p class="text-gray-500 text-[10px] tracking-widest uppercase mt-1">Eingangslogistik Management</p>
+            </div>
+            <button onclick="location.reload()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-xs transition-all">Aktualisieren</button>
+        </header>
+
+        <div class="glass-panel overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-white/5 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
+                    <tr>
+                        <th class="p-6">Datum</th>
+                        <th class="p-6">Spedition</th>
+                        <th class="p-6">Einheiten</th>
+                        <th class="p-6">Dokument</th>
+                        <th class="p-6 text-right">Verwaltung</th>
+                    </tr>
+                </thead>
+                <tbody id="adminContent" class="divide-y divide-white/5">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SB_URL = 'DEINE_SUPABASE_URL'; 
+        const SB_KEY = 'DEIN_ANON_KEY';
+        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+
+        async function init() {
+            // Einfache Passwort-Sperre
+            const pw = prompt("Admin-Passwort erforderlich:");
+            if (pw !== "Darula2024") { // Ändere das Passwort hier!
+                alert("Zugriff verweigert");
+                document.body.innerHTML = "<div class='flex h-screen items-center justify-center font-black uppercase text-red-500'>Keine Berechtigung</div>";
+                return;
+            }
+            loadEntries();
+        }
+
+        async function loadEntries() {
+            const container = document.getElementById('adminContent');
+            container.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Lade Daten aus Zentrale...</td></tr>';
+
+            const { data: rows, error } = await supabaseClient
+                .from('avisierungen')
+                .select('*')
+                .order('datum', { ascending: false });
+
+            if (error) { console.error(error); return; }
+
+            container.innerHTML = '';
+
+            for (const row of rows) {
+                let docAction = '<span class="text-gray-700 italic">Fehlt</span>';
+
+                // Private Datei-URL generieren
+                if (row.datei_url) {
+                    const fileName = row.datei_url.split('/').pop();
+                    const { data: signData } = await supabaseClient
+                        .storage
+                        .from('lieferscheine')
+                        .createSignedUrl(fileName, 300); // 5 Minuten gültig
+
+                    if (signData) {
+                        docAction = `<a href="${signData.signedUrl}" target="_blank" class="text-cyan-400 hover:text-white transition-colors flex items-center gap-2 font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Ansehen</a>`;
+                    }
+                }
+
+                container.innerHTML += `
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                        <td class="p-6 font-mono text-cyan-400">${new Date(row.datum).toLocaleDateString('de-DE')}</td>
+                        <td class="p-6 font-extrabold text-lg">${row.firma}</td>
+                        <td class="p-6">
+                            <span class="status-badge ${row.paletten_anzahl >= 10 ? 'bg-red-500/20 text-red-500' : 'bg-cyan-500/10 text-cyan-400'}">
+                                ${row.paletten_anzahl} Paletten
+                            </span>
+                        </td>
+                        <td class="p-6">${docAction}</td>
+                        <td class="p-6 text-right">
+                            <button onclick="deleteEntry('${row.id}')" class="text-[10px] text-gray-700 hover:text-red-500 uppercase tracking-widest font-bold transition-colors">Löschen</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        async function deleteEntry(id) {
+            if(confirm('Avisierung aus dem System entfernen?')) {
+                const { error } = await supabaseClient.from('avisierungen').delete().eq('id', id);
+                if (!error) loadEntries();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
