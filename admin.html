@@ -2,115 +2,129 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Intern | Darula Transporte Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Darula Admin | Terminal-Steuerung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-panel { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
-        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e2e8f0; }
+        .admin-card { background: #0a0a0a; border: 1px solid #1a1a1a; transition: all 0.3s ease; }
+        .admin-card:hover { border-color: #333; background: #0f0f0f; }
+        .status-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; color: black; }
+            .admin-card { border: 1px solid #000; background: white; color: black; margin-bottom: 10px; page-break-inside: avoid; }
+        }
     </style>
 </head>
-<body class="p-4 md:p-10">
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-12 flex justify-between items-center border-b border-white/5 pb-8">
-            <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Darula <span class="text-cyan-400">Admin</span></h1>
-                <p class="text-gray-500 text-[10px] tracking-widest uppercase mt-1">Eingangslogistik Management</p>
-            </div>
-            <button onclick="location.reload()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-xs transition-all">Aktualisieren</button>
-        </header>
+<body class="min-h-screen">
 
-        <div class="glass-panel overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-white/5 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
-                    <tr>
-                        <th class="p-6">Datum</th>
-                        <th class="p-6">Spedition</th>
-                        <th class="p-6">Einheiten</th>
-                        <th class="p-6">Dokument</th>
-                        <th class="p-6 text-right">Verwaltung</th>
-                    </tr>
-                </thead>
-                <tbody id="adminContent" class="divide-y divide-white/5">
-                    </tbody>
-            </table>
+    <div id="loginOverlay" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-[#0a0a0a] border border-[#1a1a1a] p-10 rounded-sm shadow-2xl">
+            <div class="text-center mb-10">
+                <h1 class="text-xl font-800 tracking-[0.3em] uppercase italic">Darula <span class="text-gray-600 font-400">Admin</span></h1>
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Sicherheitsüberprüfung</p>
+            </div>
+            <input type="password" id="adminPass" placeholder="PASSWORT" class="w-full bg-black border border-[#222] p-4 rounded-none mb-6 text-center font-bold tracking-widest focus:border-white outline-none transition text-white">
+            <button onclick="checkPass()" class="w-full bg-white text-black py-4 font-800 uppercase text-xs tracking-[0.2em] hover:bg-gray-200 transition">Terminal starten</button>
         </div>
     </div>
 
+    <div id="adminContent" class="hidden">
+        <header class="border-b border-[#1a1a1a] bg-black sticky top-0 z-50 no-print">
+            <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>
+                    <h1 class="text-sm font-800 uppercase tracking-[0.3em]">Live-Terminal <span class="text-gray-600">2026</span></h1>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="refreshData()" class="text-[10px] font-bold uppercase tracking-widest border border-[#222] px-4 py-2 hover:bg-[#111]">Aktualisieren</button>
+                    <button onclick="window.print()" class="text-[10px] font-bold uppercase tracking-widest bg-white text-black px-6 py-2 hover:bg-gray-200">Drucken</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-6 py-12">
+            <div class="mb-12 flex justify-between items-end border-b border-[#1a1a1a] pb-6">
+                <h2 class="text-xs font-800 uppercase tracking-[0.4em] text-gray-500">Eingangs-Logistik / Avisierungen</h2>
+                <div id="countLabel" class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">0 Einträge geladen</div>
+            </div>
+
+            <div id="masterList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+        </main>
+    </div>
+
     <script>
-        const SB_URL = 'DEINE_SUPABASE_URL'; 
-        const SB_KEY = 'DEIN_ANON_KEY';
-        const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
+        const supabaseUrl = 'https://navhxyadbifllpopumfz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function init() {
-            // Einfache Passwort-Sperre
-            const pw = prompt("Admin-Passwort erforderlich:");
-            if (pw !== "Darula2024") { // Ändere das Passwort hier!
-                alert("Zugriff verweigert");
-                document.body.innerHTML = "<div class='flex h-screen items-center justify-center font-black uppercase text-red-500'>Keine Berechtigung</div>";
-                return;
-            }
-            loadEntries();
-        }
-
-        async function loadEntries() {
-            const container = document.getElementById('adminContent');
-            container.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Lade Daten aus Zentrale...</td></tr>';
-
-            const { data: rows, error } = await supabaseClient
-                .from('avisierungen')
-                .select('*')
-                .order('datum', { ascending: false });
-
-            if (error) { console.error(error); return; }
-
-            container.innerHTML = '';
-
-            for (const row of rows) {
-                let docAction = '<span class="text-gray-700 italic">Fehlt</span>';
-
-                // Private Datei-URL generieren
-                if (row.datei_url) {
-                    const fileName = row.datei_url.split('/').pop();
-                    const { data: signData } = await supabaseClient
-                        .storage
-                        .from('lieferscheine')
-                        .createSignedUrl(fileName, 300); // 5 Minuten gültig
-
-                    if (signData) {
-                        docAction = `<a href="${signData.signedUrl}" target="_blank" class="text-cyan-400 hover:text-white transition-colors flex items-center gap-2 font-bold">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            Ansehen</a>`;
-                    }
-                }
-
-                container.innerHTML += `
-                    <tr class="hover:bg-white/[0.02] transition-colors">
-                        <td class="p-6 font-mono text-cyan-400">${new Date(row.datum).toLocaleDateString('de-DE')}</td>
-                        <td class="p-6 font-extrabold text-lg">${row.firma}</td>
-                        <td class="p-6">
-                            <span class="status-badge ${row.paletten_anzahl >= 10 ? 'bg-red-500/20 text-red-500' : 'bg-cyan-500/10 text-cyan-400'}">
-                                ${row.paletten_anzahl} Paletten
-                            </span>
-                        </td>
-                        <td class="p-6">${docAction}</td>
-                        <td class="p-6 text-right">
-                            <button onclick="deleteEntry('${row.id}')" class="text-[10px] text-gray-700 hover:text-red-500 uppercase tracking-widest font-bold transition-colors">Löschen</button>
-                        </td>
-                    </tr>
-                `;
-            }
+        function checkPass() {
+            if(document.getElementById('adminPass').value === "Darula2024") {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                refreshData();
+            } else { alert("Zutritt verweigert."); }
         }
 
         async function deleteEntry(id) {
-            if(confirm('Avisierung aus dem System entfernen?')) {
-                const { error } = await supabaseClient.from('avisierungen').delete().eq('id', id);
-                if (!error) loadEntries();
+            if(confirm("Eintrag endgültig löschen?")) {
+                const { error } = await _supabase.from('avisierung').delete().eq('id', id);
+                if (error) alert("Fehler beim Löschen");
+                refreshData();
             }
         }
 
-        init();
+        async function refreshData() {
+            const { data, error } = await _supabase.from('avisierung').select('*').order('liefer_datum', { ascending: true });
+            
+            const list = document.getElementById('masterList');
+            const countLabel = document.getElementById('countLabel');
+            list.innerHTML = '';
+
+            if (data) {
+                countLabel.innerText = `${data.length} Avisierungen aktiv`;
+                data.forEach(item => {
+                    const isBigLoad = item.palettes >= 20;
+                    const card = `
+                        <div class="admin-card p-6 flex flex-col justify-between">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">${item.liefer_datum}</p>
+                                    <h3 class="text-lg font-800 uppercase italic tracking-tight text-white">${item.firma}</h3>
+                                </div>
+                                <button onclick="deleteEntry(${item.id})" class="no-print text-[9px] font-bold text-red-900 hover:text-red-500 uppercase tracking-tighter border border-red-900/30 px-2 py-1 transition">Löschen</button>
+                            </div>
+                            
+                            <div class="space-y-2 mb-6">
+                                <div class="flex justify-between text-[10px] uppercase tracking-widest border-b border-[#1a1a1a] pb-2 text-gray-500">
+                                    <span>Art-Nr:</span> <span class="text-gray-200 font-bold">${item.artikel_nr}</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] uppercase tracking-widest border-b border-[#1a1a1a] pb-2 text-gray-500">
+                                    <span>BE-Nr:</span> <span class="text-gray-200 font-bold">${item.be_nummer}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="text-[10px] font-bold uppercase tracking-[0.2em] ${isBigLoad ? 'text-white' : 'text-gray-600'}">
+                                    ${isBigLoad ? '🚛 SATTELZUG' : '🚚 KLEIN-LKW'}
+                                </div>
+                                <div class="text-2xl font-800 text-white">${item.palettes} <span class="text-[10px] text-gray-600 uppercase tracking-widest ml-1 font-bold">PAL</span></div>
+                            </div>
+                        </div>
+                    `;
+                    list.innerHTML += card;
+                });
+            }
+        }
+
+        // Auto-Refresh alle 60 Sekunden
+        setInterval(refreshData, 60000);
     </script>
 </body>
 </html>
