@@ -3,123 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Darula Transporte | Digitale Sendungsavisierung & Wareneingangssteuerung</title>
-    <meta name="description" content="Offizielles Portal zur Avisierung von Warenanlieferungen bei Darula Transporte Nürnberg.">
+    <title>Darula Transporte | Avisierung</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #000; 
-            color: #ffffff; 
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Kalender-Gitter Design */
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 1px; 
-            background-color: #1a1a1a; 
-            border: 1px solid #1a1a1a; 
-        }
-        .calendar-day { 
-            background-color: #000; 
-            min-height: 100px; 
-            padding: 12px; 
-            transition: 0.2s; 
-            cursor: pointer; 
-            border-bottom: 3px solid transparent; 
-        }
-        .calendar-day:hover:not(.full-day):not(.empty-day) { 
-            background-color: #0c0c0c; 
-        }
-        .day-header { 
-            font-size: 11px; 
-            font-weight: 700; 
-            color: #555; 
-            text-transform: uppercase; 
-        }
-        .weekday-label { 
-            font-size: 9px; 
-            color: #444; 
-            text-align: center; 
-            padding-bottom: 10px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            letter-spacing: 0.1em; 
-        }
-        
-        /* Formular Styling */
-        .input-control { 
-            background-color: #0a0a0a; 
-            border: 1px solid #222; 
-            border-radius: 0; 
-            padding: 16px; 
-            width: 100%; 
-            color: #fff; 
-            font-size: 15px; 
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .input-control:focus { 
-            border-color: #fff; 
-        }
-        
-        /* Status-Indikatoren */
-        .full-day { opacity: 0.3; cursor: not-allowed; border-bottom-color: #dc2626; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #ffffff; -webkit-font-smoothing: antialiased; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #1a1a1a; border: 1px solid #1a1a1a; }
+        .calendar-day { background-color: #000; min-height: 100px; padding: 12px; transition: 0.2s; cursor: pointer; border-bottom: 3px solid transparent; }
+        .calendar-day:hover:not(.empty-day) { background-color: #0c0c0c; }
+        .day-header { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; }
+        .weekday-label { font-size: 9px; color: #444; text-align: center; padding-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+        .input-control { background-color: #0a0a0a; border: 1px solid #222; border-radius: 0; padding: 16px; width: 100%; color: #fff; font-size: 15px; outline: none; transition: border-color 0.3s; appearance: none; }
+        .input-control:focus { border-color: #fff; }
+        .full-day { border-bottom-color: #dc2626; }
         .available-day { border-bottom-color: #16a34a; }
+        .weekend-day { opacity: 0.3; cursor: not-allowed; border-bottom-color: #333; }
         .empty-day { background-color: #050505; cursor: default; }
-        
-        .btn-nav { 
-            background: #111; 
-            padding: 10px 20px; 
-            border: 1px solid #222; 
-            font-size: 12px; 
-            font-weight: bold; 
-            transition: 0.2s; 
-        }
+        .btn-nav { background: #111; padding: 10px 20px; border: 1px solid #222; font-size: 12px; font-weight: bold; transition: 0.2s; }
         .btn-nav:hover { background: #fff; color: #000; }
-        
-        .btn-submit { 
-            background-color: #fff; 
-            color: #000; 
-            font-weight: 700; 
-            padding: 22px; 
-            text-transform: uppercase; 
-            letter-spacing: 0.2em; 
-            font-size: 12px; 
-            width: 100%; 
-            cursor: pointer; 
-            border: none;
-            transition: 0.3s;
-        }
+        .btn-submit { background-color: #fff; color: #000; font-weight: 700; padding: 22px; text-transform: uppercase; letter-spacing: 0.2em; font-size: 12px; width: 100%; cursor: pointer; border: none; transition: 0.3s; }
         .btn-submit:hover { background-color: #ccc; transform: translateY(-1px); }
-
-        label { 
-            font-size: 11px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            color: #666; 
-            display: block; 
-            margin-bottom: 8px; 
-        }
+        label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #666; display: block; margin-bottom: 8px; }
+        select.input-control { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; }
     </style>
 </head>
 <body class="max-w-6xl mx-auto p-4 md:p-12">
 
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-[#111] pb-12 mb-16">
+    <header class="flex flex-col md:flex-row justify-between items-center border-b border-[#111] pb-12 mb-16 gap-8 text-center md:text-left">
         <div>
-            <h1 class="text-4xl font-700 tracking-tighter uppercase italic">Darula <span class="text-gray-500 font-400">Transporte</span></h1>
-            <p class="text-[10px] text-white bg-red-900/20 px-2 py-1 inline-block uppercase tracking-[0.4em] mt-4 font-bold">Wareneingang & Sendungsavisierung</p>
+            <img src="darula_logo.jpg" alt="Logo" class="h-20 md:h-24 w-auto mb-4 mx-auto md:mx-0">
+            <h1 class="text-4xl font-900 tracking-tighter uppercase italic">Darula <span class="text-gray-500 font-400">Transporte</span></h1>
         </div>
-        <div class="mt-8 md:mt-0 text-[10px] text-gray-500 uppercase tracking-widest leading-relaxed md:text-right font-medium">
-            Anlieferfenster Nürnberg:<br>
+        <div class="text-[10px] text-gray-500 uppercase tracking-widest leading-relaxed md:text-right font-medium">
+            Anlieferungen Nürnberg:<br>
             Mo – Do: 07:00 – 15:00 Uhr | <span class="text-white font-bold">Fr: 07:00 – 14:30 Uhr</span><br>
-            Anschrift: Thoner Weg 23, 90425 Nürnberg
+            Thoner Weg 23, 90425 Nürnberg
         </div>
     </header>
 
@@ -132,9 +53,9 @@
                     <button onclick="changeMonth(1)" class="btn-nav">VOR</button>
                 </div>
             </div>
-            <div class="hidden md:flex gap-8 text-[9px] uppercase font-bold text-gray-500 tracking-widest">
-                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-green-600"></span> Kapazität Frei</span>
-                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-red-600"></span> Tag Ausgebucht</span>
+            <div class="hidden md:flex gap-4 text-[9px] uppercase font-bold tracking-widest">
+                <span class="text-red-600">● Kapazität Großmengen voll</span>
+                <span class="text-green-600">● Anlieferungen < 15 Pal. immer möglich</span>
             </div>
         </div>
         
@@ -147,37 +68,45 @@
     </section>
 
     <section id="booking-section" class="max-w-3xl mx-auto bg-[#050505] border border-[#111] p-10 md:p-16 mb-20">
-        <div class="text-center mb-16">
-            <h3 class="text-[12px] font-700 uppercase tracking-[0.6em] text-white mb-4">Digitale Anmeldung</h3>
-            <div class="h-px w-20 bg-gray-800 mx-auto"></div>
-        </div>
-        
         <form id="form" class="space-y-12">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div>
-                    <label>Geplante Anlieferung</label>
+                    <label>Datum</label>
                     <input id="date" type="date" required class="input-control">
                 </div>
                 <div>
-                    <label>Spedition / Frachtführer</label>
-                    <input id="company" type="text" placeholder="Firmenname" required class="input-control">
+                    <label>Spedition</label>
+                    <input id="company" type="text" placeholder="Name" required class="input-control">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div>
-                    <label>Artikel-Nr </label>
-                    <input id="article" type="text" placeholder="Referenznummer" required class="input-control">
+                    <label>Art der Anlieferung</label>
+                    <select id="be_type" class="input-control" onchange="toggleBEField()">
+                        <option value="single">Einzelne BE</option>
+                        <option value="multi">Sammel-Avisierung</option>
+                    </select>
                 </div>
                 <div>
-                    <label>Bestellnummer (BE)</label>
-                    <input id="order" type="text" placeholder="BE-Beleg" required class="input-control">
+                    <label>Artikelnummer</label>
+                    <input id="article" type="text" placeholder="Nummer" required class="input-control">
                 </div>
             </div>
 
+            <div id="single_be_wrapper">
+                <label>Bestellnummer (BE)</label>
+                <input id="order" type="text" placeholder="BE-Nummer" class="input-control">
+            </div>
+
+            <div id="multi_be_wrapper" class="hidden">
+                <label>Bestellnummern Liste</label>
+                <textarea id="order_multi" placeholder="Nummern auflisten..." class="input-control min-h-[120px] py-4"></textarea>
+            </div>
+
             <div>
-                <label class="text-center">Anzahl Paletten (Gesamt)</label>
-                <input id="palettes" type="number" min="1" placeholder="0" required class="input-control text-center text-4xl font-bold py-10">
+                <label class="text-center">Paletten Gesamt</label>
+                <input id="palettes" type="number" min="1" placeholder="Anzahl" required class="input-control text-center text-4xl font-bold py-10">
             </div>
 
             <div class="pt-10 border-t border-[#111]">
@@ -186,97 +115,82 @@
         </form>
         
         <div id="success" class="hidden mt-10 p-8 border border-green-600/20 bg-green-600/5 text-green-500 text-center text-[11px] font-bold uppercase tracking-[0.4em]">
-            Daten erfolgreich an das Terminal übermittelt.
+            Erfolgreich übermittelt.
         </div>
     </section>
 
     <footer class="mt-32 pt-16 border-t border-[#111] flex flex-col md:flex-row justify-between gap-12 text-[10px] text-gray-600 uppercase tracking-widest leading-loose mb-12">
-        <div>
-            <strong class="text-gray-400">Darula Transporte</strong><br>
-            Inhaber: Tibor Darula<br>
-            Thoner Weg 23, 90425 Nürnberg<br>
-            Zulassung: BALM (Bundesamt für Logistik und Mobilität)
-        </div>
-        <div class="md:text-right">
-            <strong class="text-gray-400">Kontakt & Support</strong><br>
-            E-Mail Lager: lagerbrangs@gmx.de<br>
-            Verwaltung: d.darulatransporte@gmail.com<br>
-            System: V2.6 Online
-        </div>
+        <div>Darula Transporte<br>Thoner Weg 23, 90425 Nürnberg</div>
+        <div class="md:text-right">Email: lagerbrangs@gmx.de<br>Email: d.darulatransporte@gmail.com</div>
     </footer>
 
     <script>
-        // Supabase Konfiguration
         const supabaseUrl = "https://navhxyadbifllpopumfz.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY";
         const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-        let truckCounts = {};
+        let heavyCounts = {};
         let viewDate = new Date();
 
-        // Daten laden
+        function toggleBEField() {
+            const type = document.getElementById('be_type').value;
+            const single = document.getElementById('single_be_wrapper');
+            const multi = document.getElementById('multi_be_wrapper');
+            if(type === 'multi') { single.classList.add('hidden'); multi.classList.remove('hidden'); }
+            else { single.classList.remove('hidden'); multi.classList.add('hidden'); }
+        }
+
         async function loadData() {
-            const { data, error } = await db.from("avisierung").select("liefer_datum, palettes");
-            truckCounts = {};
+            const { data } = await db.from("avisierung").select("liefer_datum, palettes");
+            heavyCounts = {};
             if (data) {
                 data.forEach(row => {
-                    // Wir zählen die Anzahl der LKWs (Einträge) pro Tag
-                    truckCounts[row.liefer_datum] = (truckCounts[row.liefer_datum] || 0) + 1;
+                    if (row.palettes >= 15) {
+                        heavyCounts[row.liefer_datum] = (heavyCounts[row.liefer_datum] || 0) + 1;
+                    }
                 });
             }
             buildCalendar();
         }
 
-        function changeMonth(offset) {
-            viewDate.setMonth(viewDate.getMonth() + offset);
-            buildCalendar();
-        }
+        function changeMonth(offset) { viewDate.setMonth(viewDate.getMonth() + offset); buildCalendar(); }
 
-        // Kalender Logik
         function buildCalendar() {
             const calendar = document.getElementById("calendar");
             calendar.innerHTML = "";
             const year = viewDate.getFullYear();
             const month = viewDate.getMonth();
-            
             const monatsNamen = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
             document.getElementById("monthDisplay").innerText = `${monatsNamen[month]} ${year}`;
 
-            // Wochentag des ersten Tags im Monat (0=So, 1=Mo...)
             const firstDayIndex = new Date(year, month, 1).getDay();
-            // Anpassung auf Montag als Start (Mo=0, Di=1... So=6)
-            const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            
+            const adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Leere Felder für Vormonat
             for (let x = 0; x < adjustedFirstDay; x++) {
                 const empty = document.createElement("div");
                 empty.className = "calendar-day empty-day";
                 calendar.appendChild(empty);
             }
 
-            // Tage des aktuellen Monats
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateObj = new Date(year, month, d);
-                const iso = dateObj.toLocaleDateString('en-CA'); // Format YYYY-MM-DD
-                const trucks = truckCounts[iso] || 0;
-                
-                // Regel: Max 3 LKWs pro Tag (oder deine eigene Logik)
-                const isFull = trucks >= 3;
+                const iso = dateObj.toLocaleDateString('en-CA');
+                const dayOfWeek = dateObj.getDay();
+                const heavyCount = heavyCounts[iso] || 0;
+                const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                const isFull = heavyCount >= 3;
                 const isPast = dateObj < new Date().setHours(0,0,0,0);
                 
                 const el = document.createElement("div");
-                el.className = `calendar-day ${isFull || isPast ? 'full-day' : 'available-day'}`;
+                el.className = `calendar-day ${isWeekend ? 'weekend-day' : (isFull ? 'full-day' : 'available-day')}`;
                 
-                el.innerHTML = `
-                    <div class="day-header">${d}</div>
-                    <div class="mt-4">
-                        ${trucks > 0 ? `<span class="text-xs font-bold ${isFull ? 'text-red-600' : 'text-white'}">${trucks} LKW</span>` : '<span class="text-[9px] text-gray-800 tracking-tighter">KEINE BELEGUNG</span>'}
-                    </div>
-                `;
+                let info = isWeekend ? '---' : (heavyCount > 0 ? `${heavyCount}/3 Großmengen` : 'FREI');
+                if (isPast && !isWeekend) info = "OK";
 
-                if (!isFull && !isPast) {
+                el.innerHTML = `<div class="day-header">${d}</div><div class="mt-4"><span class="text-[9px] font-bold tracking-tighter uppercase ${isFull && !isWeekend ? 'text-red-600' : 'text-gray-500'}">${info}</span></div>`;
+
+                if (!isWeekend && !isPast) {
                     el.onclick = () => {
                         document.getElementById("date").value = iso;
                         document.getElementById("booking-section").scrollIntoView({ behavior: "smooth" });
@@ -286,31 +200,36 @@
             }
         }
 
-        // Formular Absenden
         document.getElementById("form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            
+            const selectedDate = document.getElementById("date").value;
+            const palCount = parseInt(document.getElementById("palettes").value);
+            const currentHeavy = heavyCounts[selectedDate] || 0;
+
+            if (palCount >= 15 && currentHeavy >= 3) {
+                alert("Für diesen Tag sind bereits 3 Großanlieferungen (≥ 15 Pal.) avisiert. Bitte wählen Sie einen anderen Tag oder kontaktieren Sie uns.");
+                return;
+            }
+
+            const beNummer = (document.getElementById('be_type').value === 'multi') ? document.getElementById("order_multi").value : document.getElementById("order").value;
+
             const { error } = await db.from("avisierung").insert({
-                liefer_datum: document.getElementById("date").value,
+                liefer_datum: selectedDate,
                 firma: document.getElementById("company").value,
                 artikel_nr: document.getElementById("article").value,
-                be_nummer: document.getElementById("order").value,
-                palettes: parseInt(document.getElementById("palettes").value)
+                be_nummer: beNummer,
+                palettes: palCount
             });
 
-            if (error) {
-                alert("Systemfehler: " + error.message);
-            } else {
+            if (!error) {
                 document.getElementById("success").classList.remove("hidden");
                 e.target.reset();
+                toggleBEField();
                 loadData();
-                setTimeout(() => {
-                    document.getElementById("success").classList.add("hidden");
-                }, 6000);
+                setTimeout(() => document.getElementById("success").classList.add("hidden"), 6000);
             }
         });
 
-        // Initialisierung
         loadData();
     </script>
 </body>
