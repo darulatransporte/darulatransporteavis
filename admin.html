@@ -3,119 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Darula Admin | Terminal-Steuerung</title>
+    <title>Darula Admin | Logistik-Steuerung</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e2e8f0; }
-        .admin-card { background: #0a0a0a; border: 1px solid #1a1a1a; transition: all 0.3s ease; }
-        .admin-card:hover { border-color: #333; background: #0f0f0f; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #1e293b; -webkit-font-smoothing: antialiased; }
+        
+        .admin-card { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-left: 6px solid #cbd5e1;
+            transition: all 0.2s ease; 
+        }
+        .admin-card:hover { transform: translateY(-2px); shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        /* Status-Farben */
+        .heavy-load { border-left-color: #2563eb !important; background: #f8faff; } /* Blau für LKW-Ladung (>=20 Pal) */
+        .reka-special { border-left-color: #f97316 !important; background: #fffcf0; } /* Orange für Reka */
+
         .status-dot { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
         
         @media print { 
             .no-print { display: none !important; } 
             body { background: white; color: black; }
-            .admin-card { border: 1px solid #000; background: white; color: black; margin-bottom: 10px; page-break-inside: avoid; }
+            .admin-card { border: 1px solid #ddd; background: white; color: black; margin-bottom: 10px; page-break-inside: avoid; border-left: 10px solid #333 !important; }
         }
+
+        .pass-input {
+            background-color: #fff; border: 2px solid #e2e8f0;
+            padding: 20px; width: 100%; color: #1e293b; text-align: center;
+            font-size: 24px; letter-spacing: 0.4em; outline: none; border-radius: 12px;
+        }
+        .pass-input:focus { border-color: #2563eb; ring: 4px rgba(37, 99, 235, 0.1); }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div id="loginOverlay" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-6">
-        <div class="max-w-md w-full bg-[#0a0a0a] border border-[#1a1a1a] p-10 rounded-sm shadow-2xl">
-            <div class="text-center mb-10">
-                <h1 class="text-xl font-800 tracking-[0.3em] uppercase italic">Darula <span class="text-gray-600 font-400">Admin</span></h1>
-                <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Sicherheitsüberprüfung</p>
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6">
+        <div class="max-w-md w-full text-center bg-white p-10 rounded-3xl shadow-2xl">
+            <div class="mb-10">
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-black italic mb-4">D</div>
+                <h1 class="text-3xl font-900 tracking-tighter text-slate-900">ADMIN <span class="text-blue-600 italic">LOGIN</span></h1>
+                <p class="text-[10px] text-slate-400 uppercase tracking-[0.3em] mt-2">Darula Transporte Logistics Terminal</p>
             </div>
-            <input type="password" id="adminPass" placeholder="PASSWORT" class="w-full bg-black border border-[#222] p-4 rounded-none mb-6 text-center font-bold tracking-widest focus:border-white outline-none transition text-white">
-            <button onclick="checkPass()" class="w-full bg-white text-black py-4 font-800 uppercase text-xs tracking-[0.2em] hover:bg-gray-200 transition">Terminal starten</button>
+            <input type="password" id="adminPass" class="pass-input mb-6" placeholder="••••">
+            <button onclick="checkPass()" class="w-full bg-slate-900 text-white py-5 rounded-xl font-800 uppercase text-xs tracking-[0.2em] hover:bg-blue-600 transition-all duration-300">Terminal entsperren</button>
         </div>
     </div>
 
     <div id="adminContent" class="hidden">
-        <header class="border-b border-[#1a1a1a] bg-black sticky top-0 z-50 no-print">
-            <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+        <header class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 no-print">
+            <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <div class="w-2 h-2 bg-green-500 rounded-full status-dot"></div>
-                    <h1 class="text-sm font-800 uppercase tracking-[0.3em]">Live-Terminal <span class="text-gray-600">2026</span></h1>
+                    <div class="w-3 h-3 bg-green-500 rounded-full status-dot shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                    <div>
+                        <h1 class="text-sm font-900 uppercase tracking-widest text-slate-900">Logistik <span class="text-blue-600">Live-Monitor</span></h1>
+                    </div>
                 </div>
-                <div class="flex gap-4">
-                    <button onclick="refreshData()" class="text-[10px] font-bold uppercase tracking-widest border border-[#222] px-4 py-2 hover:bg-[#111]">Aktualisieren</button>
-                    <button onclick="window.print()" class="text-[10px] font-bold uppercase tracking-widest bg-white text-black px-6 py-2 hover:bg-gray-200">Drucken</button>
+                <div class="flex gap-2">
+                    <button onclick="refreshData()" class="text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600 px-5 py-3 rounded-lg hover:bg-slate-200 transition">Aktualisieren</button>
+                    <button onclick="window.print()" class="text-[10px] font-bold uppercase tracking-widest bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Druckliste</button>
                 </div>
             </div>
         </header>
 
         <main class="max-w-7xl mx-auto px-6 py-12">
-            <div class="mb-12 flex justify-between items-end border-b border-[#1a1a1a] pb-6">
-                <h2 class="text-xs font-800 uppercase tracking-[0.4em] text-gray-500">Eingangs-Logistik / Avisierungen</h2>
-                <div id="countLabel" class="text-[10px] font-bold text-gray-700 uppercase tracking-widest">0 Einträge geladen</div>
+            <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-8">
+                <div>
+                    <h2 class="text-3xl font-900 text-slate-900 tracking-tight">Eingehende Avisierungen</h2>
+                    <p class="text-slate-500 text-sm mt-1">Übersicht aller geplanten Warenanlieferungen Rampe 6-7</p>
+                </div>
+                <div id="countLabel" class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Lade Daten...</div>
             </div>
 
-            <div id="masterList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="hidden lg:grid grid-cols-6 gap-4 px-8 mb-4 text-[11px] font-bold uppercase text-slate-400 tracking-widest">
+                <div>Anlieferdatum</div>
+                <div>Spedition / Firma</div>
+                <div>Artikelnummer</div>
+                <div>Bestellung (BE)</div>
+                <div class="text-center">Paletten</div>
+                <div class="text-right">Verwaltung</div>
+            </div>
+
+            <div id="masterList" class="space-y-3">
                 </div>
         </main>
     </div>
 
     <script>
-        const supabaseUrl = 'https://navhxyadbifllpopumfz.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const CFG = {
+            U: "https://navhxyadbifllpopumfz.supabase.co",
+            K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
+        };
+        const _sb = supabase.createClient(CFG.U, CFG.K);
 
         function checkPass() {
-            if(document.getElementById('adminPass').value === "Darula2024") {
+            // Passwort bleibt wie gewünscht
+            if(document.getElementById('adminPass').value === "darula") {
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('adminContent').classList.remove('hidden');
                 refreshData();
-            } else { alert("Zutritt verweigert."); }
+            } else { 
+                alert("Zutritt verweigert."); 
+                document.getElementById('adminPass').value = "";
+            }
         }
 
+        document.getElementById('adminPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPass(); });
+
         async function deleteEntry(id) {
-            if(confirm("Eintrag endgültig löschen?")) {
-                const { error } = await _supabase.from('avisierung').delete().eq('id', id);
+            if(confirm("Eintrag endgültig löschen? Die Kapazität wird sofort wieder freigegeben.")) {
+                const { error } = await _sb.from('avisierung').delete().eq('id', id);
                 if (error) alert("Fehler beim Löschen");
                 refreshData();
             }
         }
 
         async function refreshData() {
-            const { data, error } = await _supabase.from('avisierung').select('*').order('liefer_datum', { ascending: true });
+            const { data, error } = await _sb.from('avisierung').select('*').order('liefer_datum', { ascending: true });
             
             const list = document.getElementById('masterList');
             const countLabel = document.getElementById('countLabel');
             list.innerHTML = '';
 
             if (data) {
-                countLabel.innerText = `${data.length} Avisierungen aktiv`;
+                countLabel.innerText = `${data.length} Avisierungen im System`;
+                
                 data.forEach(item => {
-                    const isBigLoad = item.palettes >= 20;
+                    const isHeavy = item.palettes >= 20;
+                    const isReka = item.firma?.toLowerCase().includes('reka');
+                    const dateObj = new Date(item.liefer_datum);
+                    const dateFormatted = dateObj.toLocaleDateString('de-DE', {
+                        weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+
                     const card = `
-                        <div class="admin-card p-6 flex flex-col justify-between">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">${item.liefer_datum}</p>
-                                    <h3 class="text-lg font-800 uppercase italic tracking-tight text-white">${item.firma}</h3>
-                                </div>
-                                <button onclick="deleteEntry(${item.id})" class="no-print text-[9px] font-bold text-red-900 hover:text-red-500 uppercase tracking-tighter border border-red-900/30 px-2 py-1 transition">Löschen</button>
-                            </div>
+                        <div class="admin-card p-5 lg:p-6 rounded-xl shadow-sm ${isHeavy ? 'heavy-load' : ''} ${isReka ? 'reka-special' : ''} flex flex-col lg:grid lg:grid-cols-6 lg:items-center gap-4">
                             
-                            <div class="space-y-2 mb-6">
-                                <div class="flex justify-between text-[10px] uppercase tracking-widest border-b border-[#1a1a1a] pb-2 text-gray-500">
-                                    <span>Art-Nr:</span> <span class="text-gray-200 font-bold">${item.artikel_nr}</span>
-                                </div>
-                                <div class="flex justify-between text-[10px] uppercase tracking-widest border-b border-[#1a1a1a] pb-2 text-gray-500">
-                                    <span>BE-Nr:</span> <span class="text-gray-200 font-bold">${item.be_nummer}</span>
+                            <div class="flex flex-col">
+                                <span class="lg:hidden text-[9px] font-bold text-slate-400 uppercase mb-1">Datum</span>
+                                <span class="text-sm font-800 text-slate-900">${dateFormatted}</span>
+                            </div>
+
+                            <div class="flex flex-col">
+                                <span class="lg:hidden text-[9px] font-bold text-slate-400 uppercase mb-1">Spedition</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-800 uppercase text-slate-700 truncate">${item.firma}</span>
+                                    ${isReka ? '<span class="bg-orange-500 text-white text-[8px] px-1.5 py-0.5 rounded font-black">REKA 12H</span>' : ''}
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between mt-auto">
-                                <div class="text-[10px] font-bold uppercase tracking-[0.2em] ${isBigLoad ? 'text-white' : 'text-gray-600'}">
-                                    ${isBigLoad ? '🚛 SATTELZUG' : '🚚 KLEIN-LKW'}
-                                </div>
-                                <div class="text-2xl font-800 text-white">${item.palettes} <span class="text-[10px] text-gray-600 uppercase tracking-widest ml-1 font-bold">PAL</span></div>
+                            <div class="flex flex-col">
+                                <span class="lg:hidden text-[9px] font-bold text-slate-400 uppercase mb-1">Artikel</span>
+                                <span class="text-xs font-semibold text-slate-500 font-mono bg-slate-50 px-2 py-1 rounded w-fit">${item.artikel_nr}</span>
                             </div>
+
+                            <div class="flex flex-col">
+                                <span class="lg:hidden text-[9px] font-bold text-slate-400 uppercase mb-1">Bestellung</span>
+                                <span class="text-xs font-semibold text-slate-500 font-mono">${item.be_nummer}</span>
+                            </div>
+
+                            <div class="flex flex-col lg:items-center">
+                                <span class="lg:hidden text-[9px] font-bold text-slate-400 uppercase mb-1">Paletten</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xl font-900 ${isHeavy ? 'text-blue-600' : 'text-slate-900'}">${item.palettes}</span>
+                                    <span class="text-[9px] font-black text-slate-400 uppercase">PAL</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-4 lg:pt-0 no-print">
+                                <button onclick="deleteEntry(${item.id})" class="text-[10px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest border border-red-100 px-4 py-2 rounded-lg hover:bg-red-50 transition">Entfernen</button>
+                            </div>
+
                         </div>
                     `;
                     list.innerHTML += card;
@@ -123,8 +186,8 @@
             }
         }
 
-        // Auto-Refresh alle 60 Sekunden
-        setInterval(refreshData, 60000);
+        // Live-Update
+        setInterval(refreshData, 30000);
     </script>
 </body>
 </html>
