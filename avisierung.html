@@ -3,204 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Avisierung</title>
+    <title>Darula Transporte | Impressum & Rechtliches</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 4px; border-radius: 8px; }
-        .day-cell { background: white; min-height: 100px; padding: 12px; cursor: pointer; transition: 0.2s; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; }
-        .day-cell:hover:not(.disabled) { background: #eff6ff; border-color: #3b82f6; }
-        .day-cell.selected { background: #2563eb !important; color: white !important; }
-        .day-cell.disabled { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; }
-        .day-cell.full { border-left: 4px solid #ef4444; background: #fff1f2; }
-        .day-cell.reserved { border-left: 4px solid #94a3b8; background: #f8fafc; }
-        label { display: block; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
-        input { border: 1px solid #cbd5e1; padding: 10px; width: 100%; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
-        .btn-primary { background: #1e293b; color: white; width: 100%; padding: 16px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; font-size: 16px; }
-        #reka-notice { display: none; background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; color: #9a3412; font-size: 13px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffedd5; }
-        .time-badge { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; line-height: 1.6; }
+        
+        .admin-card { 
+            background: white; 
+            border: 1px solid #e2e8f0; 
+            border-bottom: 6px solid #1e293b; 
+            border-radius: 12px; 
+            padding: 3rem;
+        }
+
+        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #64748b; }
+        
+        .section-tag { 
+            font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4em; 
+            color: #2563eb; margin-bottom: 1rem; display: block; 
+        }
+
+        h3 { 
+            font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-size: 13px; 
+            color: #0f172a; margin-top: 3rem; margin-bottom: 1rem; border-left: 4px solid #1e293b;
+            padding-left: 12px;
+        }
+
+        p { font-size: 15px; color: #475569; margin-bottom: 1.25rem; font-weight: 500; }
+        strong { color: #0f172a; font-weight: 800; }
+        
+        .legal-link { color: #2563eb; font-weight: 700; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .legal-link:hover { border-bottom-color: #2563eb; }
     </style>
 </head>
-<body>
+<body class="antialiased min-h-screen flex flex-col">
 
-    <nav class="bg-white border-b py-6 mb-8 px-6 text-center">
-        <a href="index.html" class="inline-block hover:opacity-80 transition-opacity">
-            <h1 class="text-2xl font-800 tracking-tight text-slate-900">Darula <span class="text-blue-600">Transporte</span></h1>
-        </a>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Avisierungsportal Rampe 7</p>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
-        
-        <div class="lg:col-span-8">
-            <div class="card p-6">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 id="month-label" class="text-2xl font-800 text-slate-800 uppercase italic">März 2026</h2>
-                    <div class="flex gap-2">
-                        <button onclick="nav(-1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-50 transition">←</button>
-                        <button onclick="nav(1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-50 transition">→</button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-7 mb-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                    <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
-                </div>
-                <div class="calendar-grid" id="grid"></div>
+    <nav class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+            <h1 class="text-2xl font-900 tracking-tighter uppercase italic">
+                Darula <span class="text-blue-600 not-italic">Transporte</span>
+            </h1>
+            <div class="flex gap-8">
+                <a href="index.html" class="nav-link hover:text-blue-600">Home</a>
+                <a href="avisierung.html" class="nav-link hover:text-blue-600">Avisierung</a>
             </div>
         </div>
+    </nav>
 
-        <div class="lg:col-span-4">
-            <div class="card p-8 sticky top-8">
-                <h3 class="text-2xl font-bold mb-1 text-slate-800">Anlieferung buchen</h3>
+    <main class="max-w-4xl mx-auto px-6 py-12 md:py-24 flex-grow">
+        
+        <div class="mb-12">
+            <span class="section-tag">Rechtliche Hinweise</span>
+            <h2 class="text-5xl md:text-6xl font-900 uppercase italic tracking-tighter text-slate-900 leading-none">
+                Impressum
+            </h2>
+        </div>
+
+        <div class="admin-card">
+            
+            <section>
+                <h3>Angaben gemäß § 5 TMG</h3>
+                <p>
+                    <strong>Tibor Darula</strong><br>
+                    Darula Transporte<br>
+                    Thoner Weg 23<br>
+                    90425 Nürnberg
+                </p>
+            </section>
+
+            <section>
+                <h3>Kontaktmöglichkeiten</h3>
+                <p>
+                    <strong>Telefon:</strong> 015563597496<br>
+                    <strong>E-Mail:</strong> <a href="mailto:d.darulatransporte@gmail.com" class="legal-link">d.darulatransporte@gmail.com</a><br>
+                    <strong>Webseite:</strong> <a href="https://www.darulatransporte.de/" class="legal-link">https://www.darulatransporte.de/</a>
+                </p>
+            </section>
+
+            <section>
+                <h3>Verantwortlich für den Inhalt</h3>
+                <p>
+                    <strong>Tibor Darula</strong><br>
+                    Thoner Weg 23<br>
+                    90425 Nürnberg<br>
+                    (Verantwortlich gemäß § 18 Abs. 2 MStV)
+                </p>
+            </section>
+
+            <section>
+                <h3>Realisierung & Webdesign</h3>
+                <p>
+                    <strong>Darius Darula</strong>
+                </p>
+            </section>
+
+            <section class="mt-12 pt-8 border-t border-slate-100">
+                <h3>EU-Streitschlichtung</h3>
+                <p>
+                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+                    <a href="https://ec.europa.eu/consumers/odr/" target="_blank" class="legal-link">https://ec.europa.eu/consumers/odr/</a>.<br>
+                    Unsere E-Mail-Adresse finden Sie oben im Impressum.
+                </p>
+                <h3>Verbraucherstreitbeilegung</h3>
+                <p>
+                    Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+                </p>
+            </section>
+
+            <section class="mt-12 pt-8 border-t border-slate-100">
+                <h3>Haftung für Inhalte</h3>
+                <p class="text-sm">
+                    Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.
+                </p>
                 
-                <div class="mt-4 mb-6 space-y-2">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Warenannahmezeiten:</p>
-                    <div class="flex gap-2">
-                        <div class="time-badge">MO-DO: 07:00 - 14:00</div>
-                        <div class="time-badge">FR: 07:00 - 12:00</div>
-                    </div>
-                </div>
+                <h3>Haftung für Links</h3>
+                <p class="text-sm">
+                    Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+                </p>
 
-                <hr class="mb-6">
-                
-                <form id="avisForm">
-                    <input type="hidden" id="in-date">
-                    
-                    <div id="reka-notice">
-                        <strong>HINWEIS:</strong> Anlieferung für REKA zwingend bis 12:00 Uhr!
-                    </div>
-
-                    <label>Lieferant/Spedition</label>
-                    <input type="text" id="in-company" required placeholder="Lieferant/Spedition eingeben" oninput="logicCheck()">
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label>Bestellung (BE)</label>
-                            <input type="text" id="in-be" required placeholder="BE-XXXXX">
-                        </div>
-                        <div>
-                            <label>Artikelnummer</label>
-                            <input type="text" id="in-art" required placeholder="Art-Nr.">
-                        </div>
-                    </div>
-
-                    <label>Ladeeinheiten</label>
-                    <input type="number" id="in-pal" required min="1" value="0">
-
-                    <div id="sel-info" class="p-5 bg-slate-50 text-center text-sm font-bold mb-6 rounded-xl border-2 border-dashed border-slate-200 text-slate-400">
-                        Datum im Kalender wählen
-                    </div>
-
-                    <button type="submit" id="sub-btn" class="btn-primary w-100">Anmeldung abschließen</button>
-                    
-                    <div class="mt-8 p-4 bg-blue-50 rounded-xl text-[12px] text-blue-700 leading-relaxed border border-blue-100">
-                        <strong>Hinweis:</strong> LKWs ab 20 Paletten werden systemseitig als Kontingent erfasst und blockieren den Slot für andere Anlieferungen.
-                    </div>
-                </form>
-            </div>
+                <h3>Urheberrecht</h3>
+                <p class="text-sm">
+                    Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+                </p>
+            </section>
         </div>
     </main>
 
-    <script>
-        const CFG = {
-            U: "https://navhxyadbifllpopumfz.supabase.co",
-            K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-            LIMIT: 3, THRESHOLD: 20 
-        };
-        const sb = supabase.createClient(CFG.U, CFG.K);
+    <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">
+                &copy; 2026 Darula Transporte &bull; Nürnberg
+            </p>
+        </div>
+    </footer>
 
-        function logicCheck() {
-            const v = document.getElementById('in-company').value.toLowerCase();
-            document.getElementById('reka-notice').style.display = v.includes('reka') ? 'block' : 'none';
-        }
-
-        const State = {
-            now: new Date(), sel: null, data: {}, locked: [],
-
-            async init() {
-                await this.sync();
-                this.render();
-                document.getElementById('avisForm').onsubmit = (e) => this.send(e);
-            },
-
-            async sync() {
-                const { data } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
-                this.data = {}; this.locked = [];
-                data?.forEach(r => {
-                    const d = r.liefer_datum;
-                    if(r.firma?.toLowerCase().includes("monowell")) this.locked.push(d);
-                    if(r.palettes >= CFG.THRESHOLD) this.data[d] = (this.data[d] || 0) + 1;
-                });
-                this.render();
-            },
-
-            render() {
-                const grid = document.getElementById('grid'); grid.innerHTML = '';
-                const y = this.now.getFullYear(), m = this.now.getMonth();
-                document.getElementById('month-label').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(this.now);
-                const first = (new Date(y, m, 1).getDay() + 6) % 7;
-                const total = new Date(y, m + 1, 0).getDate();
-                const today = new Date().toISOString().split('T')[0];
-
-                for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-cell disabled"></div>`;
-
-                for(let d=1; d<=total; d++) {
-                    const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    const isReserved = this.locked.includes(ds);
-                    const isFull = (this.data[ds] || 0) >= CFG.LIMIT;
-                    const isPast = ds < today || [0,6].includes(new Date(y,m,d).getDay());
-
-                    const cell = document.createElement('div');
-                    cell.className = `day-cell ${isReserved ? 'reserved' : (isFull ? 'full' : '')} ${this.sel === ds ? 'selected' : ''} ${isPast ? 'disabled' : ''}`;
-                    
-                    let status = "Verfügbar";
-                    if(isReserved) status = "Belegt";
-                    else if(isFull) status = "Voll";
-
-                    cell.innerHTML = `<div class="text-xl font-800">${d}</div><div class="text-[9px] font-bold uppercase opacity-60">${isPast ? '' : status}</div>`;
-                    
-                    if(!isPast && !isFull && !isReserved) {
-                        cell.onclick = () => {
-                            this.sel = ds;
-                            document.getElementById('in-date').value = ds;
-                            document.getElementById('sel-info').innerText = `TERMIN: ${d}.${m+1}.${y}`;
-                            document.getElementById('sel-info').className = "p-5 bg-blue-600 text-white text-center text-sm font-bold mb-6 rounded-xl shadow-lg";
-                            this.render();
-                        };
-                    }
-                    grid.appendChild(cell);
-                }
-            },
-
-            send: async (e) => {
-                e.preventDefault();
-                if(!State.sel) return alert("Bitte wähle ein Datum im Kalender!");
-                const btn = document.getElementById('sub-btn');
-                btn.disabled = true; btn.innerText = "Speichert...";
-
-                const payload = {
-                    liefer_datum: State.sel,
-                    firma: document.getElementById('in-company').value,
-                    be_nummer: document.getElementById('in-be').value,
-                    artikel_nr: document.getElementById('in-art').value,
-                    palettes: parseInt(document.getElementById('in-pal').value)
-                };
-
-                const { error } = await sb.from("avisierung").insert(payload);
-                if(!error) {
-                    alert("✅ Buchung erfolgreich!");
-                    location.reload();
-                } else {
-                    alert("❌ Fehler: " + error.message);
-                    btn.disabled = false; btn.innerText = "Anmeldung abschließen";
-                }
-            }
-        };
-
-        const nav = (v) => { State.now.setMonth(State.now.getMonth() + v); State.render(); };
-        State.init();
-    </script>
 </body>
 </html>
