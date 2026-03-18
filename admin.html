@@ -3,82 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Darula Admin | Terminal</title>
+    <title>Darula Admin | Notfall-Wiederherstellung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background-color: #f1f5f9; }
-        .admin-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
-        .card-done { border-left-color: #22c55e; opacity: 0.6; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 12px; border-left: 6px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+        .card-done { border-left-color: #22c55e; background-color: #f0fdf4; }
         .hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="p-4">
 
     <div id="loginOverlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100]">
-        <div class="bg-white p-8 rounded-2xl shadow-xl text-center">
-            <h2 class="text-xl font-bold mb-4">ADMIN LOGIN</h2>
-            <input type="password" id="pass" class="border-2 p-3 rounded-lg mb-4 w-full text-center" placeholder="Passwort">
-            <button onclick="check()" class="bg-blue-600 text-white w-full py-3 rounded-lg font-bold">STARTEN</button>
+        <div class="bg-white p-10 rounded-3xl shadow-2xl text-center max-w-sm w-full">
+            <h1 class="text-2xl font-bold mb-6">ADMIN TERMINAL</h1>
+            <input type="password" id="adminPass" class="w-full border-2 p-4 rounded-xl mb-4 text-center text-2xl tracking-widest" placeholder="••••">
+            <button onclick="checkPass()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold uppercase">Einloggen</button>
         </div>
     </div>
 
-    <div id="content" class="hidden p-4 max-w-4xl mx-auto">
-        <div class="flex justify-between mb-6">
-            <h1 class="font-bold">DARULA TERMINAL</h1>
-            <button onclick="load()" class="bg-slate-800 text-white px-4 py-1 rounded text-sm">REFRESH</button>
+    <div id="adminContent" class="hidden max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm">
+            <h2 class="font-black text-slate-800 uppercase tracking-tighter">Darula <span class="text-blue-600">Terminal</span></h2>
+            <button onclick="refreshData()" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold text-xs uppercase">Liste Aktualisieren</button>
         </div>
-        <div id="list">Lade Daten...</div>
+        <div id="masterList" class="space-y-4">Lade Daten...</div>
     </div>
 
     <script>
+        // Deine Supabase Daten (direkt aus deinen Screenshots übernommen)
         const _sb = supabase.createClient(
             "https://navhxyadbifllpopumfz.supabase.co", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
         );
 
-        function check() {
-            if(document.getElementById('pass').value === "darula") {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('content').classList.remove('hidden');
-                load();
-            } else { alert("Falsch!"); }
+        function checkPass() {
+            if(document.getElementById('adminPass').value === "darula") {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('adminContent').classList.remove('hidden');
+                refreshData();
+            } else { alert("Falsches Passwort!"); }
         }
 
-        async function load() {
-            const { data, error } = await _sb.from('avisierung').select('*').order('id', {ascending: false});
-            if(error) { console.error(error); return; }
+        async function refreshData() {
+            const { data, error } = await _sb.from('avisierung').select('*').order('id', { ascending: false });
+            if(error) { alert("Fehler beim Laden: " + error.message); return; }
             
-            let html = '';
-            data.forEach(item => {
+            const list = document.getElementById('masterList');
+            list.innerHTML = '';
+
+            data?.forEach(item => {
                 const isDone = item.status === 'abgewickelt';
-                html += `
-                    <div class="admin-card ${isDone ? 'card-done' : ''}">
+                list.innerHTML += `
+                    <div class="card ${isDone ? 'card-done' : ''}">
                         <div>
-                            <div class="font-bold">${item.firma}</div>
-                            <div class="text-xs text-slate-500">BE: ${item.be_nummer} | Status: ${item.status}</div>
+                            <div class="font-bold text-lg">${item.firma}</div>
+                            <div class="text-sm text-slate-500">BE: ${item.be_nummer} | Status: <span class="uppercase font-bold">${item.status}</span></div>
                         </div>
-                        <div class="flex gap-2">
-                            ${!isDone ? `<button onclick="done(${item.id})" class="bg-green-500 text-white px-3 py-2 rounded text-xs font-bold">ABWICKELN</button>` : '<span class="text-green-600 font-bold">ERLEDIGT</span>'}
-                            <button onclick="del(${item.id})" class="bg-red-100 text-red-600 px-3 py-2 rounded text-xs">LÖSCHEN</button>
+                        <div class="flex gap-3">
+                            ${!isDone ? `
+                                <button onclick="setDone(${item.id})" class="bg-blue-600 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase hover:bg-green-600 transition-colors">Abwickeln</button>
+                            ` : `<span class="text-green-600 font-black px-5 py-3 italic">ERLEDIGT</span>`}
+                            
+                            <button onclick="deleteRow(${item.id})" class="bg-red-50 text-red-500 px-4 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     </div>
                 `;
             });
-            document.getElementById('list').innerHTML = html;
         }
 
-        async function done(id) {
+        async function setDone(id) {
             const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
-            if(error) alert("Fehler: " + error.message);
-            load();
+            if(error) { alert("Abwickeln fehlgeschlagen: " + error.message); }
+            refreshData();
         }
 
-        async function del(id) {
-            if(!confirm("Löschen?")) return;
+        async function deleteRow(id) {
+            if(!confirm("Eintrag wirklich löschen?")) return;
             const { error } = await _sb.from('avisierung').delete().eq('id', id);
-            if(error) alert("Fehler: " + error.message);
-            load();
+            if(error) { alert("Löschen fehlgeschlagen: " + error.message); }
+            refreshData();
         }
     </script>
 </body>
