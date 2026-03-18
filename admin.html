@@ -2,77 +2,127 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Darula Admin | Browser Sync</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darula Terminal | Control Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #020617; font-family: 'Inter', sans-serif; color: #f8fafc; }
+        .terminal-font { font-family: 'Orbitron', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .card-glow:hover { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
+        .delete-btn { transition: all 0.2s; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .delete-btn:hover { background: #ef4444; color: white; transform: scale(1.05); }
+    </style>
 </head>
-<body class="bg-slate-100 p-4 md:p-10 font-sans">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <h1 class="text-2xl font-black uppercase italic tracking-tighter text-slate-900">Darula <span class="text-blue-600">Terminal</span></h1>
-            <button onclick="window.location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-bold uppercase hover:bg-slate-900 transition-all shadow-lg">Seite Neu Laden</button>
+    <div class="max-w-6xl mx-auto">
+        <header class="glass p-6 rounded-3xl mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
+            <div class="text-center md:text-left">
+                <h1 class="terminal-font text-3xl font-black italic uppercase tracking-tighter text-white">
+                    Darula <span class="text-blue-500">Terminal</span>
+                </h1>
+                <div class="flex items-center justify-center md:justify-start gap-3 mt-2">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                    </span>
+                    <p id="live-status" class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">System synchronisiert...</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="window.location.reload()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase transition-all border border-slate-700">Hard Reset</button>
+                <button onclick="fetchLatestData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase shadow-xl shadow-blue-900/40 transition-all">Refresh Liste</button>
+            </div>
         </header>
 
-        <div id="status" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Live-Daten von Supabase...</div>
-        <div id="truckList" class="space-y-4"></div>
+        <div id="truckList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
     </div>
 
     <script>
-        const _sb = supabase.createClient(
-            "https://navhxyadbifllpopumfz.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
-        );
+        // VERSCHLEIERUNG DER KEYS (Base64 kodiert)
+        const _0x_u = "aHR0cHM6Ly9uYXZoeHlhZGJpZmllbGxwb3B1bWZ6LnN1cGFiYXNlLmNv"; 
+        const _0x_k = "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjeUk2SW5OMWNHRmlZWE5sSWl3aWNtVmlJam9pYm1Ga2VIaDVZV1JpYm1sbGJIeHdZWGwxYlhWbVpuWWlMQ0p5YjJ4bElqb2lZVzV2YmlJc0ltbGhkQ0k2TVRjM01qRXpOakkxTWl3aWVYYndJam95TURnM056RXlNanV6ZlEtMHVUQVlNZFJ4ZHZscFBkcFFtTUxxc3YxTWVuMXduQmZBeC1RNnpZ";
 
-        async function loadList() {
-            // Wir fügen eine zufällige Zahl hinzu, damit der Browser nicht aus dem Cache lädt
-            const { data, error } = await _sb
-                .from('avisierung')
-                .select('*')
-                .order('id', { ascending: false });
+        // Initialisierung durch Dekodierung (atob)
+        const _sb = supabase.createClient(atob(_0x_u), atob(_0x_k));
+
+        async function fetchLatestData() {
+            const statusText = document.getElementById('live-status');
+            statusText.innerText = "Daten werden abgerufen...";
+            
+            const { data, error } = await _sb.from('avisierung').select('*').order('id', { ascending: false });
 
             if (error) {
-                console.error("Fehler:", error);
+                statusText.innerText = "Verbindungsfehler!";
+                console.error(error);
                 return;
             }
 
+            statusText.innerText = `${data.length} Aktive Einheiten`;
             const container = document.getElementById('truckList');
             container.innerHTML = '';
 
+            if (data.length === 0) {
+                container.innerHTML = `<div class="col-span-full glass p-20 rounded-3xl text-center text-slate-500 font-bold uppercase italic tracking-widest">Warteschlange leer</div>`;
+                return;
+            }
+
             data.forEach(item => {
                 container.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
-                        <div>
-                            <div class="font-black text-slate-800 uppercase text-lg">${item.firma || 'Unbekannt'}</div>
-                            <div class="text-[11px] font-bold text-slate-400 uppercase mt-1">BE: ${item.be_nummer || '-'}</div>
+                    <div class="glass p-6 rounded-[2.5rem] card-glow truck-card flex flex-col gap-6 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                        
+                        <div class="flex justify-between items-start z-10">
+                            <div>
+                                <h3 class="text-xl font-black text-white uppercase tracking-tighter leading-none mb-2">${item.firma || 'Unbekannt'}</h3>
+                                <span class="bg-blue-500/10 text-blue-400 text-[9px] font-black px-3 py-1 rounded-full uppercase border border-blue-500/20">Avisiert</span>
+                            </div>
+                            <div class="terminal-font text-slate-700 text-2xl font-black opacity-30 group-hover:opacity-100 transition-opacity">#${item.id}</div>
                         </div>
-                        <button onclick="deleteTruck(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">
-                            Löschen
+
+                        <div class="space-y-4 z-10">
+                            <div class="flex justify-between border-b border-white/5 pb-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-500">BE-Nummer</span>
+                                <span class="text-xs font-mono font-bold text-slate-200">${item.be_nummer || '-'}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/5 pb-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-500">Ladung</span>
+                                <span class="text-xs font-bold text-slate-200">${item.palettes || '0'} Paletten</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/5 pb-2">
+                                <span class="text-[10px] uppercase font-bold text-slate-500">Termin</span>
+                                <span class="text-xs font-bold text-blue-400 underline">${item.liefer_datum || '-'}</span>
+                            </div>
+                        </div>
+
+                        <button onclick="confirmDelete(${item.id})" class="delete-btn w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 z-10">
+                            Abgewickelt & Löschen
                         </button>
                     </div>
                 `;
             });
         }
 
-        async function deleteTruck(id) {
-            if (!confirm("Eintrag löschen?")) return;
-
-            const { error } = await _sb
-                .from('avisierung')
-                .delete()
-                .eq('id', id);
-
+        async function confirmDelete(id) {
+            if (!confirm("Soll dieser LKW wirklich aus der Liste entfernt werden?")) return;
+            
+            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+            
             if (error) {
-                alert("Fehler im Browser: " + error.message);
+                alert("Fehler beim Löschen: " + error.message);
             } else {
-                // Nach dem Löschen laden wir die Liste neu
-                loadList();
+                fetchLatestData();
             }
         }
 
-        // Automatisch alle 5 Sekunden aktualisieren, falls im Browser nichts passiert
-        setInterval(loadList, 5000);
-        loadList();
+        // Live-Sync alle 15 Sekunden
+        setInterval(fetchLatestData, 15000);
+        fetchLatestData();
     </script>
 </body>
 </html>
