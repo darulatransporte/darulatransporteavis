@@ -3,121 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte</title>
+    <title>Darula Transporte | Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .hub-card { background: white; border: 1px solid #e2e8f0; border-bottom: 6px solid #1e293b; border-radius: 12px; }
-        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #64748b; }
-        
-        .day-cell { 
-            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
-            transition: all 0.2s ease-in-out; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
+        /* --- WEISSES DESIGN ANPASSUNGEN --- */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f2f5; /* Heller Hintergrund */
+            color: #333; /* Dunkler Text für Kontrast */
         }
-        .day-cell:hover:not(.disabled) { border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .selected { ring: 3px #2563eb; border-color: #2563eb !important; background: #eff6ff !important; }
-        
-        .status-free { border-bottom: 5px solid #22c55e; }
-        .status-warn { border-bottom: 5px solid #f59e0b; }
-        .status-full { border-bottom: 5px solid #ef4444; }
-        .status-locked { border-bottom: 5px solid #3b82f6; background: #f0f7ff; }
-        .disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); background: #f1f5f9; }
-
-        input, select { border: 1px solid #e2e8f0 !important; padding: 12px !important; border-radius: 8px !important; width: 100%; font-size: 14px; background: white; }
-        input:focus, select:focus { border-color: #2563eb !important; outline: none; ring: 2px rgba(37, 99, 235, 0.1); }
-        label { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.1em; }
-        
-        .status-tag { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px; }
+        .nav-bar { 
+            background-color: #ffffff; /* Weiße Navigationsleiste */
+            border-bottom: 1px solid #e0e0e0; /* Dezente Trennlinie */
+        }
+        .text-primary { color: #2563eb; } /* Blaue Akzentfarbe beibehalten */
+        .hub-card { 
+            background: #ffffff; /* Weiße Karte */
+            border: 1px solid #e0e0e0; 
+            border-bottom: 6px solid #2563eb; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Leichter Schatten */
+        }
+        .day-cell { 
+            background: #ffffff; /* Weiße Tageszelle */
+            border: 1px solid #e0e0e0; 
+            border-radius: 12px;
+            transition: all 0.2s ease; 
+            min-height: 110px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 12px;
+        }
+        .selected { 
+            ring: 3px #2563eb; 
+            border-color: #2563eb !important; 
+            background: #e0f2fe !important; /* Sehr hellblau bei Auswahl */
+        }
+        .status-free { border-bottom: 5px solid #22c55e; } /* Grün */
+        .status-full { border-bottom: 5px solid #ef4444; } /* Rot */
+        .status-reserved { border-bottom: 5px solid #3b82f6; } /* Blau */
+        .is-past { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+        .is-locked { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+            background: #f8f8f8 !important; /* Helleres Grau für gesperrt */
+            border-bottom: 5px solid #a0a0a0; /* Dunklerer grauer Balken */
+        }
+        input, select { 
+            background: #f9fafb !important; /* Sehr helles Grau für Inputs */
+            color: #333 !important; 
+            border: 1px solid #d1d5db !important; /* Hellerer Rand */
+            padding: 12px !important; 
+            border-radius: 8px !important; 
+            width: 100%; 
+        }
+        label { 
+            font-size: 10px; 
+            font-weight: 900; 
+            color: #6b7280; /* Dunkleres Grau für Labels */
+            text-transform: uppercase; 
+            margin-bottom: 4px; 
+            display: block; 
+        }
+        .header-text { color: #333; } /* Dunkler Text für Überschriften */
+        .button-nav { 
+            background-color: #e5e7eb; /* Helle Buttons für Navigation */
+            border: 1px solid #d1d5db; 
+            color: #333; /* Dunkler Text für Nav-Buttons */
+            hover:bg-gray-200;
+        }
+        #reka-notice { 
+            background-color: #fdbd4d; /* Orange beibehalten, aber heller */
+            color: #333; /* Dunkler Text für Warnung */
+        }
+        #selection-status { 
+            background-color: #e2e8f0; /* Hellblau-Grau für Status */
+            color: #64748b; /* Dunklerer Text für Status */
+        }
+        /* --- Ende WEISSES DESIGN ANPASSUNGEN --- */
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="antialiased min-h-screen">
 
-    <nav class="bg-white border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-            <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">
-                Darula <span class="text-blue-600 not-italic">Transporte</span>
-            </h1>
-            <div class="flex gap-8">
-                <a href="#" class="nav-link hover:text-blue-600">Home</a>
-                <a href="#" class="nav-link text-blue-600">Avisierung</a>
-            </div>
+    <nav class="nav-bar p-6 mb-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-[900] tracking-tighter uppercase italic header-text">Darula <span class="text-primary not-italic">Transporte</span></h1>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 w-full flex-grow">
+    <main class="max-w-7xl mx-auto px-6 pb-12">
+        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg font-[900] text-xs uppercase italic mb-8 border-l-8 border-yellow-500 shadow-lg">
+            ⚠️ Stückgut-Regelung: Stückgut braucht KEINE feste Slot-Reservierung und darf auch an vollen Tagen anliefern.
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            
             <div class="lg:col-span-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <span class="status-tag">Warenannahme Rampe 7</span>
-                        <h2 id="month-label" class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2">Ladeplan</h2>
-                    </div>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="month-label" class="text-3xl font-[900] uppercase italic header-text tracking-tighter">Ladeplan</h2>
                     <div class="flex gap-2">
-                        <button onclick="nav(-1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-white transition">←</button>
-                        <button onclick="nav(1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-white transition">→</button>
+                        <button onclick="nav(-1)" class="w-10 h-10 button-nav rounded-lg hover:bg-gray-200">←</button>
+                        <button onclick="nav(1)" class="w-10 h-10 button-nav rounded-lg hover:bg-gray-200">→</button>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-7 gap-3" id="grid"></div>
-
-                <div class="mt-10 p-6 bg-white border border-slate-200 rounded-xl flex flex-wrap justify-center gap-8">
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Frei</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-orange-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Begrenzt</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Voll (Nur Stückgut erlaubt)</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Reserviert</span></div>
-                </div>
             </div>
 
             <div class="lg:col-span-4">
                 <div class="hub-card p-8 sticky top-8">
-                    <h3 class="text-2xl font-900 uppercase italic tracking-tighter mb-6 border-b pb-4 text-slate-900">Avisierung</h3>
-                    
-                    <form id="avisForm" class="space-y-5">
+                    <h3 class="text-xl font-[900] uppercase italic mb-6 border-b border-gray-200 pb-4 header-text">Anmeldung</h3>
+                    <form id="avisForm" class="space-y-4">
                         <input type="hidden" id="in-date">
-                        
                         <div>
-                            <label>Lieferant auswählen</label>
-                            <select id="in-company" required onchange="State.handleSupplierChange(this.value)">
-                                <option value="">-- Bitte wählen --</option>
-                                <option value="Reka">Reka</option>
-                                <option value="Monowell">Monowell</option>
-                                <option value="Spedition / Sonstige">Spedition / Sonstige</option>
-                            </select>
+                            <label>Spedition / Lieferant</label>
+                            <input type="text" id="in-company" required placeholder="Name" oninput="State.checkReka(this.value)">
                         </div>
-
-                        <div id="reka-notice" class="hidden bg-yellow-400 text-black p-4 rounded-lg text-[11px] font-900 uppercase italic leading-tight shadow-md">
-                            ⚠️ WICHTIG: Bitte bis spätestens 13:00 Uhr anliefern. Spätere Ankunft führt zur Entladungsverweigerung.
+                        <div id="reka-notice" class="hidden p-3 rounded font-[800] text-[10px] uppercase shadow-inner">
+                            ⚠️ ACHTUNG: Anlieferung zwingend vor 13:00 Uhr!
                         </div>
-
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label>Ladeeinheiten (LE)</label>
+                                <label>Einheiten (LE)</label>
                                 <input type="number" id="in-pal" required min="1" value="1" oninput="State.render()">
                             </div>
                             <div>
-                                <label>Anlieferart</label>
+                                <label>Lieferart</label>
                                 <select id="in-type" onchange="State.render()">
-                                    <option value="Stückgut">Stückgut</option>
-                                    <option value="Teillieferung">Teillieferung</option>
-                                    <option value="Komplettlieferung">Komplettlieferung</option>
+                                    <option value="Stückgut">Stückgut (LTL)</option>
+                                    <option value="Teil">Teillieferung</option>
+                                    <option value="Komplett">Komplettladung (FTL)</option>
                                 </select>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label>Referenz (BE)</label><input type="text" id="in-be" required placeholder="BE-Nummer"></div>
-                            <div><label>Artikel-Nr.</label><input type="text" id="in-art" required placeholder="Art-Nr."></div>
+                            <div><label>BE-Nummer</label><input type="text" id="in-be" required placeholder="BE-XXXXXX"></div>
+                            <div><label>Artikelnummer</label><input type="text" id="in-art" required placeholder="12345-AB"></div>
                         </div>
-
-                        <div id="selection-status" class="bg-slate-50 p-4 rounded-lg text-center border border-dashed text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <div id="selection-status" class="p-4 rounded text-center text-[10px] font-black uppercase italic">
                             Tag im Plan wählen
                         </div>
-
-                        <button type="submit" id="sub-btn" class="w-full bg-[#0f172a] hover:bg-blue-600 text-white py-4 rounded-lg font-900 uppercase text-xs tracking-[0.2em] transition-all duration-300">
-                            Termin verbindlich buchen
+                        <button type="submit" id="sub-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-lg font-[900] uppercase text-xs tracking-widest transition-all">
+                            Termin buchen
                         </button>
                     </form>
                 </div>
@@ -128,59 +156,56 @@
 <script>
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
-        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLevel.iat:1772136252,exp:2087712252}.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        TRENNUNG_LKW: 10, // Ab wann es als LKW zählt für die Slot-Berechnung
-        MONOWELL_LIMIT: 100, // Monowell sperrt Tag ab 100 LE
-        MAX_LKW_SLOTS: 3
+        // Dein korrigierter Key:
+        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
+        LIMIT: 3
     };
+    
     const sb = supabase.createClient(CFG.U, CFG.K);
 
     const State = {
-        now: new Date(), sel: null, stats: {},
+        now: new Date(), 
+        sel: null, 
+        stats: {},
 
         async init() { 
             await this.sync(); 
             document.getElementById('avisForm').onsubmit = (e) => this.send(e); 
         },
 
-        handleSupplierChange(val) {
-            const notice = document.getElementById('reka-notice');
-            if(val === 'Reka') { notice.classList.remove('hidden'); } 
-            else { notice.classList.add('hidden'); }
-            this.render();
+        checkReka(v) {
+            const n = document.getElementById('reka-notice');
+            v.toLowerCase().includes('reka') ? n.classList.remove('hidden') : n.classList.add('hidden');
         },
 
         async sync() {
-            const { data } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
-            this.stats = {};
-            data?.forEach(r => {
-                const d = r.liefer_datum;
-                if(!this.stats[d]) this.stats[d] = { lkwCount: 0, isReserved: false };
+            try {
+                const { data, error } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
+                if(error) throw error;
                 
-                const f = (r.firma || "").toLowerCase();
-                const pal = parseInt(r.palettes) || 0;
-                
-                // Monowell Logik: Sperrt den Tag für andere (außer Stückgut), wenn > 100 LE
-                if(f.includes("monowell") && pal >= CFG.MONOWELL_LIMIT) {
-                    this.stats[d].isReserved = true;
-                }
-                
-                // Zähle LKW Slots (Alles was kein Stückgut ist oder über Trennung liegt)
-                if(pal > CFG.TRENNUNG_LKW) {
-                    this.stats[d].lkwCount += 1;
-                }
-            });
-            this.render();
+                this.stats = {};
+                data?.forEach(r => {
+                    const d = r.liefer_datum;
+                    if(!this.stats[d]) this.stats[d] = { slots: 0, monowell: false };
+                    
+                    if(parseInt(r.palettes) > 10) this.stats[d].slots++;
+                    
+                    if(r.firma?.toLowerCase().includes('monowell') && parseInt(r.palettes) > 50) {
+                        this.stats[d].monowell = true;
+                    }
+                });
+                this.render();
+            } catch (e) { console.error("Sync Error:", e); }
         },
 
         render() {
-            const grid = document.getElementById('grid'); grid.innerHTML = '';
+            const grid = document.getElementById('grid'); 
+            grid.innerHTML = '';
             const y = this.now.getFullYear(), m = this.now.getMonth();
-            
             const selectedType = document.getElementById('in-type').value;
-            const isStueckgut = selectedType === "Stückgut";
-
+            
             document.getElementById('month-label').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(this.now);
+            
             const first = (new Date(y, m, 1).getDay() + 6) % 7;
             const total = new Date(y, m + 1, 0).getDate();
             const todayStr = new Date().toISOString().split('T')[0];
@@ -189,52 +214,53 @@
 
             for(let d=1; d<=total; d++) {
                 const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const day = this.stats[ds] || { lkwCount: 0, isReserved: false };
-                const dateObj = new Date(y, m, d);
-                const isWeekend = [0,6].includes(dateObj.getDay());
-                const isPast = ds < todayStr || isWeekend;
+                const day = this.stats[ds] || { slots: 0, monowell: false };
                 
-                let sClass = "status-free", sText = "FREI";
-                if(day.isReserved) { sClass = "status-locked"; sText = "RESERVIERT"; }
-                else if(day.lkwCount >= CFG.MAX_LKW_SLOTS) { sClass = "status-full"; sText = "VOLL"; }
-                else if(day.lkwCount >= 2) { sClass = "status-warn"; sText = "BEGRENZT"; }
+                const dateObj = new Date(y, m, d);
+                const isPast = ds < todayStr || [0,6].includes(dateObj.getDay());
+                
+                const isFull = day.slots >= CFG.LIMIT;
+                const isReserved = day.monowell;
+                const isBlocked = (isFull || isReserved) && selectedType !== "Stückgut";
 
-                // LOGIK: Stückgut darf IMMER buchen (außer Vergangenheit/Wochenende)
-                // Andere dürfen nur buchen, wenn nicht VOLL und nicht RESERVIERT
-                const canClick = !isPast && (isStueckgut || (day.lkwCount < CFG.MAX_LKW_SLOTS && !day.isReserved));
+                let sClass = "status-free", sText = "FREI";
+                if(isReserved) { sClass = "status-reserved"; sText = "RESERVIERT"; }
+                else if(isFull) { sClass = "status-full"; sText = "VOLL"; }
 
                 const cell = document.createElement('div');
-                cell.className = `day-cell ${sClass} ${this.sel === ds ? 'selected' : ''} ${!canClick ? 'disabled' : 'cursor-pointer'}`;
+                cell.className = `day-cell ${isPast ? 'is-past' : sClass} ${this.sel === ds ? 'selected' : ''} ${(!isPast && isBlocked) ? 'is-locked' : 'cursor-pointer'}`;
+                
                 cell.innerHTML = `
                     <div class="flex justify-between items-start">
-                        <span class="text-lg font-900 text-slate-900 italic">${d}</span>
-                        <span class="text-[7px] font-black uppercase text-slate-400">${isPast ? '' : sText}</span>
+                        <span class="text-lg font-[900] italic">${d}</span>
+                        <span class="text-[7px] font-black uppercase text-gray-500">${isPast ? '' : sText}</span>
                     </div>
-                    <div class="text-[9px] font-bold ${day.lkwCount >= CFG.MAX_LKW_SLOTS ? 'text-red-500' : 'text-slate-400'}">
-                        ${isPast ? (isWeekend ? 'WOCHENENDE' : 'SPERRE') : day.lkwCount + '/' + CFG.MAX_LKW_SLOTS + ' LKW SLOTS'}
-                    </div>
-                `;
+                    <div class="text-[9px] font-bold text-gray-600 italic">
+                        ${isPast ? '---' : day.slots + '/' + CFG.LIMIT + ' FTL-SLOTS'}
+                    </div>`;
 
-                if(canClick) {
+                if(!isPast && !isBlocked) {
                     cell.onclick = () => {
                         this.sel = ds;
                         document.getElementById('in-date').value = ds;
-                        const statusBox = document.getElementById('selection-status');
-                        statusBox.innerHTML = `${d}.${m+1}. | <span class="text-blue-400">TERMIN WÄHLBAR</span>`;
-                        statusBox.className = "bg-slate-900 p-4 rounded-lg text-center border-none text-[10px] font-black text-white uppercase tracking-widest shadow-lg";
+                        document.getElementById('selection-status').innerHTML = `${d}.${m+1}. | <span class="text-blue-600">AUSGEWÄHLT</span>`;
                         this.render();
                     };
+                } else if (!isPast && isBlocked) {
+                    cell.onclick = () => alert("Dieser Tag ist für Komplett- oder Teilladungen bereits voll belegt. Stückgut-Anlieferungen sind weiterhin möglich.");
                 }
+
                 grid.appendChild(cell);
             }
         },
 
         async send(e) {
             e.preventDefault();
-            if(!this.sel) return alert("Bitte wähle zuerst einen Tag im Kalender aus.");
+            if(!this.sel) return alert("Bitte wähle zuerst einen Tag im Kalender aus!");
             
             const btn = document.getElementById('sub-btn');
-            btn.disabled = true; btn.innerText = "BUCHUNG LÄUFT...";
+            btn.disabled = true; 
+            btn.innerText = "VERARBEITE...";
 
             const payload = { 
                 liefer_datum: this.sel, 
@@ -246,18 +272,25 @@
                 status: 'angemeldet'
             };
 
-            const { error } = await sb.from("avisierung").insert(payload);
+            const { error } = await sb.from("avisierung").insert([payload]);
+            
             if(!error) { 
-                alert("Termin erfolgreich für " + payload.firma + " gebucht."); 
+                alert("Avisierung erfolgreich gespeichert!"); 
                 location.reload(); 
             } else { 
-                alert("Fehler: " + error.message); 
-                btn.disabled = false; btn.innerText = "TERMIN VERBINDLICH BUCHEN"; 
+                alert("Fehler beim Speichern: " + error.message); 
+                btn.disabled = false; 
+                btn.innerText = "Termin buchen";
             }
         }
     };
 
-    const nav = (v) => { State.now.setMonth(State.now.getMonth() + v); State.render(); };
+    const nav = (v) => { 
+        State.now.setMonth(State.now.getMonth() + v); 
+        State.sel = null; 
+        State.render(); 
+    };
+
     State.init();
 </script>
 </body>
