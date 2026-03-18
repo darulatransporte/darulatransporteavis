@@ -1,166 +1,157 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darula Admin | Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; }
+        .admin-card { background: white; border: 1px solid #e2e8f0; border-bottom: 6px solid #1e293b; border-radius: 12px; }
+        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #64748b; }
+        .login-overlay { 
+            background: #0f172a; 
+            position: fixed; 
+            inset: 0; 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .truck-row { border-left: 4px solid transparent; transition: all 0.2s; }
+        .truck-row:hover { border-left-color: #2563eb; background: #f1f5f9; }
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="bg-slate-100 p-4 md:p-10 font-sans">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <div class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <h1 class="text-2xl font-black uppercase italic tracking-tighter text-slate-900">Darula <span class="text-blue-600">Terminal</span></h1>
-            <button onclick="window.location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-bold uppercase hover:bg-slate-900 transition-all shadow-lg">Seite Neu Laden</button>
-        </header>
+    <div id="loginPanel" class="login-overlay">
+        <div class="max-w-md w-full p-8 bg-white rounded-2xl shadow-2xl border-b-8 border-blue-600 mx-4">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-900 uppercase italic tracking-tighter text-slate-900">Admin <span class="text-blue-600">Login</span></h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Darula Transporte Intern</p>
+            </div>
+            
+            <div class="space-y-4">
+                <input type="password" id="passInput" placeholder="Passwort eingeben" 
+                       class="w-full p-4 bg-slate-100 border border-slate-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 text-center text-lg">
+                
+                <button onclick="checkLogin()" 
+                        class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-4 rounded-xl text-xs tracking-widest transition-all shadow-lg">
+                    Terminal Entsperren →
+                </button>
+            </div>
+            <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 text-center hidden">⚠️ Zugriff verweigert: Passwort falsch</p>
+        </div>
+    </div>
 
-        <div id="status" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Live-Daten von Supabase...</div>
-        <div id="truckList" class="space-y-4"></div>
-    </div>
+    <div id="mainContent" class="hidden flex-col min-h-screen">
+        <nav class="bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">
+                    Darula <span class="text-blue-600 not-italic">Terminal</span>
+                </h1>
+                <div class="flex gap-8">
+                    <a href="index.html" class="nav-link hover:text-blue-600">Home</a>
+                    <button onclick="location.reload()" class="nav-link text-red-600 hover:opacity-70 transition-opacity underline">Abmelden</button>
+                </div>
+            </div>
+        </nav>
 
-    <script>
-        const _sb = supabase.createClient(
-            "https://navhxyadbifllpopumfz.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
-        );
+        <main class="max-w-5xl mx-auto px-6 py-12 w-full flex-grow">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                <div>
+                    <span class="text-[10px] font-900 text-blue-600 uppercase tracking-[0.3em] bg-blue-50 px-3 py-1 rounded">Admin-Bereich</span>
+                    <h2 class="text-5xl md:text-6xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-none">Avisierungs<br>Eingänge</h2>
+                </div>
+                <button onclick="loadList()" class="bg-slate-900 text-white px-8 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl active:scale-95">
+                    Daten Aktualisieren
+                </button>
+            </div>
 
-        async function loadList() {
-            // Wir fügen eine zufällige Zahl hinzu, damit der Browser nicht aus dem Cache lädt
-            const { data, error } = await _sb
-                .from('avisierung')
-                .select('*')
-                .order('id', { ascending: false });
+            <div id="statusLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                Live-Verbindung aktiv
+            </div>
 
-            if (error) {
-                console.error("Fehler:", error);
-                return;
-            }
+            <div class="admin-card overflow-hidden shadow-2xl">
+                <div id="truckList" class="divide-y divide-slate-100">
+                    <div class="p-20 text-center text-slate-300 font-bold uppercase italic tracking-widest">Lade Datenbank...</div>
+                </div>
+            </div>
+        </main>
 
-            const container = document.getElementById('truckList');
-            container.innerHTML = '';
+        <footer class="bg-white border-t py-8 text-center">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte | Logistics Hub Nürnberg</p>
+        </footer>
+    </div>
 
-            data.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
-                        <div>
-                            <div class="font-black text-slate-800 uppercase text-lg">${item.firma || 'Unbekannt'}</div>
-                            <div class="text-[11px] font-bold text-slate-400 uppercase mt-1">BE: ${item.be_nummer || '-'}</div>
-                        </div>
-                        <button onclick="deleteTruck(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">
-                            Löschen
-                        </button>
-                    </div>
-                `;
-            });
-        }
+    <script>
+        // Supabase Initialisierung
+        const _sb = supabase.createClient(
+            "https://navhxyadbifllpopumfz.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
+        );
 
-        async function deleteTruck(id) {
-            if (!confirm("Eintrag löschen?")) return;
+        // Login Logik
+        function checkLogin() {
+            const input = document.getElementById('passInput').value;
+            // Passwort: alurad2026
+            if (input === "alurad2026") {
+                document.getElementById('loginPanel').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                loadList(); // Liste erst nach Login laden
+            } else {
+                const err = document.getElementById('errorMsg');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 3000);
+                document.getElementById('passInput').value = "";
+            }
+        }
 
-            const { error } = await _sb
-                .from('avisierung')
-                .delete()
-                .eq('id', id);
+        // Enter-Taste Support
+        document.getElementById('passInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkLogin();
+        });
 
-            if (error) {
-                alert("Fehler im Browser: " + error.message);
-            } else {
-                // Nach dem Löschen laden wir die Liste neu
-                loadList();
-            }
-        }
+        // Liste laden
+        async function loadList() {
+            const { data, error } = await _sb
+                .from('avisierung')
+                .select('*')
+                .order('id', { ascending: false });
 
-        // Automatisch alle 5 Sekunden aktualisieren, falls im Browser nichts passiert
-        setInterval(loadList, 5000);
-        loadList();
-    </script>
-</body>
-</html>
+            if (error) {
+                console.error("Datenfehler:", error);
+                return;
+            }
 
-passe das Degsing an. 
+            const container = document.getElementById('truckList');
+            container.innerHTML = '';
 
-Mache ausfürlichen skript damit alles Funktioniert. 
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="p-20 text-center text-slate-400 font-bold uppercase text-xs italic">Keine aktuellen Avisierungen gefunden.</div>';
+                return;
+            }
 
-Verschlüssele sachen damit  man auf 
+            data.forEach(item => {
+                // Datum formatieren: Nur Tag.Monat.Jahr
+                const dateObj = new Date(item.created_at);
+                const formattedDate = dateObj.toLocaleDateString('de-DE', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
 
-Strg+U keine sachen sieht die andere ned sehen sollten. 
-
-Mache das bei allen Skripts 
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Darula Admin | Browser Sync</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-slate-100 p-4 md:p-10 font-sans">
-
-    <div class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <h1 class="text-2xl font-black uppercase italic tracking-tighter text-slate-900">Darula <span class="text-blue-600">Terminal</span></h1>
-            <button onclick="window.location.reload()" class="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-bold uppercase hover:bg-slate-900 transition-all shadow-lg">Seite Neu Laden</button>
-        </header>
-
-        <div id="status" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Live-Daten von Supabase...</div>
-        <div id="truckList" class="space-y-4"></div>
-    </div>
-
-    <script>
-        const _sb = supabase.createClient(
-            "https://navhxyadbifllpopumfz.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
-        );
-
-        async function loadList() {
-            // Wir fügen eine zufällige Zahl hinzu, damit der Browser nicht aus dem Cache lädt
-            const { data, error } = await _sb
-                .from('avisierung')
-                .select('*')
-                .order('id', { ascending: false });
-
-            if (error) {
-                console.error("Fehler:", error);
-                return;
-            }
-
-            const container = document.getElementById('truckList');
-            container.innerHTML = '';
-
-            data.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
-                        <div>
-                            <div class="font-black text-slate-800 uppercase text-lg">${item.firma || 'Unbekannt'}</div>
-                            <div class="text-[11px] font-bold text-slate-400 uppercase mt-1">BE: ${item.be_nummer || '-'}</div>
-                        </div>
-                        <button onclick="deleteTruck(${item.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm">
-                            Löschen
-                        </button>
-                    </div>
-                `;
-            });
-        }
-
-        async function deleteTruck(id) {
-            if (!confirm("Eintrag löschen?")) return;
-
-            const { error } = await _sb
-                .from('avisierung')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                alert("Fehler im Browser: " + error.message);
-            } else {
-                // Nach dem Löschen laden wir die Liste neu
-                loadList();
-            }
-        }
-
-        // Automatisch alle 5 Sekunden aktualisieren, falls im Browser nichts passiert
-        setInterval(loadList, 5000);
-        loadList();
-    </script>
-</body>
-</html>
+                container.innerHTML += `
+                    <div class="truck-row bg-white p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="bg-blue-600 text-white p-1 rounded">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                                <div class="font-900 text-slate-900 uppercase text-2xl italic tracking-tighter leading-none">${item.firma || '
