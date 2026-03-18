@@ -9,7 +9,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
         
-        /* Markantes Admin-Card Design */
         .hub-card { 
             background: white; 
             border: 1px solid #e2e8f0; 
@@ -81,6 +80,13 @@
                     </div>
                 </div>
 
+                <div class="mt-8 p-5 bg-blue-50 border-l-4 border-blue-600 rounded-r-lg">
+                    <p class="text-xs font-900 uppercase tracking-widest text-blue-800 mb-1">Wichtiger Hinweis</p>
+                    <p class="text-sm font-medium text-blue-900 leading-relaxed">
+                        Anlieferungen sind innerhalb der Öffnungszeiten <b>jederzeit möglich</b>. Auch wenn das System "Voll" anzeigt, dürfen Sie uns ohne Einschränkung anfahren.
+                    </p>
+                </div>
+
                 <div class="mt-12 flex items-center gap-4 border-t border-slate-100 pt-8">
                     <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
                         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
@@ -96,9 +102,26 @@
                 <div>
                     <span class="status-tag text-blue-400 bg-blue-400/10">External Access</span>
                     <h2 class="text-4xl font-900 uppercase italic tracking-tighter mt-6 mb-6">Digitales<br>Avisierungs-Terminal</h2>
-                    <p class="text-slate-400 font-medium leading-relaxed">
-                        Registrieren Sie Ihre Anlieferung vorab, um die Abfertigung an Rampe 7 zu beschleunigen. Verpflichtend für Ladungsvolumen ab 20 Paletten stellplätzen.
-                    </p>
+                    
+                    <div class="space-y-4 mb-8">
+                        <p class="text-slate-400 font-medium leading-relaxed">
+                            Registrieren Sie Ihre Anlieferung vorab für eine schnellere Abwicklung.
+                        </p>
+                        <ul class="text-sm space-y-3">
+                            <li class="flex gap-2">
+                                <span class="text-blue-500 font-black">✓</span> 
+                                <span><b>Pflicht:</b> Nur ab 20 Palettenstellplätzen.</span>
+                            </li>
+                            <li class="flex gap-2 text-slate-300">
+                                <span class="text-blue-500 font-black">!</span> 
+                                <span><b>Stückgut:</b> Keine Avisierung nötig.</span>
+                            </li>
+                            <li class="flex gap-2 text-slate-300">
+                                <span class="text-blue-500 font-black">→</span> 
+                                <span>Anfahrt an vollen Tagen erlaubt.</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <a href="avisierung.html" class="block w-full bg-blue-600 hover:bg-white hover:text-black text-white text-center py-5 rounded-lg font-900 uppercase text-xs tracking-[0.3em] transition-all duration-300 shadow-lg">
@@ -114,9 +137,6 @@
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 &copy; 2026 Darula Transporte
             </p>
-            <div class="flex gap-6">
-                <a href="impressum.html" class="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600">Impressum</a>
-            </div>
         </div>
     </footer>
 
