@@ -23,7 +23,7 @@
                 <h1 class="terminal-header text-4xl font-black italic uppercase tracking-tighter text-white">
                     Darula <span class="text-blue-500">Terminal</span>
                 </h1>
-                <p id="stats-info" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Master Access Secured</p>
+                <p id="stats-info" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Datenbank-Monitor aktiv</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="window.location.reload()" class="bg-slate-800 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase border border-slate-700 hover:bg-slate-700">Reload</button>
@@ -32,12 +32,13 @@
         </header>
 
         <div id="data-container" class="space-y-3">
-            <div class="text-center py-20 opacity-20 font-black uppercase tracking-[0.5em]">Lade Datenbank...</div>
+            <div class="text-center py-20 opacity-20 font-black uppercase tracking-[0.5em]">Verbinde mit Server...</div>
         </div>
     </div>
 
     <script>
-        // KORRIGIERTE VERSCHLÜSSELUNG
+        // VERSCHLEIERUNG (KORRIGIERT)
+        // URL: https://navhxyadbifllpopumfz.supabase.co
         const _v_u = "aHR0cHM6Ly9uYXZoeHlhZGJpZmxscG9wdW1mei5zdXBhYmFzZS5jbw=="; 
         const _v_k = "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjeUk2SW5OMWNHRmlZWE5sSWl3aWNtVmlJam9pYm1Ga2VIaDVZV1JpYm1sbGJIeHdZWGwxYlhWbVpuWWlMQ0p5YjJ4bElqb2lZVzV2YmlJc0ltbGhkQ0k2TVRjM01qRXpOakkxTWl3aWVYYndJam95TURnM056RXlNanV6ZlEtMHVUQVlNZFJ4ZHZscFBkcFFtTUxxc3YxTWVuMXduQmZBeC1RNnpZ";
 
@@ -45,16 +46,24 @@
 
         async function renderDashboard() {
             const container = document.getElementById('data-container');
+            const stats = document.getElementById('stats-info');
+            
+            // Holt einfach alles ohne Filter
             const { data, error } = await _client.from('avisierung').select('*').order('id', { ascending: false });
 
             if (error) {
-                console.error("Fehler:", error);
-                document.getElementById('stats-info').innerHTML = `<span class="text-red-500">Netzwerkfehler!</span>`;
+                console.error("Netzwerkfehler:", error);
+                stats.innerHTML = `<span class="text-red-500">Verbindungsfehler! Prüfe Internet oder API-Keys.</span>`;
                 return;
             }
 
-            document.getElementById('stats-info').innerText = `${data.length} Avisierungen aktiv`;
+            stats.innerText = `${data.length} Einträge gefunden`;
             container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="glass-panel p-20 rounded-3xl text-center opacity-40 uppercase tracking-widest font-black">Keine Avisierungen vorhanden</div>`;
+                return;
+            }
 
             data.forEach(entry => {
                 container.innerHTML += `
@@ -67,19 +76,20 @@
                                 <span class="text-xs font-bold text-slate-400 italic">${entry.liefer_datum || 'Kein Datum'}</span>
                             </div>
                         </div>
-                        <button onclick="removeEntry(${entry.id})" class="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase border border-red-500/20">Löschen</button>
+                        <button onclick="removeEntry(${entry.id})" class="bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase border border-red-500/20 shadow-lg shadow-red-900/10">Löschen</button>
                     </div>
                 `;
             });
         }
 
         async function removeEntry(id) {
-            if (!confirm("Eintrag permanent löschen?")) return;
+            if (!confirm("Soll dieser LKW-Eintrag wirklich gelöscht werden?")) return;
             const { error } = await _client.from('avisierung').delete().eq('id', id);
-            if (error) alert("Fehler: " + error.message);
+            if (error) alert("Fehler beim Löschen: " + error.message);
             else renderDashboard();
         }
 
+        // Start beim Laden
         renderDashboard();
     </script>
 </body>
