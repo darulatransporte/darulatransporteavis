@@ -2,125 +2,87 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Admin | Terminal Management</title>
+    <title>Darula Admin | Debug & Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .truck-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .truck-card:hover { transform: scale(1.01); }
-        .status-pill { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; }
-    </style>
 </head>
-<body class="min-h-screen">
-
-    <div id="loginSection" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900 p-6">
-        <div class="w-full max-w-md bg-white p-10 rounded-[2rem] shadow-2xl text-center border-b-8 border-blue-600">
-            <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center text-white text-4xl font-black italic shadow-xl rotate-3">D</div>
-            <h1 class="text-3xl font-900 text-slate-900 mb-2 uppercase tracking-tighter">Admin <span class="text-blue-600 italic">Terminal</span></h1>
-            <input type="password" id="passInput" class="w-full border-2 border-slate-100 bg-slate-50 p-5 rounded-2xl mb-6 text-center text-3xl tracking-[0.4em] outline-none focus:border-blue-500 transition-all" placeholder="••••">
-            <button onclick="handleLogin()" class="w-full bg-slate-900 hover:bg-blue-600 text-white py-5 rounded-2xl font-bold uppercase tracking-widest transition-all shadow-lg active:scale-95">Dashboard betreten</button>
+<body class="bg-slate-100 p-4">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white p-6 rounded-xl shadow-md mb-6 flex justify-between items-center border-b-4 border-blue-600">
+            <h1 class="font-black italic text-xl uppercase">Darula <span class="text-blue-600">Terminal</span></h1>
+            <button onclick="load()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-blue-600 transition-all">Refresh</button>
         </div>
-    </div>
 
-    <div id="adminMain" class="hidden">
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 py-5">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 bg-blue-600 rounded-lg text-white font-black italic text-sm">DARULA</div>
-                    <h2 class="text-sm font-900 uppercase tracking-widest text-slate-400">Logistics <span class="text-slate-900">Control</span></h2>
-                </div>
-                
-                <div id="stats" class="flex gap-4">
-                    <div class="bg-blue-50 px-4 py-2 rounded-xl border border-blue-100"><span class="text-[10px] block font-bold text-blue-400 uppercase">Offen</span><span id="stat-open" class="font-900 text-blue-700">0</span></div>
-                    <div class="bg-green-50 px-4 py-2 rounded-xl border border-green-100"><span class="text-[10px] block font-bold text-green-400 uppercase">Erledigt</span><span id="stat-done" class="font-900 text-green-700">0</span></div>
-                </div>
-
-                <button onclick="fetchLKW()" class="bg-slate-900 text-white px-6 py-2 rounded-xl text-xs font-bold uppercase hover:bg-blue-600 transition-all">Liste Refresh</button>
-            </div>
-        </header>
-
-        <main class="max-w-6xl mx-auto px-6 py-10">
-            <div id="lkwList" class="space-y-4 text-center text-slate-400">Synchronisiere mit Datenbank...</div>
-        </main>
+        <div id="status" class="mb-4 text-center text-xs font-bold uppercase tracking-widest text-slate-400">Verbinde...</div>
+        <div id="liste" class="space-y-3"></div>
     </div>
 
     <script>
-        const _sb = supabase.createClient("https://navhxyadbifllpopumfz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY");
+        // DEINE ZUGANGSDATEN
+        const SB_URL = "https://navhxyadbifllpopumfz.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY";
+        
+        const _sb = supabase.createClient(SB_URL, SB_KEY);
 
-        function handleLogin() {
-            if(document.getElementById('passInput').value === "darula") {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('adminMain').classList.remove('hidden');
-                fetchLKW();
-            } else { alert("Zugriff verweigert."); }
-        }
+        async function load() {
+            document.getElementById('status').innerText = "Lade Daten...";
+            const { data, error } = await _sb.from('avisierung').select('*').order('id', {ascending: false});
+            
+            if(error) {
+                document.getElementById('status').innerHTML = `<span class="text-red-500 font-black italic underline">FEHLER: ${error.message}</span>`;
+                return;
+            }
 
-        async function fetchLKW() {
-            const { data, error } = await _sb.from('avisierung').select('*').order('id', { ascending: false });
-            if(error) return console.error(error);
-
-            const container = document.getElementById('lkwList');
+            document.getElementById('status').innerText = `${data.length} LKWs gefunden`;
+            const container = document.getElementById('liste');
             container.innerHTML = '';
             
-            let countOpen = 0;
-            let countDone = 0;
-
             data.forEach(item => {
                 const isDone = item.status === 'abgewickelt';
-                isDone ? countDone++ : countOpen++;
-
                 container.innerHTML += `
-                    <div class="truck-card bg-white p-6 rounded-[1.5rem] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 border border-slate-100 ${isDone ? 'opacity-60 bg-slate-50' : 'border-l-8 border-l-blue-600'}">
-                        <div class="flex items-center gap-6">
-                            <div class="text-center bg-slate-100 p-3 rounded-2xl min-w-[70px]">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${new Date(item.liefer_datum).toLocaleDateString('de-DE', {weekday: 'short'})}</span>
-                                <span class="text-xl font-900 text-slate-900">${new Date(item.liefer_datum).getDate()}</span>
-                            </div>
-                            <div>
-                                <h3 class="font-900 text-lg text-slate-900 uppercase tracking-tight">${item.firma}</h3>
-                                <p class="text-xs text-slate-500 font-medium">BE: ${item.be_nummer} | Art: ${item.artikel_nr || '-'}</p>
-                            </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center ${isDone ? 'opacity-50 grayscale' : ''}">
+                        <div>
+                            <div class="font-bold text-slate-800 uppercase tracking-tight">${item.firma || 'Keine Firma'}</div>
+                            <div class="text-[10px] text-slate-400 font-bold">ID: ${item.id} | BE: ${item.be_nummer || '-'}</div>
                         </div>
-
-                        <div class="flex gap-8 px-4">
-                            <div class="text-center"><span class="block text-[9px] font-bold text-slate-400 uppercase">Paletten</span><span class="text-xl font-900 text-slate-700">${item.palettes}</span></div>
-                            <div class="text-center"><span class="block text-[9px] font-bold text-slate-400 uppercase">Typ</span><span class="text-xs font-bold text-slate-600 uppercase italic">${item.fahrzeug_typ || 'LKW'}</span></div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
+                        <div class="flex gap-2">
                             ${!isDone ? `
-                                <button onclick="setDone(${item.id})" class="bg-blue-600 hover:bg-green-600 text-white px-8 py-4 rounded-2xl text-[11px] font-900 uppercase tracking-widest transition-all shadow-lg shadow-blue-100">Abwickeln</button>
-                            ` : `<div class="status-pill bg-green-100 text-green-600">✓ Erledigt</div>`}
+                                <button onclick="handleUpdate(${item.id})" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:scale-105 transition-all">Abwickeln</button>
+                            ` : '<span class="text-green-600 font-black text-[10px] uppercase p-2 tracking-widest">Done</span>'}
                             
-                            <button onclick="deleteTruck(${item.id})" class="p-4 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <button onclick="handleDelete(${item.id})" class="bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-500 hover:text-white transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-            document.getElementById('stat-open').innerText = countOpen;
-            document.getElementById('stat-done').innerText = countDone;
         }
 
-        async function setDone(id) {
+        async function handleUpdate(id) {
+            console.log("Update wird gestartet für ID:", id);
             const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
-            if(error) alert("Fehler: " + error.message);
-            fetchLKW();
+            
+            if(error) {
+                alert("UPDATE BLOCKIERT: " + error.message);
+            } else {
+                load();
+            }
         }
 
-        async function deleteTruck(id) {
-            if(!confirm("Eintrag unwiderruflich löschen?")) return;
+        async function handleDelete(id) {
+            if(!confirm("Wirklich löschen?")) return;
+            console.log("Löschbefehl gesendet für ID:", id);
             const { error } = await _sb.from('avisierung').delete().eq('id', id);
-            if(error) alert("Fehler: " + error.message);
-            fetchLKW();
+            
+            if(error) {
+                alert("LÖSCHEN BLOCKIERT: " + error.message);
+            } else {
+                load();
+            }
         }
 
-        document.getElementById('passInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
-        setInterval(fetchLKW, 30000); // Auto-Refresh alle 30 Sek
+        // Start beim Laden
+        load();
     </script>
 </body>
 </html>
