@@ -9,53 +9,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; }
-        .admin-card { background: white; border-radius: 20px; border: 1px solid #e2e8f0; border-bottom: 8px solid #1e293b; overflow: hidden; }
+        .admin-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; border-bottom: 8px solid #1e293b; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
         .login-overlay { background: #0f172a; position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .truck-row { border-left: 6px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f1f5f9; }
         .truck-row:hover { border-left-color: #2563eb; background: #f8fafc; }
-        .week-header { background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 12px 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; font-size: 12px; }
-        .past-entry { opacity: 0.6; grayscale: 1; }
+        .week-header { background: #1e293b; color: white; padding: 16px 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .past-entry { opacity: 0.5; filter: grayscale(1); }
+        .today-pulse { animation: pulse 2s infinite; border-left-color: #2563eb; background: #eff6ff; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .hidden { display: none !important; }
+        .stat-badge { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 99px; font-size: 10px; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <div id="loginPanel" class="login-overlay">
-        <div class="max-w-md w-full p-8 bg-white rounded-3xl shadow-2xl border-b-8 border-blue-600 mx-4 text-center">
+        <div class="max-w-md w-full p-10 bg-white rounded-[2.5rem] shadow-2xl border-b-8 border-blue-600 mx-4 text-center">
             <h2 class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 leading-none mb-8">Admin<br><span class="text-blue-600">Terminal</span></h2>
             <input type="password" id="passInput" placeholder="Passwort" class="w-full p-5 bg-slate-100 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold focus:outline-none text-center text-xl mb-4 transition-all">
-            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-5 rounded-2xl text-xs tracking-[0.2em] transition-all shadow-lg">System Entsperren</button>
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-5 rounded-2xl text-[10px] tracking-[0.3em] transition-all shadow-lg active:scale-95">Terminal Entsperren</button>
             <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 hidden">Zugriff verweigert</p>
         </div>
     </div>
 
     <div id="mainContent" class="hidden flex-col min-h-screen">
         <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">Darula <span class="text-blue-600">Logistics</span></h1>
-                <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-[10px] font-900 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Logout</button>
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">Darula <span class="text-blue-600">Logistics</span></h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Suche Firma / BE..." class="hidden md:block bg-slate-100 border-none rounded-xl px-4 py-2 text-xs font-bold focus:ring-2 focus:ring-blue-600 outline-none w-64">
+                    <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Logout</button>
+                </div>
             </div>
         </nav>
 
         <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-grow">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
                 <div>
-                    <span class="text-blue-600 font-900 text-[10px] uppercase tracking-[0.4em] bg-blue-50 px-3 py-1 rounded">Wochen-Planung</span>
-                    <h2 class="text-5xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-tight">Avisierungen</h2>
+                    <span class="text-blue-600 font-900 text-[10px] uppercase tracking-[0.4em] bg-blue-50 px-3 py-1 rounded">Logistics Terminal V3</span>
+                    <h2 class="text-5xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-tight">Lieferplan</h2>
                 </div>
-                <button onclick="loadList()" class="bg-slate-900 text-white px-8 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl">Daten Synchronisieren</button>
+                <div class="flex gap-3">
+                    <button onclick="loadList()" class="bg-white border border-slate-200 text-slate-900 px-6 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">Sync</button>
+                </div>
             </div>
 
-            <div class="admin-card shadow-2xl">
+            <div class="admin-card">
                 <div id="truckList">
-                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Wird geladen...</div>
+                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Initialisiere Kalenderdaten...</div>
                 </div>
             </div>
         </main>
-
-        <footer class="bg-white border-t py-8 text-center mt-12">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte | Admin Hub</p>
-        </footer>
     </div>
 
     <script>
@@ -63,6 +69,8 @@
             "https://navhxyadbifllpopumfz.supabase.co", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
         );
+
+        let allData = [];
 
         function checkLogin() {
             if (document.getElementById('passInput').value === "alurad2026") {
@@ -74,81 +82,85 @@
             }
         }
 
-        // Hilfsfunktion: Kalenderwoche berechnen
-        function getWeekNumber(d) {
-            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-        }
-
         async function loadList() {
             const container = document.getElementById('truckList');
             const { data, error } = await _sb.from('avisierung').select('*');
 
             if (error) {
-                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center italic">FEHLER: ${error.message}</div>`;
+                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center">Fehler: ${error.message}</div>`;
                 return;
             }
 
+            allData = data;
+            renderList(allData);
+        }
+
+        function renderList(data) {
+            const container = document.getElementById('truckList');
             container.innerHTML = '';
+            
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            // 1. Sortierung: Zuerst nach Datum (Zukunft zuerst, Vergangenheit zuletzt)
-            data.sort((a, b) => {
-                const dateA = new Date(a.datum || a.created_at);
-                const dateB = new Date(b.datum || b.created_at);
-                return dateB - dateA;
-            });
+            // Sortierung: Zukünftige zuerst, dann nach Datum absteigend
+            data.sort((a, b) => new Date(b.liefer_datum) - new Date(a.liefer_datum));
 
-            // 2. Gruppierung nach Wochen
+            // Gruppierung nach Wochen
             const groups = {};
             data.forEach(item => {
-                const d = new Date(item.datum || item.created_at);
-                const week = getWeekNumber(d);
+                const d = new Date(item.liefer_datum);
+                const kw = getWeekNumber(d);
                 const year = d.getFullYear();
-                const key = `KW ${week} / ${year}`;
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(item);
+                const key = `KW ${kw} / ${year}`;
+                if (!groups[key]) groups[key] = { items: [], totalPalettes: 0 };
+                groups[key].items.push(item);
+                groups[key].totalPalettes += parseInt(item.palettes || 0);
             });
 
-            // 3. Anzeige
-            for (const [weekLabel, items] of Object.entries(groups)) {
-                container.innerHTML += `<div class="week-header">${weekLabel}</div>`;
+            for (const [weekLabel, group] of Object.entries(groups)) {
+                container.innerHTML += `
+                    <div class="week-header">
+                        <span>${weekLabel}</span>
+                        <div class="flex gap-4">
+                            <span class="stat-badge">${group.items.length} LKW</span>
+                            <span class="stat-badge text-blue-400">${group.totalPalettes} Paletten gesamt</span>
+                        </div>
+                    </div>`;
                 
-                items.forEach(item => {
-                    const itemDate = new Date(item.datum || item.created_at);
-                    const isPast = itemDate < today;
-                    const dateStr = itemDate.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+                group.items.forEach(item => {
+                    const lDate = new Date(item.liefer_datum);
+                    const isPast = lDate < today;
+                    const isToday = lDate.getTime() === today.getTime();
+                    
+                    const formattedDate = lDate.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
 
                     container.innerHTML += `
-                        <div class="truck-row bg-white p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-center ${isPast ? 'past-entry' : ''}">
-                            <div class="md:col-span-4 flex items-center gap-4">
-                                <div class="bg-blue-600 text-white font-black text-[10px] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-                                    ${item.firma ? item.firma.charAt(0).toUpperCase() : '?'}
+                        <div class="truck-row p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-center ${isPast ? 'past-entry' : ''} ${isToday ? 'today-pulse' : ''}" data-search="${item.firma} ${item.be_nummer}">
+                            <div class="md:col-span-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="font-900 text-slate-900 uppercase text-2xl italic tracking-tighter leading-none">${item.firma || 'UNBEKANNT'}</div>
+                                    ${isToday ? '<span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest">Heute</span>' : ''}
                                 </div>
-                                <div>
-                                    <div class="font-900 text-slate-900 uppercase text-xl italic tracking-tighter leading-none">${item.firma || 'UNBEKANNT'}</div>
-                                    <div class="text-[9px] font-black ${isPast ? 'text-red-400' : 'text-green-500'} uppercase tracking-widest mt-1">
-                                        ${isPast ? 'Abgeschlossen' : 'Erwartet'}
-                                    </div>
+                                <div class="flex flex-wrap gap-2 mt-3">
+                                    <span class="text-[8px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase tracking-widest">${item.fahrzeug_typ || 'LKW'}</span>
+                                    <span class="text-[8px] font-black bg-blue-50 text-blue-600 px-2 py-1 rounded uppercase tracking-widest">Art: ${item.artikel_nr || '-'}</span>
+                                    <span class="text-[8px] font-black bg-orange-50 text-orange-600 px-2 py-1 rounded uppercase tracking-widest">${item.palettes || 0} Pal.</span>
                                 </div>
                             </div>
                             
                             <div class="md:col-span-3">
-                                <div class="text-[10px] md:hidden font-black text-slate-400 uppercase">BE-Nummer:</div>
-                                <span class="bg-slate-100 px-3 py-1 rounded-lg font-bold text-sm text-slate-700">${item.be_nummer || '---'}</span>
+                                <div class="text-[9px] font-black text-slate-400 uppercase mb-1 tracking-widest">BE-Nummer</div>
+                                <span class="font-mono font-bold text-slate-700 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">${item.be_nummer || '---'}</span>
                             </div>
 
                             <div class="md:col-span-3">
-                                <div class="text-[10px] md:hidden font-black text-slate-400 uppercase">Geplant am:</div>
-                                <span class="${isPast ? 'text-slate-400' : 'text-blue-600'} font-900 text-lg italic tracking-tighter">${dateStr}</span>
+                                <div class="text-[9px] font-black text-slate-400 uppercase mb-1 tracking-widest">Liefertermin</div>
+                                <span class="font-900 text-xl italic tracking-tighter ${isToday ? 'text-blue-600' : 'text-slate-900'}">${formattedDate}</span>
                             </div>
 
-                            <div class="md:col-span-2 flex justify-end">
-                                <button onclick="deleteTruck(${item.id})" class="w-full md:w-auto bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[9px] font-900 uppercase tracking-widest transition-all">
-                                    Löschen
+                            <div class="md:col-span-2 flex justify-end gap-2">
+                                <button onclick="deleteTruck(${item.id})" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-xl transition-all shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewbox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </button>
                             </div>
                         </div>
@@ -157,11 +169,27 @@
             }
         }
 
+        function filterList() {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.truck-row');
+            rows.forEach(row => {
+                const text = row.getAttribute('data-search').toLowerCase();
+                row.style.display = text.includes(val) ? '' : 'none';
+            });
+        }
+
         async function deleteTruck(id) {
-            if (!confirm("Eintrag aus der Wochenplanung entfernen?")) return;
+            if (!confirm("Eintrag löschen?")) return;
             const { error } = await _sb.from('avisierung').delete().eq('id', id);
             if (error) alert(error.message);
             else loadList();
+        }
+
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
         document.getElementById('passInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkLogin(); });
