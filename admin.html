@@ -3,82 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Admin | Logistics Control</title>
+    <title>Darula Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; margin: 0; }
-        .admin-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; border-bottom: 8px solid #1e293b; overflow: hidden; }
-        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; color: #64748b; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; }
+        .admin-card { background: white; border-radius: 20px; border: 1px solid #e2e8f0; border-bottom: 8px solid #1e293b; overflow: hidden; }
         .login-overlay { background: #0f172a; position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .truck-row { border-left: 6px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f1f5f9; }
         .truck-row:hover { border-left-color: #2563eb; background: #f8fafc; }
+        .week-header { background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 12px 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; font-size: 12px; }
+        .past-entry { opacity: 0.6; grayscale: 1; }
         .hidden { display: none !important; }
-        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.5); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <div id="loginPanel" class="login-overlay">
-        <div class="max-w-md w-full p-8 bg-white rounded-3xl shadow-2xl border-b-8 border-blue-600 mx-4">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 leading-none">Admin<br><span class="text-blue-600">Terminal</span></h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-4">Zutritt nur für Personal</p>
-            </div>
-            <input type="password" id="passInput" placeholder="Passwort" 
-                   class="w-full p-5 bg-slate-100 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold focus:outline-none text-center text-xl mb-4 transition-all">
-            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-5 rounded-2xl text-xs tracking-[0.2em] transition-all shadow-lg active:scale-95">
-                System Entsperren
-            </button>
-            <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 text-center hidden tracking-widest">Passwort ungültig</p>
+        <div class="max-w-md w-full p-8 bg-white rounded-3xl shadow-2xl border-b-8 border-blue-600 mx-4 text-center">
+            <h2 class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 leading-none mb-8">Admin<br><span class="text-blue-600">Terminal</span></h2>
+            <input type="password" id="passInput" placeholder="Passwort" class="w-full p-5 bg-slate-100 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold focus:outline-none text-center text-xl mb-4 transition-all">
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-5 rounded-2xl text-xs tracking-[0.2em] transition-all shadow-lg">System Entsperren</button>
+            <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 hidden">Zugriff verweigert</p>
         </div>
     </div>
 
     <div id="mainContent" class="hidden flex-col min-h-screen">
         <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">Darula <span class="text-blue-600">Admin</span></h1>
-                <div class="flex items-center gap-6">
-                    <a href="index.html" class="nav-link hover:text-blue-600 hidden md:block">Zur Startseite</a>
-                    <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-[10px] font-900 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Logout</button>
-                </div>
+                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">Darula <span class="text-blue-600">Logistics</span></h1>
+                <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-[10px] font-900 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Logout</button>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-4 md:px-6 py-10 w-full flex-grow">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 items-end">
-                <div class="lg:col-span-6">
-                    <span class="status-tag text-blue-600 font-900 text-[10px] uppercase tracking-[0.4em] bg-blue-50 px-3 py-1 rounded">Logistik Übersicht</span>
-                    <h2 class="text-5xl md:text-6xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-tight">Eingänge</h2>
+        <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-grow">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+                <div>
+                    <span class="text-blue-600 font-900 text-[10px] uppercase tracking-[0.4em] bg-blue-50 px-3 py-1 rounded">Wochen-Planung</span>
+                    <h2 class="text-5xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-tight">Avisierungen</h2>
                 </div>
-                
-                <div class="lg:col-span-6 flex flex-col md:flex-row gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-                    <div class="flex-grow">
-                        <label class="text-[9px] font-900 uppercase text-slate-400 mb-1 block tracking-widest">Nach Datum filtern</label>
-                        <input type="date" id="dateFilter" onchange="loadList()" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    </div>
-                    <button onclick="clearFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-3 rounded-xl text-[10px] font-900 uppercase tracking-widest transition-all self-end">Alle</button>
-                    <button onclick="loadList()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-[10px] font-900 uppercase tracking-widest transition-all self-end">Refresh</button>
-                </div>
-            </div>
-
-            <div class="hidden md:grid grid-cols-12 gap-4 px-8 mb-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                <div class="col-span-4">Firma / Transporteur</div>
-                <div class="col-span-2">BE-Nummer</div>
-                <div class="col-span-2 text-blue-600">Ankunft (Geplant)</div>
-                <div class="col-span-2 text-center">Aktion</div>
+                <button onclick="loadList()" class="bg-slate-900 text-white px-8 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl">Daten Synchronisieren</button>
             </div>
 
             <div class="admin-card shadow-2xl">
-                <div id="truckList" class="divide-y divide-slate-100">
-                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Datenbank wird abgerufen...</div>
+                <div id="truckList">
+                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Wird geladen...</div>
                 </div>
             </div>
         </main>
 
         <footer class="bg-white border-t py-8 text-center mt-12">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte | Logistics Terminal v2.0</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte | Admin Hub</p>
         </footer>
     </div>
 
@@ -94,93 +70,101 @@
                 document.getElementById('mainContent').classList.remove('hidden');
                 loadList();
             } else {
-                const err = document.getElementById('errorMsg');
-                err.classList.remove('hidden');
-                setTimeout(() => err.classList.add('hidden'), 2000);
+                document.getElementById('errorMsg').classList.remove('hidden');
             }
         }
 
-        document.getElementById('passInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkLogin(); });
-
-        function clearFilter() {
-            document.getElementById('dateFilter').value = '';
-            loadList();
+        // Hilfsfunktion: Kalenderwoche berechnen
+        function getWeekNumber(d) {
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
         async function loadList() {
             const container = document.getElementById('truckList');
-            const selectedDate = document.getElementById('dateFilter').value;
-
-            let query = _sb.from('avisierung').select('*').order('datum', { ascending: true });
-
-            if (selectedDate) {
-                query = query.eq('datum', selectedDate);
-            }
-
-            const { data, error } = await query;
+            const { data, error } = await _sb.from('avisierung').select('*');
 
             if (error) {
-                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center">Fehler: ${error.message}</div>`;
+                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center italic">FEHLER: ${error.message}</div>`;
                 return;
             }
 
             container.innerHTML = '';
+            const today = new Date();
+            today.setHours(0,0,0,0);
 
-            if (data.length === 0) {
-                container.innerHTML = '<div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest text-xs">Keine Einträge für diesen Zeitraum</div>';
-                return;
-            }
-
-            data.forEach(item => {
-                // Formatiere das Datum (aus dem Spaltennamen 'datum')
-                let planDate = "---";
-                if(item.datum) {
-                    const d = new Date(item.datum);
-                    planDate = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                }
-
-                container.innerHTML += `
-                    <div class="truck-row bg-white p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                        <div class="md:col-span-4 flex items-center gap-4">
-                            <div class="bg-blue-600 text-white font-black text-[10px] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
-                                ${item.firma ? item.firma.charAt(0).toUpperCase() : '?'}
-                            </div>
-                            <div>
-                                <div class="font-900 text-slate-900 uppercase text-xl italic tracking-tighter leading-none">${item.firma || 'UNBEKANNT'}</div>
-                                <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Status: Bestätigt</div>
-                            </div>
-                        </div>
-                        
-                        <div class="md:col-span-2">
-                            <div class="text-[10px] md:hidden font-black text-slate-400 uppercase mb-1">BE-Nummer:</div>
-                            <span class="bg-slate-100 px-3 py-1 rounded-lg font-bold text-sm text-slate-700">${item.be_nummer || '---'}</span>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <div class="text-[10px] md:hidden font-black text-slate-400 uppercase mb-1">Ankunft:</div>
-                            <span class="text-blue-600 font-900 text-lg italic tracking-tighter">${planDate}</span>
-                        </div>
-
-                        <div class="md:col-span-2 text-center">
-                            <span class="text-[10px] font-black text-slate-400 uppercase bg-slate-50 px-3 py-1 rounded-full">Rampe 7</span>
-                        </div>
-
-                        <div class="md:col-span-2 flex justify-end">
-                            <button onclick="deleteTruck(${item.id})" class="w-full md:w-auto bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[9px] font-900 uppercase tracking-widest transition-all active:scale-95 shadow-sm">
-                                Löschen
-                            </button>
-                        </div>
-                    </div>
-                `;
+            // 1. Sortierung: Zuerst nach Datum (Zukunft zuerst, Vergangenheit zuletzt)
+            data.sort((a, b) => {
+                const dateA = new Date(a.datum || a.created_at);
+                const dateB = new Date(b.datum || b.created_at);
+                return dateB - dateA;
             });
+
+            // 2. Gruppierung nach Wochen
+            const groups = {};
+            data.forEach(item => {
+                const d = new Date(item.datum || item.created_at);
+                const week = getWeekNumber(d);
+                const year = d.getFullYear();
+                const key = `KW ${week} / ${year}`;
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(item);
+            });
+
+            // 3. Anzeige
+            for (const [weekLabel, items] of Object.entries(groups)) {
+                container.innerHTML += `<div class="week-header">${weekLabel}</div>`;
+                
+                items.forEach(item => {
+                    const itemDate = new Date(item.datum || item.created_at);
+                    const isPast = itemDate < today;
+                    const dateStr = itemDate.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+                    container.innerHTML += `
+                        <div class="truck-row bg-white p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-center ${isPast ? 'past-entry' : ''}">
+                            <div class="md:col-span-4 flex items-center gap-4">
+                                <div class="bg-blue-600 text-white font-black text-[10px] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+                                    ${item.firma ? item.firma.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <div>
+                                    <div class="font-900 text-slate-900 uppercase text-xl italic tracking-tighter leading-none">${item.firma || 'UNBEKANNT'}</div>
+                                    <div class="text-[9px] font-black ${isPast ? 'text-red-400' : 'text-green-500'} uppercase tracking-widest mt-1">
+                                        ${isPast ? 'Abgeschlossen' : 'Erwartet'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="md:col-span-3">
+                                <div class="text-[10px] md:hidden font-black text-slate-400 uppercase">BE-Nummer:</div>
+                                <span class="bg-slate-100 px-3 py-1 rounded-lg font-bold text-sm text-slate-700">${item.be_nummer || '---'}</span>
+                            </div>
+
+                            <div class="md:col-span-3">
+                                <div class="text-[10px] md:hidden font-black text-slate-400 uppercase">Geplant am:</div>
+                                <span class="${isPast ? 'text-slate-400' : 'text-blue-600'} font-900 text-lg italic tracking-tighter">${dateStr}</span>
+                            </div>
+
+                            <div class="md:col-span-2 flex justify-end">
+                                <button onclick="deleteTruck(${item.id})" class="w-full md:w-auto bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[9px] font-900 uppercase tracking-widest transition-all">
+                                    Löschen
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         async function deleteTruck(id) {
-            if (!confirm("Eintrag entfernen?")) return;
+            if (!confirm("Eintrag aus der Wochenplanung entfernen?")) return;
             const { error } = await _sb.from('avisierung').delete().eq('id', id);
             if (error) alert(error.message);
             else loadList();
         }
+
+        document.getElementById('passInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkLogin(); });
     </script>
 </body>
 </html>
