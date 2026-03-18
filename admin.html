@@ -3,183 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Admin | Terminal</title>
+    <title>Darula Admin | Logistics Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; }
-        .admin-card { background: white; border: 1px solid #e2e8f0; border-bottom: 6px solid #1e293b; border-radius: 12px; }
-        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #64748b; }
-        .login-overlay { 
-            background: #0f172a; 
-            position: fixed; 
-            inset: 0; 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .truck-row { border-left: 4px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #0f172a; margin: 0; }
+        .admin-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; border-bottom: 8px solid #1e293b; overflow: hidden; }
+        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; color: #64748b; }
+        .login-overlay { background: #0f172a; position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .truck-row { border-left: 6px solid transparent; transition: all 0.2s; border-bottom: 1px solid #f1f5f9; }
         .truck-row:hover { border-left-color: #2563eb; background: #f8fafc; }
         .hidden { display: none !important; }
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.5); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <div id="loginPanel" class="login-overlay">
-        <div class="max-w-md w-full p-8 bg-white rounded-2xl shadow-2xl border-b-8 border-blue-600 mx-4">
+        <div class="max-w-md w-full p-8 bg-white rounded-3xl shadow-2xl border-b-8 border-blue-600 mx-4">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-900 uppercase italic tracking-tighter text-slate-900">Admin <span class="text-blue-600">Login</span></h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Darula Transporte Intern</p>
+                <h2 class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 leading-none">Admin<br><span class="text-blue-600">Terminal</span></h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-4">Zutritt nur für Personal</p>
             </div>
-            
-            <div class="space-y-4">
-                <input type="password" id="passInput" placeholder="Passwort eingeben" 
-                       class="w-full p-4 bg-slate-100 border border-slate-200 rounded-xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-600 text-center text-lg">
-                
-                <button id="loginBtn" onclick="checkLogin()" 
-                        class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-4 rounded-xl text-xs tracking-widest transition-all shadow-lg active:scale-95">
-                    Terminal Entsperren →
-                </button>
-            </div>
-            <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 text-center hidden">⚠️ Passwort falsch!</p>
+            <input type="password" id="passInput" placeholder="Passwort" 
+                   class="w-full p-5 bg-slate-100 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold focus:outline-none text-center text-xl mb-4 transition-all">
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-slate-900 text-white font-900 uppercase py-5 rounded-2xl text-xs tracking-[0.2em] transition-all shadow-lg active:scale-95">
+                System Entsperren
+            </button>
+            <p id="errorMsg" class="text-red-600 text-[10px] font-black uppercase mt-4 text-center hidden tracking-widest">Passwort ungültig</p>
         </div>
     </div>
 
     <div id="mainContent" class="hidden flex-col min-h-screen">
-        <nav class="bg-white border-b border-slate-200">
-            <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
-                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">
-                    Darula <span class="text-blue-600 not-italic">Terminal</span>
-                </h1>
-                <div class="flex gap-8">
-                    <a href="index.html" class="nav-link hover:text-blue-600">Home</a>
-                    <button onclick="location.reload()" class="nav-link text-red-600 underline">Logout</button>
+        <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+                <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">Darula <span class="text-blue-600">Admin</span></h1>
+                <div class="flex items-center gap-6">
+                    <a href="index.html" class="nav-link hover:text-blue-600 hidden md:block">Zur Startseite</a>
+                    <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-[10px] font-900 uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Logout</button>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-5xl mx-auto px-6 py-12 w-full flex-grow">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
-                <div>
-                    <span class="text-[10px] font-900 text-blue-600 uppercase tracking-[0.3em] bg-blue-50 px-3 py-1 rounded">Logistik Hub Nürnberg</span>
-                    <h2 class="text-5xl md:text-6xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-none text-blue-600">Avisierungen</h2>
+        <main class="max-w-7xl mx-auto px-4 md:px-6 py-10 w-full flex-grow">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10 items-end">
+                <div class="lg:col-span-6">
+                    <span class="status-tag text-blue-600 font-900 text-[10px] uppercase tracking-[0.4em] bg-blue-50 px-3 py-1 rounded">Logistik Übersicht</span>
+                    <h2 class="text-5xl md:text-6xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2 leading-tight">Eingänge</h2>
                 </div>
-                <button onclick="loadList()" class="bg-slate-900 text-white px-8 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl">
-                    Liste Aktualisieren
-                </button>
+                
+                <div class="lg:col-span-6 flex flex-col md:flex-row gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex-grow">
+                        <label class="text-[9px] font-900 uppercase text-slate-400 mb-1 block tracking-widest">Nach Datum filtern</label>
+                        <input type="date" id="dateFilter" onchange="loadList()" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <button onclick="clearFilter()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-3 rounded-xl text-[10px] font-900 uppercase tracking-widest transition-all self-end">Alle</button>
+                    <button onclick="loadList()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-[10px] font-900 uppercase tracking-widest transition-all self-end">Refresh</button>
+                </div>
             </div>
 
-            <div class="admin-card overflow-hidden shadow-2xl">
-                <div id="truckList">
-                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Daten werden geladen...</div>
+            <div class="hidden md:grid grid-cols-12 gap-4 px-8 mb-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                <div class="col-span-4">Firma / Transporteur</div>
+                <div class="col-span-2">BE-Nummer</div>
+                <div class="col-span-2 text-blue-600">Ankunft (Geplant)</div>
+                <div class="col-span-2 text-center">Aktion</div>
+            </div>
+
+            <div class="admin-card shadow-2xl">
+                <div id="truckList" class="divide-y divide-slate-100">
+                    <div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest">Datenbank wird abgerufen...</div>
                 </div>
             </div>
         </main>
 
         <footer class="bg-white border-t py-8 text-center mt-12">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte</p>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte | Logistics Terminal v2.0</p>
         </footer>
     </div>
 
     <script>
-        // Supabase Client
         const _sb = supabase.createClient(
             "https://navhxyadbifllpopumfz.supabase.co", 
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
         );
 
-        // Login Funktion
         function checkLogin() {
-            const btn = document.getElementById('loginBtn');
-            const pw = document.getElementById('passInput').value;
-            const err = document.getElementById('errorMsg');
-            
-            // Visuelles Feedback beim Klicken
-            btn.innerHTML = "Prüfe...";
-            btn.classList.add('opacity-50');
-
-            setTimeout(() => {
-                if (pw === "alurad2026") {
-                    document.getElementById('loginPanel').classList.add('hidden');
-                    document.getElementById('mainContent').classList.remove('hidden');
-                    loadList();
-                } else {
-                    btn.innerHTML = "Terminal Entsperren →";
-                    btn.classList.remove('opacity-50');
-                    err.classList.remove('hidden');
-                    document.getElementById('passInput').value = "";
-                }
-            }, 400); // Kurze Verzögerung für das Gefühl der Sicherheit
+            if (document.getElementById('passInput').value === "alurad2026") {
+                document.getElementById('loginPanel').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                loadList();
+            } else {
+                const err = document.getElementById('errorMsg');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2000);
+            }
         }
 
-        // Enter-Taste
-        document.getElementById('passInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') checkLogin();
-        });
+        document.getElementById('passInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') checkLogin(); });
 
-        // Daten laden
+        function clearFilter() {
+            document.getElementById('dateFilter').value = '';
+            loadList();
+        }
+
         async function loadList() {
-            const { data, error } = await _sb
-                .from('avisierung')
-                .select('*')
-                .order('id', { ascending: false });
-
             const container = document.getElementById('truckList');
-            
+            const selectedDate = document.getElementById('dateFilter').value;
+
+            let query = _sb.from('avisierung').select('*').order('datum', { ascending: true });
+
+            if (selectedDate) {
+                query = query.eq('datum', selectedDate);
+            }
+
+            const { data, error } = await query;
+
             if (error) {
-                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center">Fehler beim Laden: ${error.message}</div>`;
+                container.innerHTML = `<div class="p-10 text-red-500 font-bold text-center">Fehler: ${error.message}</div>`;
                 return;
             }
 
             container.innerHTML = '';
 
             if (data.length === 0) {
-                container.innerHTML = '<div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest text-xs">Keine Einträge vorhanden</div>';
+                container.innerHTML = '<div class="p-20 text-center text-slate-400 font-bold uppercase italic tracking-widest text-xs">Keine Einträge für diesen Zeitraum</div>';
                 return;
             }
 
             data.forEach(item => {
-                const dateObj = new Date(item.created_at);
-                const formattedDate = dateObj.toLocaleDateString('de-DE', {
-                    day: '2-digit', month: '2-digit', year: 'numeric'
-                });
+                // Formatiere das Datum (aus dem Spaltennamen 'datum')
+                let planDate = "---";
+                if(item.datum) {
+                    const d = new Date(item.datum);
+                    planDate = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                }
 
                 container.innerHTML += `
-                    <div class="truck-row bg-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex-grow">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="w-3 h-3 bg-blue-600 rounded-sm rotate-45"></span>
-                                <div class="font-900 text-slate-900 uppercase text-2xl italic tracking-tighter">${item.firma || 'UNBEKANNT'}</div>
+                    <div class="truck-row bg-white p-6 md:p-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        <div class="md:col-span-4 flex items-center gap-4">
+                            <div class="bg-blue-600 text-white font-black text-[10px] w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                                ${item.firma ? item.firma.charAt(0).toUpperCase() : '?'}
                             </div>
-                            <div class="flex gap-6 items-center">
-                                <div class="text-[11px] font-black text-slate-400 uppercase tracking-widest">BE-NR: <span class="text-slate-900">${item.be_nummer || '-'}</span></div>
-                                <div class="text-[11px] font-black text-slate-400 uppercase tracking-widest">DATUM: <span class="text-blue-600">${formattedDate}</span></div>
+                            <div>
+                                <div class="font-900 text-slate-900 uppercase text-xl italic tracking-tighter leading-none">${item.firma || 'UNBEKANNT'}</div>
+                                <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Status: Bestätigt</div>
                             </div>
                         </div>
-                        <button onclick="deleteTruck(${item.id})" class="w-full md:w-auto bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-8 py-4 rounded-xl text-[10px] font-900 uppercase tracking-widest transition-all active:scale-95">
-                            Löschen
-                        </button>
+                        
+                        <div class="md:col-span-2">
+                            <div class="text-[10px] md:hidden font-black text-slate-400 uppercase mb-1">BE-Nummer:</div>
+                            <span class="bg-slate-100 px-3 py-1 rounded-lg font-bold text-sm text-slate-700">${item.be_nummer || '---'}</span>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <div class="text-[10px] md:hidden font-black text-slate-400 uppercase mb-1">Ankunft:</div>
+                            <span class="text-blue-600 font-900 text-lg italic tracking-tighter">${planDate}</span>
+                        </div>
+
+                        <div class="md:col-span-2 text-center">
+                            <span class="text-[10px] font-black text-slate-400 uppercase bg-slate-50 px-3 py-1 rounded-full">Rampe 7</span>
+                        </div>
+
+                        <div class="md:col-span-2 flex justify-end">
+                            <button onclick="deleteTruck(${item.id})" class="w-full md:w-auto bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-6 py-3 rounded-xl text-[9px] font-900 uppercase tracking-widest transition-all active:scale-95 shadow-sm">
+                                Löschen
+                            </button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        // Löschen
         async function deleteTruck(id) {
-            if (!confirm("Eintrag unwiderruflich löschen?")) return;
-
-            const { error } = await _sb
-                .from('avisierung')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                alert("Fehler: " + error.message);
-            } else {
-                loadList();
-            }
+            if (!confirm("Eintrag entfernen?")) return;
+            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+            if (error) alert(error.message);
+            else loadList();
         }
     </script>
 </body>
