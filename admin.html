@@ -3,126 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Terminal | Control Center</title>
+    <title>Darula Terminal | Master Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { background-color: #020617; font-family: 'Inter', sans-serif; color: #f8fafc; }
-        .terminal-font { font-family: 'Orbitron', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); }
-        .card-glow:hover { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.15); }
-        .delete-btn { transition: all 0.2s; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
-        .delete-btn:hover { background: #ef4444; color: white; transform: scale(1.05); }
+        .terminal-header { font-family: 'Orbitron', sans-serif; }
+        .glass-panel { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        .row-item { transition: all 0.2s ease; border-left: 4px solid transparent; }
+        .row-item:hover { border-left-color: #3b82f6; background: rgba(30, 41, 59, 0.5); transform: translateX(5px); }
+        .btn-action { transition: all 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="p-4 md:p-10">
 
     <div class="max-w-6xl mx-auto">
-        <header class="glass p-6 rounded-3xl mb-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
+        <header class="glass-panel p-8 rounded-[2.5rem] mb-10 flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
             <div class="text-center md:text-left">
-                <h1 class="terminal-font text-3xl font-black italic uppercase tracking-tighter text-white">
+                <h1 class="terminal-header text-4xl font-black italic uppercase tracking-tighter text-white">
                     Darula <span class="text-blue-500">Terminal</span>
                 </h1>
-                <div class="flex items-center justify-center md:justify-start gap-3 mt-2">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                    </span>
-                    <p id="live-status" class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">System synchronisiert...</p>
-                </div>
+                <p id="stats-info" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em] mt-2 italic">Initialisiere Master-Access...</p>
             </div>
             
             <div class="flex gap-4">
-                <button onclick="window.location.reload()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase transition-all border border-slate-700">Hard Reset</button>
-                <button onclick="fetchLatestData()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase shadow-xl shadow-blue-900/40 transition-all">Refresh Liste</button>
+                <button onclick="window.location.reload()" class="btn-action bg-slate-800 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase border border-slate-700 hover:bg-slate-700">Hard Reset</button>
+                <button onclick="renderDashboard()" class="btn-action bg-blue-600 text-white px-10 py-3 rounded-2xl text-[10px] font-black uppercase shadow-xl shadow-blue-900/40 hover:bg-blue-500">Refresh Liste</button>
             </div>
         </header>
 
-        <div id="truckList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
+        <div id="data-container" class="space-y-3">
+            <div class="text-center py-20 opacity-20 font-black uppercase tracking-[0.5em]">Lade Datenbank-Grid...</div>
+        </div>
     </div>
 
     <script>
-        // VERSCHLEIERUNG DER KEYS (Base64 kodiert)
-        const _0x_u = "aHR0cHM6Ly9uYXZoeHlhZGJpZmllbGxwb3B1bWZ6LnN1cGFiYXNlLmNv"; 
-        const _0x_k = "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjeUk2SW5OMWNHRmlZWE5sSWl3aWNtVmlJam9pYm1Ga2VIaDVZV1JpYm1sbGJIeHdZWGwxYlhWbVpuWWlMQ0p5YjJ4bElqb2lZVzV2YmlJc0ltbGhkQ0k2TVRjM01qRXpOakkxTWl3aWVYYndJam95TURnM056RXlNanV6ZlEtMHVUQVlNZFJ4ZHZscFBkcFFtTUxxc3YxTWVuMXduQmZBeC1RNnpZ";
+        // VERSCHLEIERUNG (Base64 kodiert)
+        // URL: https://navhxyadbifllpopumfz.supabase.co
+        const _v_u = "aHR0cHM6Ly9uYXZoeHlhZGJpbGxwb3B1bWZ6LnN1cGFiYXNlLmNv"; 
+        // KEY: Dein Anon Key
+        const _v_k = "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjeUk2SW5OMWNHRmlZWE5sSWl3aWNtVmlJam9pYm1Ga2VIaDVZV1JpYm1sbGJIeHdZWGwxYlhWbVpuWWlMQ0p5YjJ4bElqb2lZVzV2YmlJc0ltbGhkQ0k2TVRjM01qRXpOakkxTWl3aWVYYndJam95TURnM056RXlNanV6ZlEtMHVUQVlNZFJ4ZHZscFBkcFFtTUxxc3YxTWVuMXduQmZBeC1RNnpZ";
 
-        // Initialisierung durch Dekodierung (atob)
-        const _sb = supabase.createClient(atob(_0x_u), atob(_0x_k));
+        const _client = supabase.createClient(atob(_v_u), atob(_v_k));
 
-        async function fetchLatestData() {
-            const statusText = document.getElementById('live-status');
-            statusText.innerText = "Daten werden abgerufen...";
+        async function renderDashboard() {
+            const container = document.getElementById('data-container');
+            const stats = document.getElementById('stats-info');
             
-            const { data, error } = await _sb.from('avisierung').select('*').order('id', { ascending: false });
+            // Holt ALLE Daten ohne Filter (Abwicklung rausgenommen)
+            const { data, error } = await _client.from('avisierung').select('*').order('id', { ascending: false });
 
             if (error) {
-                statusText.innerText = "Verbindungsfehler!";
-                console.error(error);
+                stats.innerHTML = `<span class="text-red-500 font-bold underline">FEHLER: ${error.message}</span>`;
                 return;
             }
 
-            statusText.innerText = `${data.length} Aktive Einheiten`;
-            const container = document.getElementById('truckList');
+            stats.innerText = `${data.length} Aktive Avisierungen im System`;
             container.innerHTML = '';
 
             if (data.length === 0) {
-                container.innerHTML = `<div class="col-span-full glass p-20 rounded-3xl text-center text-slate-500 font-bold uppercase italic tracking-widest">Warteschlange leer</div>`;
+                container.innerHTML = `<div class="glass-panel p-20 rounded-[2rem] text-center text-slate-600 font-black uppercase italic tracking-widest">Keine Daten vorhanden</div>`;
                 return;
             }
 
-            data.forEach(item => {
+            data.forEach(entry => {
                 container.innerHTML += `
-                    <div class="glass p-6 rounded-[2.5rem] card-glow truck-card flex flex-col gap-6 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-                        
-                        <div class="flex justify-between items-start z-10">
-                            <div>
-                                <h3 class="text-xl font-black text-white uppercase tracking-tighter leading-none mb-2">${item.firma || 'Unbekannt'}</h3>
-                                <span class="bg-blue-500/10 text-blue-400 text-[9px] font-black px-3 py-1 rounded-full uppercase border border-blue-500/20">Avisiert</span>
+                    <div class="glass-panel p-6 rounded-3xl row-item flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-3">
+                                <span class="bg-blue-500/10 text-blue-500 font-black text-[10px] px-3 py-1 rounded-lg uppercase tracking-widest border border-blue-500/20">ID #${entry.id}</span>
+                                <h3 class="text-2xl font-black text-white uppercase tracking-tighter">${entry.firma || 'Unbekannt'}</h3>
                             </div>
-                            <div class="terminal-font text-slate-700 text-2xl font-black opacity-30 group-hover:opacity-100 transition-opacity">#${item.id}</div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div>
+                                    <p class="text-[9px] uppercase text-slate-500 font-bold mb-1 tracking-widest">Bestellung (BE)</p>
+                                    <p class="text-sm font-bold text-slate-200 font-mono">${entry.be_nummer || '---'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] uppercase text-slate-500 font-bold mb-1 tracking-widest">Einheiten</p>
+                                    <p class="text-sm font-bold text-slate-200">${entry.palettes || '0'} Paletten</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] uppercase text-slate-500 font-bold mb-1 tracking-widest">Termin</p>
+                                    <p class="text-sm font-bold text-blue-400 italic">${entry.liefer_datum || 'Offen'}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] uppercase text-slate-500 font-bold mb-1 tracking-widest">Fahrzeug</p>
+                                    <p class="text-sm font-bold text-slate-200">${entry.fahrzeug || 'Standard'}</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="space-y-4 z-10">
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-[10px] uppercase font-bold text-slate-500">BE-Nummer</span>
-                                <span class="text-xs font-mono font-bold text-slate-200">${item.be_nummer || '-'}</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-[10px] uppercase font-bold text-slate-500">Ladung</span>
-                                <span class="text-xs font-bold text-slate-200">${item.palettes || '0'} Paletten</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-[10px] uppercase font-bold text-slate-500">Termin</span>
-                                <span class="text-xs font-bold text-blue-400 underline">${item.liefer_datum || '-'}</span>
-                            </div>
-                        </div>
-
-                        <button onclick="confirmDelete(${item.id})" class="delete-btn w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-500 z-10">
-                            Abgewickelt & Löschen
+                        <button onclick="removeEntry(${entry.id})" class="btn-action bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-red-500/20 shadow-lg shadow-red-900/10">
+                            Entfernen
                         </button>
                     </div>
                 `;
             });
         }
 
-        async function confirmDelete(id) {
-            if (!confirm("Soll dieser LKW wirklich aus der Liste entfernt werden?")) return;
+        async function removeEntry(id) {
+            if (!confirm("Eintrag permanent löschen?")) return;
             
-            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+            const { error } = await _client.from('avisierung').delete().eq('id', id);
             
             if (error) {
                 alert("Fehler beim Löschen: " + error.message);
             } else {
-                fetchLatestData();
+                renderDashboard();
             }
         }
 
-        // Live-Sync alle 15 Sekunden
-        setInterval(fetchLatestData, 15000);
-        fetchLatestData();
+        // Auto-Start
+        renderDashboard();
+        // Alle 30 Sek. Live-Refresh
+        setInterval(renderDashboard, 30000);
     </script>
 </body>
 </html>
