@@ -85,16 +85,24 @@
             if(!confirm("LKW abwickeln? Die Spedition erhält sofort eine Bestätigung per E-Mail.")) return;
             
             const btn = document.getElementById(`btn-${id}`);
+            const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = "...";
+            btn.innerText = "Lade...";
 
-            const { error } = await _sb.from('avisierung')
+            // WICHTIG: .select() angehängt. Nur so erfährst du, ob die Zeile wirklich überschrieben wurde!
+            const { data, error } = await _sb.from('avisierung')
                 .update({ status: 'abgewickelt' })
-                .eq('id', id);
+                .eq('id', id)
+                .select();
 
             if (error) {
-                alert("Fehler: " + error.message);
+                alert("Datenbank-Fehler: " + error.message);
                 btn.disabled = false;
+                btn.innerText = originalText;
+            } else if (!data || data.length === 0) {
+                alert("Blockiert: Du hast in Supabase keine Berechtigung (RLS) zum Ändern des Status.");
+                btn.disabled = false;
+                btn.innerText = originalText;
             } else {
                 refreshData();
             }
@@ -117,14 +125,16 @@
 
             const { data } = await query;
             const list = document.getElementById('masterList');
-            list.innerHTML = '';
+            
+            // BESSER FÜR PERFORMANCE: Erst den HTML-Code sammeln, dann 1x einfügen
+            let htmlContent = '';
 
             data?.forEach(item => {
                 const isDone = item.status === 'abgewickelt';
                 const isHeavy = item.palettes >= 20;
                 const dateFmt = new Date(item.liefer_datum).toLocaleDateString('de-DE', {weekday: 'short', day: '2-digit', month: '2-digit'});
 
-                const card = `
+                htmlContent += `
                     <div class="admin-card p-5 rounded-2xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${isDone ? 'card-done' : ''} ${isHeavy && !isDone ? 'heavy-load' : ''}">
                         
                         <div class="flex items-center gap-6">
@@ -136,7 +146,7 @@
                             <div>
                                 <div class="flex items-center gap-2">
                                     <h3 class="font-900 uppercase text-slate-800">${item.firma}</h3>
-                                    ${item.notify_me ? '<span class="text-[10px] text-blue-500">📧</span>' : ''}
+                                    ${item.notify_me ? '<span class="text-[10px] text-blue-500" title="Benachrichtigung aktiv">📧</span>' : ''}
                                 </div>
                                 <p class="text-[11px] text-slate-500 font-medium">BE: ${item.be_nummer} | Art: ${item.artikel_nr}</p>
                             </div>
@@ -164,14 +174,16 @@
                                 </span>
                             `}
                             
-                            <button onclick="deleteEntry(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition">
+                            <button onclick="deleteEntry(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition" title="Löschen">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
                     </div>
                 `;
-                list.innerHTML += card;
             });
+            
+            // Jetzt wird die Liste komplett auf einmal geupdatet
+            list.innerHTML = htmlContent;
         }
 
         document.getElementById('adminPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPass(); });
