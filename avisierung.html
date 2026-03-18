@@ -12,7 +12,6 @@
         .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 4px; border-radius: 8px; }
         .day-cell { background: white; min-height: 100px; padding: 12px; cursor: pointer; transition: 0.2s; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; }
-        .day-cell:hover:not(.disabled) { background: #eff6ff; border-color: #3b82f6; }
         .day-cell.selected { background: #2563eb !important; color: white !important; }
         .day-cell.disabled { background: #f8fafc; color: #cbd5e1; cursor: not-allowed; }
         .day-cell.full { border-left: 4px solid #ef4444; background: #fff1f2; }
@@ -21,7 +20,6 @@
         input { border: 1px solid #cbd5e1; padding: 10px; width: 100%; border-radius: 8px; font-size: 15px; margin-bottom: 12px; }
         .btn-primary { background: #1e293b; color: white; width: 100%; padding: 16px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; font-size: 16px; }
         #reka-notice { display: none; background: #fff7ed; border-left: 4px solid #f97316; padding: 15px; color: #9a3412; font-size: 13px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffedd5; }
-        .time-badge { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569; }
     </style>
 </head>
 <body>
@@ -30,16 +28,16 @@
         <a href="index.html" class="inline-block hover:opacity-80 transition-opacity">
             <h1 class="text-2xl font-800 tracking-tight text-slate-900">Darula <span class="text-blue-600">Transporte</span></h1>
         </a>
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Avisierungsportal Rampe 7</p>
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
         
         <div class="lg:col-span-8">
-            <div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-4 items-center">
-                <div class="bg-blue-600 text-white p-2 px-3 rounded-lg font-black text-xs shadow-sm">TIPP</div>
-                <p class="text-sm text-blue-900 font-medium leading-tight">
-                    Ein roter Tag (Voll) bedeutet <b>nicht</b>, dass Sie nicht kommen dürfen. Wir nehmen Ihre Ware an Rampe 7 jederzeit an.
+            <div class="mb-6 p-6 bg-red-600 text-white rounded-xl shadow-xl border-4 border-red-700">
+                <h2 class="text-2xl font-900 uppercase italic tracking-tighter mb-2">Achtung: Stückgut-Fahrer!</h2>
+                <p class="font-bold text-lg leading-tight">
+                    STÜCKGUT MUSS NICHT AVISIERT WERDEN! <br>
+                    <span class="text-red-100 text-sm font-medium">Anlieferung jederzeit an Rampe 7 möglich – auch wenn der Kalender "Voll" anzeigt.</span>
                 </p>
             </div>
 
@@ -51,71 +49,40 @@
                         <button onclick="nav(1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-gray-50 transition">→</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-7 mb-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-                    <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
-                </div>
                 <div class="calendar-grid" id="grid"></div>
-
-                <div class="mt-4 flex flex-wrap gap-6 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    <div class="flex items-center gap-1"><span class="w-3 h-3 bg-red-100 border-l-2 border-red-500 block"></span> Voll (Anlieferung gestattet)</div>
-                    <div class="flex items-center gap-1"><span class="w-3 h-3 bg-slate-100 border-l-2 border-slate-400 block"></span> Reserviert / Belegt</div>
+                <div class="mt-4 flex gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <div class="flex items-center gap-1"><span class="w-3 h-3 bg-red-500 block"></span> Tag Voll (Anfahrt trotzdem erlaubt)</div>
                 </div>
             </div>
         </div>
 
         <div class="lg:col-span-4">
             <div class="card p-8 sticky top-8">
-                <h3 class="text-2xl font-bold mb-1 text-slate-800">Anmeldung</h3>
-                
-                <div class="mt-4 mb-6 space-y-2">
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Annahmezeiten:</p>
-                    <div class="flex gap-2">
-                        <div class="time-badge">MO-DO: 07-14h</div>
-                        <div class="time-badge">FR: 07-12h</div>
-                    </div>
-                </div>
-
-                <hr class="mb-6">
-                
+                <h3 class="text-2xl font-900 mb-6 text-slate-800 uppercase italic">Registrierung</h3>
                 <form id="avisForm">
                     <input type="hidden" id="in-date">
-                    
-                    <div id="reka-notice">
-                        <strong>REKA-Info:</strong> Anlieferung zwingend bis 12:00 Uhr!
-                    </div>
+                    <div id="reka-notice"><strong>HINWEIS:</strong> REKA bis 12:00 Uhr!</div>
 
-                    <label>Spedition / Lieferant</label>
-                    <input type="text" id="in-company" required placeholder="Firma eingeben" oninput="logicCheck()">
+                    <label>Spedition / Firma</label>
+                    <input type="text" id="in-company" required placeholder="Name der Firma" oninput="logicCheck()">
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label>Bestell-Nr.</label>
-                            <input type="text" id="in-be" required placeholder="BE-...">
-                        </div>
-                        <div>
-                            <label>Artikel-Nr.</label>
-                            <input type="text" id="in-art" required placeholder="Art-Nr.">
-                        </div>
+                        <div><label>Bestell-Nr.</label><input type="text" id="in-be" required placeholder="BE-..."></div>
+                        <div><label>Artikel-Nr.</label><input type="text" id="in-art" required placeholder="Nr."></div>
                     </div>
 
                     <label>Palettenanzahl</label>
                     <input type="number" id="in-pal" required min="1" value="1" oninput="palCheck()">
 
-                    <div id="stueckgut-msg" class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-[11px] font-bold uppercase tracking-tight">
-                        ✨ Stückgut-Modus aktiv (Termin optional)
+                    <div id="stueckgut-msg" class="hidden mb-6 p-4 bg-yellow-400 text-black font-900 text-xs uppercase rounded-lg border-2 border-black text-center">
+                        !!! STÜCKGUT-MODUS !!! <br> TERMINWAHL IST FREIWILLIG
                     </div>
 
-                    <div id="sel-info" class="p-5 bg-slate-50 text-center text-sm font-bold mb-6 rounded-xl border-2 border-dashed border-slate-200 text-slate-400">
-                        Datum im Kalender wählen
+                    <div id="sel-info" class="p-5 bg-slate-50 text-center text-sm font-bold mb-6 rounded-xl border-2 border-dashed border-slate-200 text-slate-400 uppercase">
+                        Kalender wählen
                     </div>
 
-                    <button type="submit" id="sub-btn" class="btn-primary w-100">Registrierung absenden</button>
-                    
-                    <div class="mt-6 border-t pt-4 space-y-2">
-                        <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-                            <b>Hinweis:</b> Eine Avisierung ist erst ab 20 Paletten verpflichtend. Stückgut-Fahrer können sich zur Info registrieren, müssen es aber nicht.
-                        </p>
-                    </div>
+                    <button type="submit" id="sub-btn" class="btn-primary">Anmeldung senden</button>
                 </form>
             </div>
         </div>
@@ -138,31 +105,20 @@
             const pal = parseInt(document.getElementById('in-pal').value);
             const msg = document.getElementById('stueckgut-msg');
             const selInfo = document.getElementById('sel-info');
-            
             if(pal > 0 && pal < 20) {
                 msg.classList.remove('hidden');
                 if(!State.sel) {
-                    selInfo.innerText = "STÜCKGUT: KEINE TERMINPFLICHT";
+                    selInfo.innerText = "STÜCKGUT: ANFAHRT JEDERZEIT OK";
                     selInfo.className = "p-5 bg-green-600 text-white text-center text-sm font-bold mb-6 rounded-xl shadow-lg";
                 }
             } else {
                 msg.classList.add('hidden');
-                if(!State.sel) {
-                    selInfo.innerText = "Datum im Kalender wählen";
-                    selInfo.className = "p-5 bg-slate-50 text-center text-sm font-bold mb-6 rounded-xl border-2 border-dashed border-slate-200 text-slate-400";
-                }
             }
         }
 
         const State = {
             now: new Date(), sel: null, data: {}, locked: [],
-
-            async init() {
-                await this.sync();
-                this.render();
-                document.getElementById('avisForm').onsubmit = (e) => this.send(e);
-            },
-
+            async init() { await this.sync(); this.render(); document.getElementById('avisForm').onsubmit = (e) => this.send(e); },
             async sync() {
                 const { data } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
                 this.data = {}; this.locked = [];
@@ -173,7 +129,6 @@
                 });
                 this.render();
             },
-
             render() {
                 const grid = document.getElementById('grid'); grid.innerHTML = '';
                 const y = this.now.getFullYear(), m = this.now.getMonth();
@@ -183,7 +138,6 @@
                 const todayStr = new Date().toISOString().split('T')[0];
 
                 for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-cell disabled"></div>`;
-
                 for(let d=1; d<=total; d++) {
                     const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                     const isReserved = this.locked.includes(ds);
@@ -192,19 +146,14 @@
 
                     const cell = document.createElement('div');
                     cell.className = `day-cell ${isReserved ? 'reserved' : (isFull ? 'full' : '')} ${this.sel === ds ? 'selected' : ''} ${isPast ? 'disabled' : ''}`;
-                    
-                    let status = "Verfügbar";
-                    if(isReserved) status = "Belegt";
-                    else if(isFull) status = "Voll (Offen)";
-
-                    cell.innerHTML = `<div class="text-xl font-800">${d}</div><div class="text-[9px] font-bold uppercase opacity-60">${isPast ? '' : status}</div>`;
+                    let status = isFull ? "VOLL (OFFEN)" : (isReserved ? "BELEGT" : "OK");
+                    cell.innerHTML = `<div class="text-xl font-900">${d}</div><div class="text-[9px] font-black">${isPast ? '' : status}</div>`;
                     
                     if(!isPast && !isReserved) {
                         cell.onclick = () => {
                             this.sel = ds;
                             document.getElementById('in-date').value = ds;
-                            const note = isFull ? " (TAG VOLL - ANLIEFERUNG OK)" : "";
-                            document.getElementById('sel-info').innerText = `TERMIN: ${d}.${m+1}.${y}${note}`;
+                            document.getElementById('sel-info').innerText = `TERMIN: ${d}.${m+1}.${y}`;
                             document.getElementById('sel-info').className = "p-5 bg-blue-600 text-white text-center text-sm font-bold mb-6 rounded-xl shadow-lg";
                             this.render();
                         };
@@ -212,38 +161,15 @@
                     grid.appendChild(cell);
                 }
             },
-
             send: async (e) => {
                 e.preventDefault();
                 const pal = parseInt(document.getElementById('in-pal').value);
-                const today = new Date().toISOString().split('T')[0];
-
-                if(!State.sel && pal >= 20) {
-                    return alert("Für Ladungen ab 20 Paletten ist ein Termin zwingend nötig!");
-                }
-                
-                const btn = document.getElementById('sub-btn');
-                btn.disabled = true; btn.innerText = "Wird gesendet...";
-
-                const payload = {
-                    liefer_datum: State.sel || today, 
-                    firma: document.getElementById('in-company').value,
-                    be_nummer: document.getElementById('in-be').value,
-                    artikel_nr: document.getElementById('in-art').value,
-                    palettes: pal
-                };
-
+                if(!State.sel && pal >= 20) return alert("Ab 20 Paletten bitte Termin wählen!");
+                const payload = { liefer_datum: State.sel || new Date().toISOString().split('T')[0], firma: document.getElementById('in-company').value, be_nummer: document.getElementById('in-be').value, artikel_nr: document.getElementById('in-art').value, palettes: pal };
                 const { error } = await sb.from("avisierung").insert(payload);
-                if(!error) {
-                    alert("✅ Anmeldung erfolgreich abgeschlossen!");
-                    location.reload();
-                } else {
-                    alert("❌ Fehler: " + error.message);
-                    btn.disabled = false; btn.innerText = "Registrierung absenden";
-                }
+                if(!error) { alert("Erfolgreich!"); location.reload(); }
             }
         };
-
         const nav = (v) => { State.now.setMonth(State.now.getMonth() + v); State.render(); };
         State.init();
     </script>
