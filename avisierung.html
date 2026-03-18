@@ -3,198 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Avisierung 2.0</title>
+    <title>Darula Transporte | Terminal-Avisierung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; }
-        .day-cell { aspect-ratio: 1 / 0.9; transition: all 0.2s; border-radius: 12px; }
-        .day-cell:hover:not(.disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .selected { background: #2563eb !important; color: white !important; ring: 4px rgba(37, 99, 235, 0.2); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .hub-card { background: white; border: 1px solid #e2e8f0; border-bottom: 6px solid #1e293b; border-radius: 12px; }
+        .nav-link { font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; color: #64748b; }
         
-        /* Ampel Farben */
-        .status-green { border-bottom: 5px solid #22c55e; background: #f0fdf4; } /* Frei */
-        .status-yellow { border-bottom: 5px solid #eab308; background: #fefce8; } /* Fast voll */
-        .status-red { border-bottom: 5px solid #ef4444; background: #fef2f2; } /* Voll */
-        .status-locked { background: #f8fafc; border-bottom: 5px solid #94a3b8; color: #94a3b8; }
+        .day-cell { 
+            background: white; border: 1px solid #e2e8f0; border-radius: 12px;
+            transition: all 0.2s ease-in-out; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
+        }
+        .day-cell:hover:not(.disabled) { border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .selected { ring: 3px #2563eb; border-color: #2563eb !important; background: #eff6ff !important; }
         
-        .disabled { opacity: 0.5; cursor: not-allowed; }
+        .status-free { border-bottom: 5px solid #22c55e; }
+        .status-warn { border-bottom: 5px solid #f59e0b; }
+        .status-full { border-bottom: 5px solid #ef4444; }
+        .status-locked { border-bottom: 5px solid #3b82f6; background: #f0f7ff; }
+        .disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); background: #f1f5f9; }
+
+        input, select { border: 1px solid #e2e8f0 !important; padding: 12px !important; border-radius: 8px !important; width: 100%; font-size: 14px; }
+        input:focus { border-color: #2563eb !important; outline: none; ring: 2px rgba(37, 99, 235, 0.1); }
+        label { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.1em; }
+        
+        .status-tag { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body class="antialiased min-h-screen flex flex-col">
 
-<div class="max-w-7xl mx-auto">
-    <header class="flex justify-between items-center mb-10">
-        <div>
-            <h1 class="text-4xl font-900 tracking-tighter italic uppercase text-slate-900">
+    <nav class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+            <h1 class="text-2xl font-900 tracking-tighter uppercase italic text-slate-900">
                 Darula <span class="text-blue-600 not-italic">Transporte</span>
             </h1>
-            <p class="text-slate-500 font-bold flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 
-                Logistikzentrum Nürnberg · Rampe 7
-            </p>
+            <div class="flex gap-8">
+                <a href="index.html" class="nav-link hover:text-blue-600">Home</a>
+                <a href="avisierung.html" class="nav-link text-blue-600">Avisierung</a>
+            </div>
         </div>
-        <div class="hidden md:block text-right">
-            <p class="text-xs font-bold uppercase text-slate-400 tracking-widest">Support</p>
-            <p class="font-bold text-slate-700">d.darulatransporte@gmail.com</p>
-        </div>
-    </header>
+    </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <div class="lg:col-span-8 space-y-6">
+    <main class="max-w-7xl mx-auto px-6 py-12 w-full flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             
-            <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-6 text-white shadow-xl flex items-center gap-6">
-                <div class="text-4xl">📦</div>
-                <div>
-                    <h2 class="text-xl font-800 uppercase italic">Stückgut-Vorteil</h2>
-                    <p class="opacity-90 font-medium text-sm">Sendungen unter 20 Paletten benötigen keinen festen Termin und können jederzeit angeliefert werden.</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+            <div class="lg:col-span-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 id="month-label" class="text-2xl font-800 italic uppercase text-slate-800">März 2026</h2>
-                    <div class="flex gap-2">
-                        <button onclick="nav(-1)" class="p-3 border rounded-xl hover:bg-slate-50 transition">←</button>
-                        <button onclick="nav(1)" class="p-3 border rounded-xl hover:bg-slate-50 transition">→</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-7 gap-3" id="grid">
-                    </div>
-
-                <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-green-500"></span>
-                        <span class="text-[10px] font-bold uppercase text-slate-500">Frei (Kapazität hoch)</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-yellow-500"></span>
-                        <span class="text-[10px] font-bold uppercase text-slate-500">Begrenzt (Fast voll)</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-red-500"></span>
-                        <span class="text-[10px] font-bold uppercase text-slate-500">Voll (Nur Stückgut)</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="w-4 h-4 rounded-full bg-slate-300"></span>
-                        <span class="text-[10px] font-bold uppercase text-slate-500">Gesperrt / Belegt</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <span class="text-blue-600 font-bold text-lg">01.</span>
-                    <h4 class="font-bold text-xs uppercase mt-2">Registrierung</h4>
-                    <p class="text-[11px] text-slate-500 mt-1">Geben Sie Ihre Daten und E-Mail an. Wählen Sie "Benachrichtigen" aus.</p>
-                </div>
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <span class="text-blue-600 font-bold text-lg">02.</span>
-                    <h4 class="font-bold text-xs uppercase mt-2">Abwicklung</h4>
-                    <p class="text-[11px] text-slate-500 mt-1">Sobald der LKW bei uns an Rampe 7 fertig be- oder entladen wurde.</p>
-                </div>
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <span class="text-blue-600 font-bold text-lg">03.</span>
-                    <h4 class="font-bold text-xs uppercase mt-2">E-Mail Versand</h4>
-                    <p class="text-[11px] text-slate-500 mt-1">Das System schickt automatisch eine Bestätigung an die Disposition.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="lg:col-span-4">
-            <div class="bg-white rounded-3xl p-8 shadow-2xl border border-slate-200 sticky top-8">
-                <h3 class="text-xl font-900 mb-6 italic uppercase">Avisierung</h3>
-                
-                <form id="avisForm" class="space-y-4">
-                    <input type="hidden" id="in-date">
-                    
                     <div>
-                        <label>Firma / Spedition</label>
-                        <input type="text" id="in-company" required placeholder="z.B. Spedition Müller">
+                        <span class="status-tag">Warenannahme Rampe 7</span>
+                        <h2 id="month-label" class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900 mt-2">Ladeplan</h2>
                     </div>
+                    <div class="flex gap-2">
+                        <button onclick="nav(-1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-white transition">←</button>
+                        <button onclick="nav(1)" class="w-10 h-10 border rounded-lg flex items-center justify-center hover:bg-white transition">→</button>
+                    </div>
+                </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-7 gap-3" id="grid"></div>
+
+                <div class="mt-10 p-6 bg-white border border-slate-200 rounded-xl flex flex-wrap justify-center gap-8">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Kapazität frei</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-orange-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Begrenzt</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Slots belegt</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Exklusiv-Reserviert</span></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div class="hub-card p-8 sticky top-8">
+                    <h3 class="text-2xl font-900 uppercase italic tracking-tighter mb-6 border-b pb-4 text-slate-900">Avisierung</h3>
+                    
+                    <form id="avisForm" class="space-y-5">
+                        <input type="hidden" id="in-date">
+                        
                         <div>
-                            <label>Palettenanzahl</label>
-                            <input type="number" id="in-pal" required min="1" value="1" oninput="palCheck()">
+                            <label>Spedition / Lieferant</label>
+                            <input type="text" id="in-company" required placeholder="Firma" oninput="State.checkReka(this.value)">
                         </div>
-                        <div>
-                            <label>Fahrzeug</label>
-                            <select id="in-type">
-                                <option value="LKW">Sattelzug</option>
-                                <option value="7.5t">7.5t Motorwagen</option>
-                                <option value="Sprinter">Transporter</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label>Bestell-Nr. (BE)</label>
-                            <input type="text" id="in-be" required placeholder="BE-12345">
+                        <div id="reka-notice" class="hidden bg-yellow-400 text-black p-4 rounded-lg text-[11px] font-900 uppercase italic leading-tight shadow-md">
+                            ⚠️ WICHTIG: Anlieferung bis 13:00 Uhr. Spätere Ankunft führt zur Entladungsverweigerung.
                         </div>
-                        <div>
-                            <label>Artikel-Nr.</label>
-                            <input type="text" id="in-art" required placeholder="Art-99">
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label>Ladeeinheiten (LE)</label>
+                                <input type="number" id="in-pal" required min="1" value="1" oninput="State.render()">
+                            </div>
+                            <div>
+                                <label>Anlieferart</label>
+                                <select id="in-type">
+                                    <option value="Stückgut (LTL)">Stückgut</option>
+                                    <option value="Teilladung (LTL)">Teilladung</option>
+                                    <option value="Komplettladung (FTL)">Komplettladung</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="pt-4 border-t border-slate-100">
-                        <label>E-Mail für Status-Update</label>
-                        <input type="email" id="in-email" placeholder="dispo@spedition.de">
-                        <div class="mt-3 flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                            <input type="checkbox" id="in-notify" class="w-5 h-5 accent-blue-600" checked>
-                            <label for="in-notify" class="mb-0 normal-case font-medium text-blue-900 text-[12px]">
-                                E-Mail senden, wenn LKW abgewickelt wurde
-                            </label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label>Referenz (BE)</label><input type="text" id="in-be" required placeholder="BE-Nummer"></div>
+                            <div><label>Artikel-Nr.</label><input type="text" id="in-art" required placeholder="Art-Nr."></div>
                         </div>
-                    </div>
 
-                    <div id="sel-info" class="p-4 bg-slate-100 text-center text-[10px] font-bold rounded-2xl text-slate-400 uppercase tracking-widest border-2 border-dashed">
-                        Bitte Datum wählen
-                    </div>
+                        <div id="selection-status" class="bg-slate-50 p-4 rounded-lg text-center border border-dashed text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Tag im Plan wählen
+                        </div>
 
-                    <button type="submit" id="sub-btn" class="w-full bg-slate-900 hover:bg-blue-600 text-white py-5 rounded-2xl font-900 uppercase text-xs tracking-[0.2em] shadow-xl transition-all active:scale-95">
-                        Termin verbindlich buchen
-                    </button>
-                </form>
+                        <button type="submit" id="sub-btn" class="w-full bg-[#0f172a] hover:bg-blue-600 text-white py-4 rounded-lg font-900 uppercase text-xs tracking-[0.2em] transition-all duration-300">
+                            Termin verbindlich buchen
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </main>
+
+    <footer class="bg-white border-t py-6 text-center">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte</p>
+    </footer>
 
 <script>
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
-        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        LIMIT_YELLOW: 1, // Ab 1 Buchung gelb
-        LIMIT_RED: 3,    // Ab 3 Buchungen voll (rot)
-        THRESHOLD: 20    // Grenze für Stückgut
+        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLevel.iat:1772136252,exp:2087712252}.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
+        TRENNUNG_LE: 10,
+        MAX_LKW: 3
     };
     const sb = supabase.createClient(CFG.U, CFG.K);
 
     const State = {
-        now: new Date(), sel: null, data: {}, locked: [],
-        async init() { await this.sync(); this.render(); document.getElementById('avisForm').onsubmit = (e) => this.send(e); },
+        now: new Date(), sel: null, stats: {},
+
+        async init() { await this.sync(); document.getElementById('avisForm').onsubmit = (e) => this.send(e); },
+
+        checkReka(val) {
+            const notice = document.getElementById('reka-notice');
+            if(val.toLowerCase().includes('reka')) { notice.classList.remove('hidden'); } 
+            else { notice.classList.add('hidden'); }
+        },
+
         async sync() {
             const { data } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
-            this.data = {}; this.locked = [];
+            this.stats = {};
             data?.forEach(r => {
                 const d = r.liefer_datum;
-                if(r.firma?.toLowerCase().includes("monowell")) this.locked.push(d);
-                if(r.palettes >= CFG.THRESHOLD) this.data[d] = (this.data[d] || 0) + 1;
+                if(!this.stats[d]) this.stats[d] = { lkw: 0, isEx: false };
+                const f = (r.firma || "").toLowerCase();
+                const isLKW = r.palettes > CFG.TRENNUNG_LE;
+                if(f.includes("monowell") && isLKW) this.stats[d].isEx = true;
+                if(isLKW) this.stats[d].lkw += 1;
             });
             this.render();
         },
+
         render() {
             const grid = document.getElementById('grid'); grid.innerHTML = '';
             const y = this.now.getFullYear(), m = this.now.getMonth();
-            const pal = parseInt(document.getElementById('in-pal').value) || 0;
-            const isStueckgut = pal > 0 && pal < CFG.THRESHOLD;
+            const inputLE = parseInt(document.getElementById('in-pal').value) || 0;
+            const isImmune = inputLE <= CFG.TRENNUNG_LE;
 
             document.getElementById('month-label').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(this.now);
             const first = (new Date(y, m, 1).getDay() + 6) % 7;
@@ -202,75 +170,64 @@
             const todayStr = new Date().toISOString().split('T')[0];
 
             for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
-            
+
             for(let d=1; d<=total; d++) {
                 const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const count = this.data[ds] || 0;
-                const isReserved = this.locked.includes(ds);
-                const isFull = count >= CFG.LIMIT_RED;
+                const day = this.stats[ds] || { lkw: 0, isEx: false };
                 const isPast = ds < todayStr || [0,6].includes(new Date(y,m,d).getDay());
                 
-                // AMPEL LOGIK
-                let statusClass = "status-green";
-                let statusText = "FREI";
-                
-                if (isReserved) { statusClass = "status-locked"; statusText = "BELEGT"; }
-                else if (isFull) { statusClass = "status-red"; statusText = isStueckgut ? "OK (STG)" : "VOLL"; }
-                else if (count >= CFG.LIMIT_YELLOW) { statusClass = "status-yellow"; statusText = "BEGRENZT"; }
+                let sClass = "status-free", sText = "FREI";
+                if(day.isEx) { sClass = "status-locked"; sText = "RESERVIERT"; }
+                else if(day.lkw >= CFG.MAX_LKW) { sClass = "status-full"; sText = "VOLL"; }
+                else if(day.lkw >= 2) { sClass = "status-warn"; sText = "BEGRENZT"; }
 
-                const blockClick = isPast || isReserved || (isFull && !isStueckgut);
+                const canClick = !isPast && (isImmune || (!day.isEx && day.lkw < CFG.MAX_LKW));
+
                 const cell = document.createElement('div');
-                cell.className = `day-cell p-3 flex flex-col justify-between cursor-pointer border shadow-sm ${statusClass} ${this.sel === ds ? 'selected' : ''} ${blockClick ? 'disabled' : ''}`;
-                
+                cell.className = `day-cell ${sClass} ${this.sel === ds ? 'selected' : ''} ${!canClick ? 'disabled' : 'cursor-pointer'}`;
                 cell.innerHTML = `
-                    <span class="text-sm font-800">${d}</span>
-                    <span class="text-[7px] font-black uppercase">${isPast ? '' : statusText}</span>
+                    <div class="flex justify-between items-start">
+                        <span class="text-lg font-900 text-slate-900 italic">${d}</span>
+                        <span class="text-[7px] font-black uppercase text-slate-400">${isPast ? '' : sText}</span>
+                    </div>
+                    <div class="text-[9px] font-bold ${day.lkw >= CFG.MAX_LKW ? 'text-red-500' : 'text-slate-400'}">
+                        ${isPast ? 'SPERRE' : day.lkw + '/' + CFG.MAX_LKW + ' SLOTS'}
+                    </div>
                 `;
-                
-                if(!blockClick) {
+
+                if(canClick) {
                     cell.onclick = () => {
                         this.sel = ds;
                         document.getElementById('in-date').value = ds;
-                        document.getElementById('sel-info').innerText = `GEWÄHLT: ${d}.${m+1}.${y}`;
-                        document.getElementById('sel-info').className = "p-4 bg-green-500 text-white text-center text-[10px] font-bold rounded-2xl shadow-lg uppercase tracking-widest border-none";
+                        const statusBox = document.getElementById('selection-status');
+                        statusBox.innerHTML = `${d}.${m+1}. | <span class="text-blue-600">FREIGABE ERTEILT</span>`;
+                        statusBox.className = "bg-slate-900 p-4 rounded-lg text-center border-none text-[10px] font-black text-white uppercase tracking-widest shadow-lg";
                         this.render();
                     };
                 }
                 grid.appendChild(cell);
             }
         },
-        send: async (e) => {
+
+        async send(e) {
             e.preventDefault();
-            const pal = parseInt(document.getElementById('in-pal').value);
-            if(!State.sel && pal >= CFG.THRESHOLD) return alert("Hinweis: Ab 20 Paletten muss ein freier Termin gewählt werden!");
-            
+            if(!this.sel) return alert("Wähle einen Tag im Kalender.");
             const btn = document.getElementById('sub-btn');
             btn.disabled = true; btn.innerText = "BUCHUNG LÄUFT...";
-
             const payload = { 
-                liefer_datum: State.sel || new Date().toISOString().split('T')[0], 
+                liefer_datum: this.sel, 
                 firma: document.getElementById('in-company').value, 
                 fahrzeug_typ: document.getElementById('in-type').value,
                 be_nummer: document.getElementById('in-be').value, 
                 artikel_nr: document.getElementById('in-art').value, 
-                palettes: pal,
-                email: document.getElementById('in-email').value || null,
-                notify_me: document.getElementById('in-notify').checked,
+                palettes: parseInt(document.getElementById('in-pal').value),
                 status: 'angemeldet'
             };
-
             const { error } = await sb.from("avisierung").insert(payload);
-            if(!error) { 
-                alert("Erfolgreich avisiert! Die Bestätigung erfolgt nach Abwicklung per Mail."); 
-                location.reload(); 
-            } else { 
-                alert("Fehler: " + error.message); 
-                btn.disabled = false; btn.innerText = "ERNEUT VERSUCHEN";
-            }
+            if(!error) { alert("Termin erfolgreich gebucht."); location.reload(); } 
+            else { alert("Fehler: " + error.message); btn.disabled = false; btn.innerText = "TERMIN VERBINDLICH BUCHEN"; }
         }
     };
-
-    function palCheck() { State.render(); }
     const nav = (v) => { State.now.setMonth(State.now.getMonth() + v); State.render(); };
     State.init();
 </script>
