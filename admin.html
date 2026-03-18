@@ -17,12 +17,8 @@
             border-left: 6px solid #cbd5e1;
             transition: all 0.2s ease; 
         }
-        /* Status-Styles */
         .card-done { border-left-color: #22c55e !important; background: #f0fdf4; opacity: 0.8; }
         .heavy-load { border-left-color: #2563eb !important; }
-        
-        .status-badge { font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
-        
         @media print { .no-print { display: none !important; } }
         .pass-input {
             background-color: #fff; border: 2px solid #e2e8f0;
@@ -60,8 +56,7 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-6 py-10">
-            <div id="masterList" class="space-y-4">
-                </div>
+            <div id="masterList" class="space-y-4"></div>
         </main>
     </div>
 
@@ -80,37 +75,30 @@
             }
         }
 
-        // FUNKTION: LKW AUF ABGEWICKELT SETZEN (Triggered E-Mail)
         async function setCompleted(id) {
-            if(!confirm("LKW abwickeln? Die Spedition erhält sofort eine Bestätigung per E-Mail.")) return;
-            
+            if(!confirm("LKW abwickeln? E-Mail Bestätigung folgt.")) return;
             const btn = document.getElementById(`btn-${id}`);
-            const originalText = btn.innerText;
             btn.disabled = true;
-            btn.innerText = "Lade...";
+            btn.innerText = "...";
 
-            // WICHTIG: .select() angehängt. Nur so erfährst du, ob die Zeile wirklich überschrieben wurde!
-            const { data, error } = await _sb.from('avisierung')
-                .update({ status: 'abgewickelt' })
-                .eq('id', id)
-                .select();
+            const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
 
             if (error) {
-                alert("Datenbank-Fehler: " + error.message);
+                alert("Fehler: " + error.message);
                 btn.disabled = false;
-                btn.innerText = originalText;
-            } else if (!data || data.length === 0) {
-                alert("Blockiert: Du hast in Supabase keine Berechtigung (RLS) zum Ändern des Status.");
-                btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = "Abwickeln";
             } else {
                 refreshData();
             }
         }
 
         async function deleteEntry(id) {
-            if(confirm("Eintrag löschen?")) {
-                await _sb.from('avisierung').delete().eq('id', id);
+            if(!confirm("Eintrag wirklich löschen?")) return;
+            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+            
+            if (error) {
+                alert("Löschen fehlgeschlagen: " + error.message);
+            } else {
                 refreshData();
             }
         }
@@ -118,76 +106,53 @@
         async function refreshData() {
             const filter = document.getElementById('filterStatus').value;
             let query = _sb.from('avisierung').select('*').order('liefer_datum', { ascending: true });
-            
-            if(filter !== 'all') {
-                query = query.eq('status', filter);
-            }
+            if(filter !== 'all') query = query.eq('status', filter);
 
             const { data } = await query;
             const list = document.getElementById('masterList');
-            
-            // BESSER FÜR PERFORMANCE: Erst den HTML-Code sammeln, dann 1x einfügen
-            let htmlContent = '';
+            let html = '';
 
             data?.forEach(item => {
                 const isDone = item.status === 'abgewickelt';
                 const isHeavy = item.palettes >= 20;
                 const dateFmt = new Date(item.liefer_datum).toLocaleDateString('de-DE', {weekday: 'short', day: '2-digit', month: '2-digit'});
 
-                htmlContent += `
+                html += `
                     <div class="admin-card p-5 rounded-2xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${isDone ? 'card-done' : ''} ${isHeavy && !isDone ? 'heavy-load' : ''}">
-                        
                         <div class="flex items-center gap-6">
                             <div class="text-center min-w-[60px]">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${dateFmt.split(',')[0]}</span>
+                                <span class="block text-[10px] font-bold text-slate-400 uppercase">${dateFmt.split(',')[0]}</span>
                                 <span class="text-lg font-900">${dateFmt.split(',')[1]}</span>
                             </div>
-                            
                             <div>
                                 <div class="flex items-center gap-2">
                                     <h3 class="font-900 uppercase text-slate-800">${item.firma}</h3>
-                                    ${item.notify_me ? '<span class="text-[10px] text-blue-500" title="Benachrichtigung aktiv">📧</span>' : ''}
+                                    ${item.notify_me ? '<span class="text-[10px] text-blue-500">📧</span>' : ''}
                                 </div>
                                 <p class="text-[11px] text-slate-500 font-medium">BE: ${item.be_nummer} | Art: ${item.artikel_nr}</p>
                             </div>
                         </div>
-
                         <div class="flex items-center gap-8 px-4">
                             <div class="text-center">
                                 <span class="block text-[9px] font-bold text-slate-400 uppercase">Paletten</span>
                                 <span class="text-xl font-900">${item.palettes}</span>
                             </div>
-                            <div class="text-center">
-                                <span class="block text-[9px] font-bold text-slate-400 uppercase">Typ</span>
-                                <span class="text-[11px] font-bold text-slate-600 uppercase">${item.fahrzeug_typ || 'LKW'}</span>
-                            </div>
                         </div>
-
                         <div class="flex gap-2 no-print">
                             ${!isDone ? `
-                                <button id="btn-${item.id}" onclick="setCompleted(${item.id})" class="bg-blue-600 hover:bg-green-600 text-white text-[10px] font-black uppercase px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-100">
-                                    Abwickeln
-                                </button>
-                            ` : `
-                                <span class="bg-green-100 text-green-700 text-[10px] font-black uppercase px-4 py-3 rounded-xl flex items-center gap-2">
-                                    ✓ Abgewickelt
-                                </span>
-                            `}
-                            
-                            <button onclick="deleteEntry(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition" title="Löschen">
+                                <button id="btn-${item.id}" onclick="setCompleted(${item.id})" class="bg-blue-600 hover:bg-green-600 text-white text-[10px] font-black uppercase px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-100">Abwickeln</button>
+                            ` : `<span class="bg-green-100 text-green-700 text-[10px] font-black uppercase px-4 py-3 rounded-xl flex items-center gap-2">✓ Abgewickelt</span>`}
+                            <button onclick="deleteEntry(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-            
-            // Jetzt wird die Liste komplett auf einmal geupdatet
-            list.innerHTML = htmlContent;
+            list.innerHTML = html;
         }
 
         document.getElementById('adminPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPass(); });
-        setInterval(refreshData, 15000); // Auto-Refresh alle 15 Sek.
+        setInterval(refreshData, 15000);
     </script>
 </body>
 </html>
