@@ -25,8 +25,8 @@
         .status-locked { border-bottom: 5px solid #3b82f6; background: #f0f7ff; }
         .disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); background: #f1f5f9; }
 
-        input, select { border: 1px solid #e2e8f0 !important; padding: 12px !important; border-radius: 8px !important; width: 100%; font-size: 14px; }
-        input:focus { border-color: #2563eb !important; outline: none; ring: 2px rgba(37, 99, 235, 0.1); }
+        input, select { border: 1px solid #e2e8f0 !important; padding: 12px !important; border-radius: 8px !important; width: 100%; font-size: 14px; background: white; }
+        input:focus, select:focus { border-color: #2563eb !important; outline: none; ring: 2px rgba(37, 99, 235, 0.1); }
         label { font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.1em; }
         
         .status-tag { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px; }
@@ -40,8 +40,8 @@
                 Darula <span class="text-blue-600 not-italic">Transporte</span>
             </h1>
             <div class="flex gap-8">
-                <a href="index.html" class="nav-link hover:text-blue-600">Home</a>
-                <a href="avisierung.html" class="nav-link text-blue-600">Avisierung</a>
+                <a href="#" class="nav-link hover:text-blue-600">Home</a>
+                <a href="#" class="nav-link text-blue-600">Avisierung</a>
             </div>
         </div>
     </nav>
@@ -64,10 +64,10 @@
                 <div class="grid grid-cols-7 gap-3" id="grid"></div>
 
                 <div class="mt-10 p-6 bg-white border border-slate-200 rounded-xl flex flex-wrap justify-center gap-8">
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Kapazität frei</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-green-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Frei</span></div>
                     <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-orange-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Begrenzt</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Slots belegt</span></div>
-                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Exklusiv-Reserviert</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-red-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Voll (Nur Stückgut erlaubt)</span></div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-blue-500"></span><span class="text-[10px] font-black uppercase text-slate-500">Reserviert</span></div>
                 </div>
             </div>
 
@@ -79,12 +79,17 @@
                         <input type="hidden" id="in-date">
                         
                         <div>
-                            <label>Spedition / Lieferant</label>
-                            <input type="text" id="in-company" required placeholder="Firma" oninput="State.checkReka(this.value)">
+                            <label>Lieferant auswählen</label>
+                            <select id="in-company" required onchange="State.handleSupplierChange(this.value)">
+                                <option value="">-- Bitte wählen --</option>
+                                <option value="Reka">Reka</option>
+                                <option value="Monowell">Monowell</option>
+                                <option value="Spedition / Sonstige">Spedition / Sonstige</option>
+                            </select>
                         </div>
 
                         <div id="reka-notice" class="hidden bg-yellow-400 text-black p-4 rounded-lg text-[11px] font-900 uppercase italic leading-tight shadow-md">
-                            ⚠️ WICHTIG: Anlieferung bis 13:00 Uhr. Spätere Ankunft führt zur Entladungsverweigerung.
+                            ⚠️ WICHTIG: Bitte bis spätestens 13:00 Uhr anliefern. Spätere Ankunft führt zur Entladungsverweigerung.
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -94,10 +99,10 @@
                             </div>
                             <div>
                                 <label>Anlieferart</label>
-                                <select id="in-type">
-                                    <option value="Stückgut (LTL)">Stückgut</option>
-                                    <option value="Teilladung (LTL)">Teilladung</option>
-                                    <option value="Komplettladung (FTL)">Komplettladung</option>
+                                <select id="in-type" onchange="State.render()">
+                                    <option value="Stückgut">Stückgut</option>
+                                    <option value="Teillieferung">Teillieferung</option>
+                                    <option value="Komplettlieferung">Komplettlieferung</option>
                                 </select>
                             </div>
                         </div>
@@ -120,28 +125,29 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t py-6 text-center">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">&copy; 2026 Darula Transporte</p>
-    </footer>
-
 <script>
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLevel.iat:1772136252,exp:2087712252}.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        TRENNUNG_LE: 10,
-        MAX_LKW: 3
+        TRENNUNG_LKW: 10, // Ab wann es als LKW zählt für die Slot-Berechnung
+        MONOWELL_LIMIT: 100, // Monowell sperrt Tag ab 100 LE
+        MAX_LKW_SLOTS: 3
     };
     const sb = supabase.createClient(CFG.U, CFG.K);
 
     const State = {
         now: new Date(), sel: null, stats: {},
 
-        async init() { await this.sync(); document.getElementById('avisForm').onsubmit = (e) => this.send(e); },
+        async init() { 
+            await this.sync(); 
+            document.getElementById('avisForm').onsubmit = (e) => this.send(e); 
+        },
 
-        checkReka(val) {
+        handleSupplierChange(val) {
             const notice = document.getElementById('reka-notice');
-            if(val.toLowerCase().includes('reka')) { notice.classList.remove('hidden'); } 
+            if(val === 'Reka') { notice.classList.remove('hidden'); } 
             else { notice.classList.add('hidden'); }
+            this.render();
         },
 
         async sync() {
@@ -149,11 +155,20 @@
             this.stats = {};
             data?.forEach(r => {
                 const d = r.liefer_datum;
-                if(!this.stats[d]) this.stats[d] = { lkw: 0, isEx: false };
+                if(!this.stats[d]) this.stats[d] = { lkwCount: 0, isReserved: false };
+                
                 const f = (r.firma || "").toLowerCase();
-                const isLKW = r.palettes > CFG.TRENNUNG_LE;
-                if(f.includes("monowell") && isLKW) this.stats[d].isEx = true;
-                if(isLKW) this.stats[d].lkw += 1;
+                const pal = parseInt(r.palettes) || 0;
+                
+                // Monowell Logik: Sperrt den Tag für andere (außer Stückgut), wenn > 100 LE
+                if(f.includes("monowell") && pal >= CFG.MONOWELL_LIMIT) {
+                    this.stats[d].isReserved = true;
+                }
+                
+                // Zähle LKW Slots (Alles was kein Stückgut ist oder über Trennung liegt)
+                if(pal > CFG.TRENNUNG_LKW) {
+                    this.stats[d].lkwCount += 1;
+                }
             });
             this.render();
         },
@@ -161,8 +176,9 @@
         render() {
             const grid = document.getElementById('grid'); grid.innerHTML = '';
             const y = this.now.getFullYear(), m = this.now.getMonth();
-            const inputLE = parseInt(document.getElementById('in-pal').value) || 0;
-            const isImmune = inputLE <= CFG.TRENNUNG_LE;
+            
+            const selectedType = document.getElementById('in-type').value;
+            const isStueckgut = selectedType === "Stückgut";
 
             document.getElementById('month-label').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(this.now);
             const first = (new Date(y, m, 1).getDay() + 6) % 7;
@@ -173,15 +189,19 @@
 
             for(let d=1; d<=total; d++) {
                 const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const day = this.stats[ds] || { lkw: 0, isEx: false };
-                const isPast = ds < todayStr || [0,6].includes(new Date(y,m,d).getDay());
+                const day = this.stats[ds] || { lkwCount: 0, isReserved: false };
+                const dateObj = new Date(y, m, d);
+                const isWeekend = [0,6].includes(dateObj.getDay());
+                const isPast = ds < todayStr || isWeekend;
                 
                 let sClass = "status-free", sText = "FREI";
-                if(day.isEx) { sClass = "status-locked"; sText = "RESERVIERT"; }
-                else if(day.lkw >= CFG.MAX_LKW) { sClass = "status-full"; sText = "VOLL"; }
-                else if(day.lkw >= 2) { sClass = "status-warn"; sText = "BEGRENZT"; }
+                if(day.isReserved) { sClass = "status-locked"; sText = "RESERVIERT"; }
+                else if(day.lkwCount >= CFG.MAX_LKW_SLOTS) { sClass = "status-full"; sText = "VOLL"; }
+                else if(day.lkwCount >= 2) { sClass = "status-warn"; sText = "BEGRENZT"; }
 
-                const canClick = !isPast && (isImmune || (!day.isEx && day.lkw < CFG.MAX_LKW));
+                // LOGIK: Stückgut darf IMMER buchen (außer Vergangenheit/Wochenende)
+                // Andere dürfen nur buchen, wenn nicht VOLL und nicht RESERVIERT
+                const canClick = !isPast && (isStueckgut || (day.lkwCount < CFG.MAX_LKW_SLOTS && !day.isReserved));
 
                 const cell = document.createElement('div');
                 cell.className = `day-cell ${sClass} ${this.sel === ds ? 'selected' : ''} ${!canClick ? 'disabled' : 'cursor-pointer'}`;
@@ -190,8 +210,8 @@
                         <span class="text-lg font-900 text-slate-900 italic">${d}</span>
                         <span class="text-[7px] font-black uppercase text-slate-400">${isPast ? '' : sText}</span>
                     </div>
-                    <div class="text-[9px] font-bold ${day.lkw >= CFG.MAX_LKW ? 'text-red-500' : 'text-slate-400'}">
-                        ${isPast ? 'SPERRE' : day.lkw + '/' + CFG.MAX_LKW + ' SLOTS'}
+                    <div class="text-[9px] font-bold ${day.lkwCount >= CFG.MAX_LKW_SLOTS ? 'text-red-500' : 'text-slate-400'}">
+                        ${isPast ? (isWeekend ? 'WOCHENENDE' : 'SPERRE') : day.lkwCount + '/' + CFG.MAX_LKW_SLOTS + ' LKW SLOTS'}
                     </div>
                 `;
 
@@ -200,7 +220,7 @@
                         this.sel = ds;
                         document.getElementById('in-date').value = ds;
                         const statusBox = document.getElementById('selection-status');
-                        statusBox.innerHTML = `${d}.${m+1}. | <span class="text-blue-600">FREIGABE ERTEILT</span>`;
+                        statusBox.innerHTML = `${d}.${m+1}. | <span class="text-blue-400">TERMIN WÄHLBAR</span>`;
                         statusBox.className = "bg-slate-900 p-4 rounded-lg text-center border-none text-[10px] font-black text-white uppercase tracking-widest shadow-lg";
                         this.render();
                     };
@@ -211,9 +231,11 @@
 
         async send(e) {
             e.preventDefault();
-            if(!this.sel) return alert("Wähle einen Tag im Kalender.");
+            if(!this.sel) return alert("Bitte wähle zuerst einen Tag im Kalender aus.");
+            
             const btn = document.getElementById('sub-btn');
             btn.disabled = true; btn.innerText = "BUCHUNG LÄUFT...";
+
             const payload = { 
                 liefer_datum: this.sel, 
                 firma: document.getElementById('in-company').value, 
@@ -223,11 +245,18 @@
                 palettes: parseInt(document.getElementById('in-pal').value),
                 status: 'angemeldet'
             };
+
             const { error } = await sb.from("avisierung").insert(payload);
-            if(!error) { alert("Termin erfolgreich gebucht."); location.reload(); } 
-            else { alert("Fehler: " + error.message); btn.disabled = false; btn.innerText = "TERMIN VERBINDLICH BUCHEN"; }
+            if(!error) { 
+                alert("Termin erfolgreich für " + payload.firma + " gebucht."); 
+                location.reload(); 
+            } else { 
+                alert("Fehler: " + error.message); 
+                btn.disabled = false; btn.innerText = "TERMIN VERBINDLICH BUCHEN"; 
+            }
         }
     };
+
     const nav = (v) => { State.now.setMonth(State.now.getMonth() + v); State.render(); };
     State.init();
 </script>
