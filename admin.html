@@ -3,156 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Darula Admin | Terminal Steuerung</title>
-    
+    <title>Darula Admin | Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .admin-card { 
-            background: #ffffff; 
-            border: 1px solid #e2e8f0; 
-            border-left: 6px solid #cbd5e1;
-            transition: all 0.2s ease; 
-        }
-        .card-done { border-left-color: #22c55e !important; background: #f0fdf4; opacity: 0.8; }
-        .heavy-load { border-left-color: #2563eb !important; }
-        @media print { .no-print { display: none !important; } }
-        .pass-input {
-            background-color: #fff; border: 2px solid #e2e8f0;
-            padding: 20px; width: 100%; text-align: center;
-            font-size: 24px; letter-spacing: 0.4em; outline: none; border-radius: 12px;
-        }
+        body { font-family: sans-serif; background-color: #f1f5f9; }
+        .admin-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; }
+        .card-done { border-left-color: #22c55e; opacity: 0.6; }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-    <div id="loginOverlay" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-6">
-        <div class="max-w-md w-full text-center bg-white p-10 rounded-3xl shadow-2xl">
-            <h1 class="text-3xl font-900 text-slate-900 mb-6 uppercase italic">Admin <span class="text-blue-600">Login</span></h1>
-            <input type="password" id="adminPass" class="pass-input mb-6" placeholder="••••">
-            <button onclick="checkPass()" class="w-full bg-slate-900 text-white py-5 rounded-xl font-800 uppercase text-xs tracking-[0.2em]">Einloggen</button>
+    <div id="loginOverlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-2xl shadow-xl text-center">
+            <h2 class="text-xl font-bold mb-4">ADMIN LOGIN</h2>
+            <input type="password" id="pass" class="border-2 p-3 rounded-lg mb-4 w-full text-center" placeholder="Passwort">
+            <button onclick="check()" class="bg-blue-600 text-white w-full py-3 rounded-lg font-bold">STARTEN</button>
         </div>
     </div>
 
-    <div id="adminContent" class="hidden">
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black italic text-lg">D</div>
-                    <h1 class="text-sm font-900 uppercase tracking-tighter">Terminal <span class="text-blue-600">Management</span></h1>
-                </div>
-                <div class="flex gap-2">
-                    <select id="filterStatus" onchange="refreshData()" class="text-[10px] font-bold uppercase border-none bg-slate-100 rounded-lg px-3">
-                        <option value="angemeldet">Offene LKW</option>
-                        <option value="abgewickelt">Abgewickelt (Archiv)</option>
-                        <option value="all">Alle anzeigen</option>
-                    </select>
-                    <button onclick="refreshData()" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase">Refresh</button>
-                </div>
-            </div>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-6 py-10">
-            <div id="masterList" class="space-y-4"></div>
-        </main>
+    <div id="content" class="hidden p-4 max-w-4xl mx-auto">
+        <div class="flex justify-between mb-6">
+            <h1 class="font-bold">DARULA TERMINAL</h1>
+            <button onclick="load()" class="bg-slate-800 text-white px-4 py-1 rounded text-sm">REFRESH</button>
+        </div>
+        <div id="list">Lade Daten...</div>
     </div>
 
     <script>
-        const CFG = {
-            U: "https://navhxyadbifllpopumfz.supabase.co",
-            K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
-        };
-        const _sb = supabase.createClient(CFG.U, CFG.K);
+        const _sb = supabase.createClient(
+            "https://navhxyadbifllpopumfz.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
+        );
 
-        function checkPass() {
-            if(document.getElementById('adminPass').value === "darula") {
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('adminContent').classList.remove('hidden');
-                refreshData();
-            }
+        function check() {
+            if(document.getElementById('pass').value === "darula") {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('content').classList.remove('hidden');
+                load();
+            } else { alert("Falsch!"); }
         }
 
-        async function setCompleted(id) {
-            if(!confirm("LKW abwickeln? E-Mail Bestätigung folgt.")) return;
-            const btn = document.getElementById(`btn-${id}`);
-            btn.disabled = true;
-            btn.innerText = "...";
-
-            const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
-
-            if (error) {
-                alert("Fehler: " + error.message);
-                btn.disabled = false;
-                btn.innerText = "Abwickeln";
-            } else {
-                refreshData();
-            }
-        }
-
-        async function deleteEntry(id) {
-            if(!confirm("Eintrag wirklich löschen?")) return;
-            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+        async function load() {
+            const { data, error } = await _sb.from('avisierung').select('*').order('id', {ascending: false});
+            if(error) { console.error(error); return; }
             
-            if (error) {
-                alert("Löschen fehlgeschlagen: " + error.message);
-            } else {
-                refreshData();
-            }
-        }
-
-        async function refreshData() {
-            const filter = document.getElementById('filterStatus').value;
-            let query = _sb.from('avisierung').select('*').order('liefer_datum', { ascending: true });
-            if(filter !== 'all') query = query.eq('status', filter);
-
-            const { data } = await query;
-            const list = document.getElementById('masterList');
             let html = '';
-
-            data?.forEach(item => {
+            data.forEach(item => {
                 const isDone = item.status === 'abgewickelt';
-                const isHeavy = item.palettes >= 20;
-                const dateFmt = new Date(item.liefer_datum).toLocaleDateString('de-DE', {weekday: 'short', day: '2-digit', month: '2-digit'});
-
                 html += `
-                    <div class="admin-card p-5 rounded-2xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${isDone ? 'card-done' : ''} ${isHeavy && !isDone ? 'heavy-load' : ''}">
-                        <div class="flex items-center gap-6">
-                            <div class="text-center min-w-[60px]">
-                                <span class="block text-[10px] font-bold text-slate-400 uppercase">${dateFmt.split(',')[0]}</span>
-                                <span class="text-lg font-900">${dateFmt.split(',')[1]}</span>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h3 class="font-900 uppercase text-slate-800">${item.firma}</h3>
-                                    ${item.notify_me ? '<span class="text-[10px] text-blue-500">📧</span>' : ''}
-                                </div>
-                                <p class="text-[11px] text-slate-500 font-medium">BE: ${item.be_nummer} | Art: ${item.artikel_nr}</p>
-                            </div>
+                    <div class="admin-card ${isDone ? 'card-done' : ''}">
+                        <div>
+                            <div class="font-bold">${item.firma}</div>
+                            <div class="text-xs text-slate-500">BE: ${item.be_nummer} | Status: ${item.status}</div>
                         </div>
-                        <div class="flex items-center gap-8 px-4">
-                            <div class="text-center">
-                                <span class="block text-[9px] font-bold text-slate-400 uppercase">Paletten</span>
-                                <span class="text-xl font-900">${item.palettes}</span>
-                            </div>
+                        <div class="flex gap-2">
+                            ${!isDone ? `<button onclick="done(${item.id})" class="bg-green-500 text-white px-3 py-2 rounded text-xs font-bold">ABWICKELN</button>` : '<span class="text-green-600 font-bold">ERLEDIGT</span>'}
+                            <button onclick="del(${item.id})" class="bg-red-100 text-red-600 px-3 py-2 rounded text-xs">LÖSCHEN</button>
                         </div>
-                        <div class="flex gap-2 no-print">
-                            ${!isDone ? `
-                                <button id="btn-${item.id}" onclick="setCompleted(${item.id})" class="bg-blue-600 hover:bg-green-600 text-white text-[10px] font-black uppercase px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-100">Abwickeln</button>
-                            ` : `<span class="bg-green-100 text-green-700 text-[10px] font-black uppercase px-4 py-3 rounded-xl flex items-center gap-2">✓ Abgewickelt</span>`}
-                            <button onclick="deleteEntry(${item.id})" class="p-3 text-slate-300 hover:text-red-500 transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                    </div>`;
+                    </div>
+                `;
             });
-            list.innerHTML = html;
+            document.getElementById('list').innerHTML = html;
         }
 
-        document.getElementById('adminPass').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPass(); });
-        setInterval(refreshData, 15000);
+        async function done(id) {
+            const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
+            if(error) alert("Fehler: " + error.message);
+            load();
+        }
+
+        async function del(id) {
+            if(!confirm("Löschen?")) return;
+            const { error } = await _sb.from('avisierung').delete().eq('id', id);
+            if(error) alert("Fehler: " + error.message);
+            load();
+        }
     </script>
 </body>
 </html>
