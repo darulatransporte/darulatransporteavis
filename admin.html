@@ -5,62 +5,67 @@
     <title>Darula Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f1f5f9; padding: 20px; }
+        .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #3b82f6; }
+        .done { border-left-color: #22c55e; opacity: 0.7; }
+    </style>
 </head>
-<body class="bg-slate-100 p-8">
-    <div id="login" class="max-w-sm mx-auto bg-white p-6 rounded-xl shadow-xl mt-20">
-        <input type="password" id="pw" class="w-full border p-2 mb-4 rounded" placeholder="Passwort">
-        <button onclick="start()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+<body>
+    <div id="login" class="max-w-sm mx-auto mt-20 bg-white p-6 rounded shadow">
+        <input type="password" id="pw" class="w-full border p-2 mb-4" placeholder="Passwort">
+        <button onclick="login()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
     </div>
 
     <div id="main" class="hidden max-w-4xl mx-auto">
-        <h1 class="text-2xl font-bold mb-6 text-center italic">DARULA ADMIN TERMINAL</h1>
-        <div id="liste" class="space-y-4"></div>
+        <div class="flex justify-between mb-4">
+            <h1 class="font-bold text-xl uppercase">Terminal Steuerung</h1>
+            <button onclick="load()" class="bg-gray-800 text-white px-4 py-1 rounded text-sm">Refresh</button>
+        </div>
+        <div id="liste"></div>
     </div>
 
     <script>
         const _sb = supabase.createClient("https://navhxyadbifllpopumfz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY");
 
-        function start() {
+        function login() {
             if(document.getElementById('pw').value === "darula") {
-                document.getElementById('login').classList.add('hidden');
+                document.getElementById('login').style.display = 'none';
                 document.getElementById('main').classList.remove('hidden');
                 load();
             }
         }
 
         async function load() {
-            const { data, error } = await _sb.from('avisierung').select('*').order('id', {ascending: false});
-            if(error) return alert("Ladefehler: " + error.message);
-            
-            let html = '';
+            const { data } = await _sb.from('avisierung').select('*').order('id', {ascending: false});
+            const container = document.getElementById('liste');
+            container.innerHTML = '';
             data.forEach(item => {
-                const done = item.status === 'abgewickelt';
-                html += `
-                    <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center border-l-8 ${done ? 'border-green-500' : 'border-blue-500'}">
+                const isDone = item.status === 'abgewickelt';
+                container.innerHTML += `
+                    <div class="card ${isDone ? 'done' : ''}">
                         <div>
-                            <p class="font-bold uppercase">${item.firma}</p>
-                            <p class="text-xs text-gray-500">BE: ${item.be_nummer} | Status: ${item.status}</p>
+                            <div class="font-bold">${item.firma}</div>
+                            <div class="text-xs text-gray-500">BE: ${item.be_nummer} | Status: ${item.status}</div>
                         </div>
                         <div class="flex gap-2">
-                            ${!done ? `<button onclick="updateStatus(${item.id})" class="bg-green-500 text-white px-3 py-1 rounded text-xs">ABWICKELN</button>` : ''}
-                            <button onclick="removeItem(${item.id})" class="bg-red-500 text-white px-3 py-1 rounded text-xs">LÖSCHEN</button>
+                            ${!isDone ? `<button onclick="done(${item.id})" class="bg-blue-500 text-white px-3 py-1 rounded text-xs">Abwickeln</button>` : '<span class="text-green-600 font-bold">✓</span>'}
+                            <button onclick="del(${item.id})" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Löschen</button>
                         </div>
                     </div>`;
             });
-            document.getElementById('liste').innerHTML = html;
         }
 
-        async function updateStatus(id) {
-            const { error } = await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id).select();
-            if(error) alert("Policy Fehler (Update): " + error.message);
+        async function done(id) {
+            await _sb.from('avisierung').update({ status: 'abgewickelt' }).eq('id', id);
             load();
         }
 
-        async function removeItem(id) {
-            if(!confirm("Löschen?")) return;
-            const { error } = await _sb.from('avisierung').delete().eq('id', id);
-            if(error) alert("Policy Fehler (Delete): " + error.message);
-            load();
+        async function del(id) {
+            if(confirm("Löschen?")) {
+                await _sb.from('avisierung').delete().eq('id', id);
+                load();
+            }
         }
     </script>
 </body>
