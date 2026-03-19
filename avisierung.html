@@ -3,149 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Terminal</title>
+    <title>Darula Transporte | Avisierung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        /* --- WEISSES DESIGN ANPASSUNGEN --- */
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f0f2f5; /* Heller Hintergrund */
-            color: #333; /* Dunkler Text für Kontrast */
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+        .day-card { 
+            background: white; border-radius: 20px; padding: 18px; min-height: 120px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
         }
-        .nav-bar { 
-            background-color: #ffffff; /* Weiße Navigationsleiste */
-            border-bottom: 1px solid #e0e0e0; /* Dezente Trennlinie */
-        }
-        .text-primary { color: #2563eb; } /* Blaue Akzentfarbe beibehalten */
-        .hub-card { 
-            background: #ffffff; /* Weiße Karte */
-            border: 1px solid #e0e0e0; 
-            border-bottom: 6px solid #2563eb; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Leichter Schatten */
-        }
-        .day-cell { 
-            background: #ffffff; /* Weiße Tageszelle */
-            border: 1px solid #e0e0e0; 
-            border-radius: 12px;
-            transition: all 0.2s ease; 
-            min-height: 110px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            padding: 12px;
-        }
-        .selected { 
-            ring: 3px #2563eb; 
-            border-color: #2563eb !important; 
-            background: #e0f2fe !important; /* Sehr hellblau bei Auswahl */
-        }
-        .status-free { border-bottom: 5px solid #22c55e; } /* Grün */
-        .status-full { border-bottom: 5px solid #ef4444; } /* Rot */
-        .status-reserved { border-bottom: 5px solid #3b82f6; } /* Blau */
-        .is-past { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
-        .is-locked { 
-            opacity: 0.6; 
-            cursor: not-allowed; 
-            background: #f8f8f8 !important; /* Helleres Grau für gesperrt */
-            border-bottom: 5px solid #a0a0a0; /* Dunklerer grauer Balken */
-        }
-        input, select { 
-            background: #f9fafb !important; /* Sehr helles Grau für Inputs */
-            color: #333 !important; 
-            border: 1px solid #d1d5db !important; /* Hellerer Rand */
-            padding: 12px !important; 
-            border-radius: 8px !important; 
-            width: 100%; 
-        }
-        label { 
-            font-size: 10px; 
-            font-weight: 900; 
-            color: #6b7280; /* Dunkleres Grau für Labels */
-            text-transform: uppercase; 
-            margin-bottom: 4px; 
-            display: block; 
-        }
-        .header-text { color: #333; } /* Dunkler Text für Überschriften */
-        .button-nav { 
-            background-color: #e5e7eb; /* Helle Buttons für Navigation */
-            border: 1px solid #d1d5db; 
-            color: #333; /* Dunkler Text für Nav-Buttons */
-            hover:bg-gray-200;
-        }
-        #reka-notice { 
-            background-color: #fdbd4d; /* Orange beibehalten, aber heller */
-            color: #333; /* Dunkler Text für Warnung */
-        }
-        #selection-status { 
-            background-color: #e2e8f0; /* Hellblau-Grau für Status */
-            color: #64748b; /* Dunklerer Text für Status */
-        }
-        /* --- Ende WEISSES DESIGN ANPASSUNGEN --- */
+        .day-card:not(.disabled):hover { transform: translateY(-6px); border-color: #2563eb; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .day-card.selected { border-color: #2563eb; background: #eff6ff; ring: 3px #2563eb; }
+        .day-card.disabled { opacity: 0.35; cursor: not-allowed !important; background: #f8fafc; filter: grayscale(1); }
+        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fee2e2; background-color: #fff1f1; }
+        .progress-bar { height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; transition: width 0.8s ease-in-out; }
     </style>
 </head>
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen pb-12 text-slate-800">
 
-    <nav class="nav-bar p-6 mb-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-[900] tracking-tighter uppercase italic header-text">Darula <span class="text-primary not-italic">Transporte</span></h1>
+    <nav class="bg-white border-b border-slate-200 mb-10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-900 tracking-tighter uppercase italic">Darula <span class="text-blue-600">Transporte</span></a>
+            <div id="toast" class="hidden fixed top-8 right-8 bg-slate-900 text-white px-8 py-4 rounded-2xl text-xs font-900 uppercase tracking-widest shadow-2xl z-[100]"></div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 pb-12">
-        <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg font-[900] text-xs uppercase italic mb-8 border-l-8 border-yellow-500 shadow-lg">
-            ⚠️ Stückgut-Regelung: Stückgut braucht KEINE feste Slot-Reservierung und darf auch an vollen Tagen anliefern.
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <main class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
             <div class="lg:col-span-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 id="month-label" class="text-3xl font-[900] uppercase italic header-text tracking-tighter">Ladeplan</h2>
-                    <div class="flex gap-2">
-                        <button onclick="nav(-1)" class="w-10 h-10 button-nav rounded-lg hover:bg-gray-200">←</button>
-                        <button onclick="nav(1)" class="w-10 h-10 button-nav rounded-lg hover:bg-gray-200">→</button>
+                <div class="flex justify-between items-end mb-10">
+                    <div>
+                        <h2 id="monthLabel" class="text-5xl font-900 uppercase italic tracking-tighter text-slate-900">Ladeplan</h2>
+                        <p class="text-[10px] font-900 text-slate-400 uppercase tracking-[0.3em] mt-2 italic">Anlieferungstag für Rampe 7 wählen</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="changeMonth(-1)" class="p-4 bg-white border border-slate-200 rounded-2xl hover:bg-blue-600 hover:text-white transition-all font-black">←</button>
+                        <button onclick="changeMonth(1)" class="p-4 bg-white border border-slate-200 rounded-2xl hover:bg-blue-600 hover:text-white transition-all font-black">→</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-7 gap-3" id="grid"></div>
+
+                <div class="calendar-grid mb-10" id="calendarGrid"></div>
+
+                <div class="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm space-y-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-emerald-500"></div> Frei (LKW)</div>
+                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-red-500"></div> LKW Belegt</div>
+                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-blue-600"></div> Reserviert</div>
+                        <div class="text-[11px] font-bold text-slate-400 italic">📦 Stückgut immer möglich</div>
+                    </div>
+                    
+                    <div class="pt-6 border-t border-slate-100">
+                        <h4 class="text-[11px] font-900 uppercase tracking-[0.2em] mb-4 text-blue-600 italic">So buchen Sie richtig:</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] font-bold text-slate-500 uppercase tracking-wider leading-relaxed">
+                            <div class="flex gap-4">
+                                <span class="text-blue-600 font-900 text-lg">01</span>
+                                <p>Geben Sie zuerst die <span class="text-slate-900">Palettenzahl & Art</span> im Formular rechts ein.</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <span class="text-blue-600 font-900 text-lg">02</span>
+                                <p>Wählen Sie im Kalender einen <span class="text-slate-900">verfügbaren Tag</span> (Grün) aus.</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <span class="text-blue-600 font-900 text-lg">03</span>
+                                <p>Füllen Sie alle Felder aus und klicken Sie auf <span class="text-slate-900">"Avisierung jetzt Senden"</span>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="lg:col-span-4">
-                <div class="hub-card p-8 sticky top-8">
-                    <h3 class="text-xl font-[900] uppercase italic mb-6 border-b border-gray-200 pb-4 header-text">Anmeldung</h3>
-                    <form id="avisForm" class="space-y-4">
-                        <input type="hidden" id="in-date">
+                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-2xl sticky top-28">
+                    <h3 class="text-3xl font-900 uppercase italic tracking-tighter mb-8 text-slate-900 border-b pb-4">Avisierung</h3>
+                    <form id="avisForm" class="space-y-6">
+                        <input type="hidden" id="fDate">
+                        
                         <div>
-                            <label>Spedition / Lieferant</label>
-                            <input type="text" id="in-company" required placeholder="Name" oninput="State.checkReka(this.value)">
+                            <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Spedition / Firma</label>
+                            <input type="text" id="fCompany" required placeholder="Name der Firma" class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold transition-all outline-none italic">
                         </div>
-                        <div id="reka-notice" class="hidden p-3 rounded font-[800] text-[10px] uppercase shadow-inner">
-                            ⚠️ ACHTUNG: Anlieferung zwingend vor 13:00 Uhr!
-                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label>Einheiten (LE)</label>
-                                <input type="number" id="in-pal" required min="1" value="1" oninput="State.render()">
+                                <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Anzahl Paletten</label>
+                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold transition-all outline-none italic">
                             </div>
                             <div>
-                                <label>Lieferart</label>
-                                <select id="in-type" onchange="State.render()">
-                                    <option value="Stückgut">Stückgut (LTL)</option>
-                                    <option value="Teil">Teillieferung</option>
-                                    <option value="Komplett">Komplettladung (FTL)</option>
+                                <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Fahrzeugtyp</label>
+                                <select id="fType" required class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none appearance-none cursor-pointer italic text-slate-500">
+                                    <option value="" disabled selected>Art wählen...</option>
+                                    <option value="Stückgut" class="text-slate-800">Stückgut</option>
+                                    <option value="Teillieferung" class="text-slate-800">Teillieferung</option>
+                                    <option value="Komplettlieferung" class="text-slate-800">Komplettlieferung</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label>BE-Nummer</label><input type="text" id="in-be" required placeholder="BE-XXXXXX"></div>
-                            <div><label>Artikelnummer</label><input type="text" id="in-art" required placeholder="12345-AB"></div>
+                            <input type="text" id="fBe" placeholder="BE-Nummer" required class="p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none italic">
+                            <input type="text" id="fArt" placeholder="Art-Nr." required class="p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none italic">
                         </div>
-                        <div id="selection-status" class="p-4 rounded text-center text-[10px] font-black uppercase italic">
-                            Tag im Plan wählen
+
+                        <div id="statusBox" class="p-5 rounded-2xl text-center text-[11px] font-900 uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 italic">
+                            Wählen Sie einen Tag
                         </div>
-                        <button type="submit" id="sub-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-lg font-[900] uppercase text-xs tracking-widest transition-all">
-                            Termin buchen
+
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-6 rounded-[1.5rem] font-900 uppercase text-xs tracking-[0.3em] transition-all shadow-xl active:scale-95 italic">
+                            Avisierung jetzt Senden
                         </button>
                     </form>
                 </div>
@@ -156,142 +125,158 @@
 <script>
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
-        // Dein korrigierter Key:
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        LIMIT: 3
+        MAX_LKW: 3, 
+        LKW_LIMIT_PAL: 11 
     };
-    
+
     const sb = supabase.createClient(CFG.U, CFG.K);
+    let currentViewDate = new Date();
+    let selectedDateStr = null;
+    let stats = {};
 
-    const State = {
-        now: new Date(), 
-        sel: null, 
-        stats: {},
+    async function init() {
+        await loadData();
+        renderCalendar();
+        
+        document.getElementById('fType').addEventListener('change', (e) => {
+            e.target.classList.remove('text-slate-500');
+            e.target.classList.add('text-slate-800');
+            renderCalendar();
+        });
+        document.getElementById('fPalettes').addEventListener('input', renderCalendar);
+    }
 
-        async init() { 
-            await this.sync(); 
-            document.getElementById('avisForm').onsubmit = (e) => this.send(e); 
-        },
+    async function loadData() {
+        const { data } = await sb.from('avisierung').select('liefer_datum, palettes, firma, fahrzeug_typ');
+        stats = {};
+        data?.forEach(r => {
+            const d = r.liefer_datum;
+            if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
+            const isLkwSlot = parseInt(r.palettes) >= CFG.LKW_LIMIT_PAL || r.fahrzeug_typ !== 'Stückgut';
+            if(isLkwSlot) stats[d].lkw_count++;
+            if(r.firma?.toLowerCase().includes('monowell')) stats[d].is_blocked = true;
+        });
+    }
 
-        checkReka(v) {
-            const n = document.getElementById('reka-notice');
-            v.toLowerCase().includes('reka') ? n.classList.remove('hidden') : n.classList.add('hidden');
-        },
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+        const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
+        document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentViewDate);
 
-        async sync() {
-            try {
-                const { data, error } = await sb.from("avisierung").select("liefer_datum, palettes, firma");
-                if(error) throw error;
-                
-                this.stats = {};
-                data?.forEach(r => {
-                    const d = r.liefer_datum;
-                    if(!this.stats[d]) this.stats[d] = { slots: 0, monowell: false };
-                    
-                    if(parseInt(r.palettes) > 10) this.stats[d].slots++;
-                    
-                    if(r.firma?.toLowerCase().includes('monowell') && parseInt(r.palettes) > 50) {
-                        this.stats[d].monowell = true;
-                    }
-                });
-                this.render();
-            } catch (e) { console.error("Sync Error:", e); }
-        },
+        const firstDayIdx = (new Date(y, m, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
+        const todayStr = new Date().toISOString().split('T')[0];
 
-        render() {
-            const grid = document.getElementById('grid'); 
-            grid.innerHTML = '';
-            const y = this.now.getFullYear(), m = this.now.getMonth();
-            const selectedType = document.getElementById('in-type').value;
+        const currentPalettes = parseInt(document.getElementById('fPalettes').value) || 0;
+        const currentType = document.getElementById('fType').value;
+        const userInputIsLkw = currentType !== "" && (currentPalettes >= CFG.LKW_LIMIT_PAL || currentType !== 'Stückgut');
+
+        for(let i=0; i<firstDayIdx; i++) grid.innerHTML += `<div></div>`;
+
+        for(let d=1; d<=daysInMonth; d++) {
+            const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const info = stats[dStr] || { lkw_count: 0, is_blocked: false };
+            const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
+            const isPast = dStr < todayStr || isWeekend;
+
+            const isFull = info.lkw_count >= CFG.MAX_LKW;
+            const denyAccess = userInputIsLkw && (isFull || info.is_blocked);
+
+            const card = document.createElement('div');
+            card.className = `day-card ${isPast ? 'disabled' : ''} ${selectedDateStr === dStr ? 'selected' : ''} ${denyAccess ? 'lkw-blocked' : ''}`;
             
-            document.getElementById('month-label').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(this.now);
-            
-            const first = (new Date(y, m, 1).getDay() + 6) % 7;
-            const total = new Date(y, m + 1, 0).getDate();
-            const todayStr = new Date().toISOString().split('T')[0];
+            let colorClass = "bg-emerald-500";
+            let statusLabel = `${info.lkw_count} / ${CFG.MAX_LKW} belegt`;
 
-            for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
+            if(info.is_blocked) {
+                colorClass = "bg-blue-600";
+                statusLabel = "RESERVIERT";
+            } else if(isFull) {
+                colorClass = "bg-red-500";
+                statusLabel = "TAG VOLL";
+            }
 
-            for(let d=1; d<=total; d++) {
-                const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const day = this.stats[ds] || { slots: 0, monowell: false };
-                
-                const dateObj = new Date(y, m, d);
-                const isPast = ds < todayStr || [0,6].includes(dateObj.getDay());
-                
-                const isFull = day.slots >= CFG.LIMIT;
-                const isReserved = day.monowell;
-                const isBlocked = (isFull || isReserved) && selectedType !== "Stückgut";
-
-                let sClass = "status-free", sText = "FREI";
-                if(isReserved) { sClass = "status-reserved"; sText = "RESERVIERT"; }
-                else if(isFull) { sClass = "status-full"; sText = "VOLL"; }
-
-                const cell = document.createElement('div');
-                cell.className = `day-cell ${isPast ? 'is-past' : sClass} ${this.sel === ds ? 'selected' : ''} ${(!isPast && isBlocked) ? 'is-locked' : 'cursor-pointer'}`;
-                
-                cell.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <span class="text-lg font-[900] italic">${d}</span>
-                        <span class="text-[7px] font-black uppercase text-gray-500">${isPast ? '' : sText}</span>
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="text-2xl font-900 italic tracking-tighter">${d}</span>
+                    <div class="w-3 h-3 rounded-full ${colorClass}"></div>
+                </div>
+                <div>
+                    <div class="text-[8px] font-black uppercase text-slate-400 tracking-widest italic">${statusLabel}</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${colorClass}" style="width: ${info.is_blocked ? 100 : (info.lkw_count/CFG.MAX_LKW)*100}%"></div>
                     </div>
-                    <div class="text-[9px] font-bold text-gray-600 italic">
-                        ${isPast ? '---' : day.slots + '/' + CFG.LIMIT + ' FTL-SLOTS'}
-                    </div>`;
+                </div>
+            `;
 
-                if(!isPast && !isBlocked) {
-                    cell.onclick = () => {
-                        this.sel = ds;
-                        document.getElementById('in-date').value = ds;
-                        document.getElementById('selection-status').innerHTML = `${d}.${m+1}. | <span class="text-blue-600">AUSGEWÄHLT</span>`;
-                        this.render();
-                    };
-                } else if (!isPast && isBlocked) {
-                    cell.onclick = () => alert("Dieser Tag ist für Komplett- oder Teilladungen bereits voll belegt. Stückgut-Anlieferungen sind weiterhin möglich.");
-                }
-
-                grid.appendChild(cell);
+            if(!isPast) {
+                card.onclick = () => {
+                    if(denyAccess) {
+                        showToast("Tag für LKW-Ladungen voll belegt.", true);
+                        return;
+                    }
+                    selectedDateStr = dStr;
+                    document.getElementById('fDate').value = dStr;
+                    document.getElementById('statusBox').innerHTML = `<span class="text-blue-600 font-black">${d}.${m+1}.</span> AUSGEWÄHLT`;
+                    renderCalendar();
+                };
             }
-        },
-
-        async send(e) {
-            e.preventDefault();
-            if(!this.sel) return alert("Bitte wähle zuerst einen Tag im Kalender aus!");
-            
-            const btn = document.getElementById('sub-btn');
-            btn.disabled = true; 
-            btn.innerText = "VERARBEITE...";
-
-            const payload = { 
-                liefer_datum: this.sel, 
-                firma: document.getElementById('in-company').value, 
-                fahrzeug_typ: document.getElementById('in-type').value,
-                be_nummer: document.getElementById('in-be').value, 
-                artikel_nr: document.getElementById('in-art').value, 
-                palettes: parseInt(document.getElementById('in-pal').value),
-                status: 'angemeldet'
-            };
-
-            const { error } = await sb.from("avisierung").insert([payload]);
-            
-            if(!error) { 
-                alert("Avisierung erfolgreich gespeichert!"); 
-                location.reload(); 
-            } else { 
-                alert("Fehler beim Speichern: " + error.message); 
-                btn.disabled = false; 
-                btn.innerText = "Termin buchen";
-            }
+            grid.appendChild(card);
         }
-    };
+    }
 
-    const nav = (v) => { 
-        State.now.setMonth(State.now.getMonth() + v); 
-        State.sel = null; 
-        State.render(); 
-    };
+    async function handleForm(e) {
+        e.preventDefault();
+        const type = document.getElementById('fType').value;
+        if(!type) return showToast("Bitte Fahrzeugtyp wählen!", true);
+        if(!selectedDateStr) return showToast("Bitte Tag im Kalender wählen!", true);
 
-    State.init();
+        const palettes = parseInt(document.getElementById('fPalettes').value);
+        const isLkw = palettes >= CFG.LKW_LIMIT_PAL || type !== 'Stückgut';
+        const dayInfo = stats[selectedDateStr] || { lkw_count: 0, is_blocked: false };
+
+        if(isLkw && (dayInfo.lkw_count >= CFG.MAX_LKW || dayInfo.is_blocked)) {
+            showToast("Fehler: Keine LKW-Kapazität!", true);
+            return;
+        }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true; btn.innerText = "VERARBEITE...";
+
+        const payload = {
+            liefer_datum: selectedDateStr,
+            firma: document.getElementById('fCompany').value,
+            palettes: palettes,
+            fahrzeug_typ: type,
+            be_nummer: document.getElementById('fBe').value,
+            artikel_nr: document.getElementById('fArt').value,
+            status: 'angemeldet'
+        };
+
+        const { error } = await sb.from('avisierung').insert([payload]);
+        if(!error) {
+            showToast("Tag erfolgreich reserviert!");
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast("Fehler: " + error.message, true);
+            btn.disabled = false;
+            btn.innerText = "Avisierung jetzt Senden";
+        }
+    }
+
+    function showToast(m, err=false) {
+        const t = document.getElementById('toast');
+        t.innerText = m; 
+        t.className = `fixed top-8 right-8 px-8 py-4 rounded-2xl text-xs font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    window.changeMonth = (v) => { currentViewDate.setMonth(currentViewDate.getMonth() + v); renderCalendar(); };
+    document.getElementById('avisForm').onsubmit = handleForm;
+    init();
 </script>
 </body>
 </html>
