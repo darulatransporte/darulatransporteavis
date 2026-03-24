@@ -2,107 +2,218 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Darula Admin | Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Darula Lager | Smart Check-In</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
-        .row-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; transition: all 0.2s; }
-        .row-card:hover { border-color: #2563eb; transform: scale(1.005); }
+        :root { --dark: #0f172a; --accent: #2563eb; --success: #10b981; --error: #ef4444; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--dark); 
+            color: white; 
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* High-End Card Design */
+        .admin-card {
+            width: 95%;
+            max-width: 500px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4rem;
+            padding: 3.5rem;
+            text-align: center;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Status Animationen */
+        .status-icon-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 35px;
+            transition: all 0.5s ease;
+        }
+
+        .pulse-emerald { animation: pulse-emerald 2s infinite; background: var(--success); }
+        .pulse-red { animation: pulse-red 2s infinite; background: var(--error); }
+        
+        @keyframes pulse-emerald {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); transform: scale(1); }
+            70% { box-shadow: 0 0 0 30px rgba(16, 185, 129, 0); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Detail-Liste nach Erfolg */
+        .info-grid {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            text-align: left;
+            display: none; /* Erst nach Erfolg sichtbar */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .info-item:last-child { border: none; }
+        .label { font-weight: 800; text-transform: uppercase; font-size: 10px; color: rgba(255, 255, 255, 0.4); letter-spacing: 0.1em; }
+        .value { font-weight: 700; font-size: 13px; font-style: italic; }
+
+        .loader-spin {
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .btn-reload {
+            margin-top: 2.5rem;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.25rem;
+            border-radius: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            transition: all 0.3s;
+        }
+        .btn-reload:hover { background: rgba(255, 255, 255, 0.2); }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <div id="login" class="fixed inset-0 bg-slate-900 z-[9999] flex items-center justify-center p-6">
-        <div class="bg-white p-12 rounded-[3rem] w-full max-w-md shadow-2xl text-center">
-            <h2 class="text-3xl font-900 uppercase italic mb-8">Admin <span class="text-blue-600">Access</span></h2>
-            <input type="password" id="pw" placeholder="Security Key" class="w-full p-5 bg-slate-100 rounded-2xl mb-4 font-bold outline-none border-2 border-transparent focus:border-blue-600">
-            <button onclick="unlock()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-900 uppercase text-xs tracking-[0.2em]">Unlock</button>
+    <div id="adminCard" class="admin-card">
+        <div id="statusIcon" class="status-icon-container">
+            <div id="spinner" class="loader-spin"></div>
+            <svg id="checkIcon" class="hidden w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+            <svg id="errorIcon" class="hidden w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"></path></svg>
         </div>
-    </div>
 
-    <div id="panel" class="hidden">
-        <nav class="bg-white border-b border-slate-200 p-6 sticky top-0 z-50 flex justify-between items-center">
-            <h1 class="text-xl font-900 uppercase italic">Darula <span class="text-blue-600">Admin</span></h1>
-            <div class="flex gap-4">
-                <input type="text" id="srch" onkeyup="draw()" placeholder="Suche..." class="bg-slate-100 rounded-xl px-5 py-2.5 text-xs font-bold outline-none border-2 border-transparent focus:border-blue-600">
-                <button onclick="location.reload()" class="text-[10px] font-900 uppercase text-red-500">Logout</button>
+        <h1 id="mainTitle" class="text-4xl font-900 uppercase italic tracking-tighter leading-none mb-3">Verarbeitung</h1>
+        <p id="subTitle" class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em] italic mb-6">Prüfe Datenbank-Eintrag</p>
+
+        <div id="details" class="info-grid animate-pop">
+            <div class="info-item">
+                <span class="label">Firma</span>
+                <span class="value" id="valCompany">---</span>
             </div>
-        </nav>
-
-        <main class="max-w-7xl mx-auto px-6 py-10">
-            <div class="flex justify-between items-end mb-10">
-                <h2 class="text-5xl font-900 uppercase italic tracking-tighter">Lieferplan</h2>
-                <div class="flex gap-4 items-center">
-                    <span class="text-[10px] font-900 uppercase text-slate-400 tracking-widest">Live Sync</span>
-                    <button onclick="load()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-900 text-[10px] uppercase tracking-widest">Refresh</button>
-                </div>
+            <div class="info-item">
+                <span class="label">BE-Nummer</span>
+                <span class="value" id="valBe">---</span>
             </div>
+            <div class="info-item">
+                <span class="label">Ladung</span>
+                <span class="value" id="valPal">---</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Status</span>
+                <span class="value text-emerald-400" id="valStatus">ARCHIVIERT</span>
+            </div>
+        </div>
 
-            <div id="list" class="space-y-4"></div>
-        </main>
+        <button onclick="location.reload()" class="btn-reload">Nächster Scan</button>
     </div>
 
 <script>
-    const _sb = supabase.createClient("https://navhxyadbifllpopumfz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY");
-    let items = [];
+    // Konfiguration
+    const CFG = {
+        U: "https://navhxyadbifllpopumfz.supabase.co",
+        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
+    };
 
-    function unlock() {
-        if(document.getElementById('pw').value === "alurad2026") {
-            document.getElementById('login').classList.add('hidden');
-            document.getElementById('panel').classList.remove('hidden');
-            load();
+    const sb = supabase.createClient(CFG.U, CFG.K);
+    const scanId = new URLSearchParams(window.location.search).get('id');
+
+    async function processCheckIn() {
+        if(!scanId) {
+            updateUI("Fehler", "Keine ID gefunden", "error");
+            return;
+        }
+
+        // 1. Suche den Eintrag & Update Status auf 'archiv'
+        const { data, error } = await sb.from('avisierung')
+            .update({ 
+                status: 'archiv', 
+                archiviert_am: new Date().toISOString() 
+            })
+            .eq('id', scanId)
+            .select();
+
+        if(!error && data?.length > 0) {
+            const entry = data[0];
+            
+            // UI Update bei Erfolg
+            document.getElementById('valCompany').innerText = entry.firma;
+            document.getElementById('valBe').innerText = entry.be_nummer;
+            document.getElementById('valPal').innerText = `${entry.palettes} Pal. (${entry.fahrzeug_typ})`;
+            
+            updateUI("Einfahrt OK", "LKW Erfolgreich erfasst", "success");
+
+            // iPhone haptisches Feedback (Vibration)
+            if ("vibrate" in navigator) {
+                navigator.vibrate([100, 30, 100, 30, 100]);
+            }
+        } else {
+            updateUI("Ungültig", "Beleg nicht in Datenbank", "error");
         }
     }
 
-    async function load() {
-        const { data } = await _sb.from('avisierung').select('*').order('liefer_datum', { ascending: false });
-        items = data || [];
-        draw();
-    }
+    function updateUI(title, sub, type) {
+        const spinner = document.getElementById('spinner');
+        const checkIcon = document.getElementById('checkIcon');
+        const errorIcon = document.getElementById('errorIcon');
+        const statusIcon = document.getElementById('statusIcon');
+        const details = document.getElementById('details');
+        const card = document.getElementById('adminCard');
 
-    function draw() {
-        const box = document.getElementById('list');
-        const q = document.getElementById('srch').value.toLowerCase();
-        box.innerHTML = '';
+        spinner.classList.add('hidden');
 
-        items.filter(i => i.firma?.toLowerCase().includes(q) || i.be_nummer?.includes(q)).forEach(i => {
-            const card = document.createElement('div');
-            card.className = 'row-card p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center';
-            card.innerHTML = `
-                <div class="md:col-span-3">
-                    <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-1">Spedition</p>
-                    <p class="font-900 text-slate-900 uppercase italic text-lg">${i.firma}</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Datum</p>
-                    <p class="font-bold text-slate-700">${new Date(i.liefer_datum).toLocaleDateString('de-DE', {weekday:'short', day:'2-digit', month:'2-digit'})}</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Ladung</p>
-                    <p class="text-xs font-bold">${i.palettes} Paletten / ${i.fahrzeug_typ}</p>
-                </div>
-                <div class="md:col-span-3">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Referenzen</p>
-                    <p class="text-[11px] font-mono bg-slate-100 p-2 rounded-lg">BE: ${i.be_nummer} | ART: ${i.artikel_nr}</p>
-                </div>
-                <div class="md:col-span-2 flex justify-end">
-                    <button onclick="del(${i.id})" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white p-4 rounded-2xl transition-all">
-                        Löschen
-                    </button>
-                </div>
-            `;
-            box.appendChild(card);
-        });
-    }
-
-    async function del(id) {
-        if(confirm("Eintrag entfernen?")) {
-            await _sb.from('avisierung').delete().eq('id', id);
-            load();
+        if(type === "success") {
+            statusIcon.classList.add('pulse-emerald');
+            checkIcon.classList.remove('hidden');
+            details.style.display = 'block';
+            document.getElementById('mainTitle').innerText = title;
+            document.getElementById('mainTitle').classList.add('text-emerald-400');
+            document.getElementById('subTitle').innerText = sub;
+            card.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        } else {
+            statusIcon.classList.add('pulse-red');
+            errorIcon.classList.remove('hidden');
+            document.getElementById('mainTitle').innerText = title;
+            document.getElementById('mainTitle').classList.add('text-red-500');
+            document.getElementById('subTitle').innerText = sub;
+            card.style.borderColor = 'rgba(239, 68, 68, 0.3)';
         }
     }
+
+    // Start nach kurzem "Apple-Style" Delay für die Optik
+    setTimeout(processCheckIn, 1200);
 </script>
 </body>
 </html>
