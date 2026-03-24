@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lager Check-In | Darula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .status-card { width: 90%; max-width: 450px; padding: 4rem; border-radius: 4rem; text-align: center; transition: all 0.5s ease; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div id="box" class="status-card bg-slate-800 shadow-2xl">
+        <div id="loader" class="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-10"></div>
+        <h1 id="title" class="text-4xl font-900 uppercase italic mb-4 tracking-tighter">Prüfe...</h1>
+        <p id="sub" class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em] italic">Datenabgleich</p>
+    </div>
+
+<script>
+    const sb = supabase.createClient("https://navhxyadbifllpopumfz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY");
+    const id = new URLSearchParams(window.location.search).get('id');
+
+    async function doScan() {
+        if(!id) return show("Fehler", "Kein Code", "bg-red-600");
+        const { data, error } = await sb.from('avisierung').update({ status: 'archiv', archiviert_am: new Date().toISOString() }).eq('id', id).select();
+        if(!error && data.length > 0) {
+            show("OK!", data[0].firma, "bg-emerald-500");
+            if(navigator.vibrate) navigator.vibrate(200);
+        } else {
+            show("Fehler", "Ungültig", "bg-red-600");
+        }
+    }
+    function show(t, s, c) {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('box').className = `status-card ${c} pulse`;
+        document.getElementById('title').innerText = t;
+        document.getElementById('sub').innerText = s;
+    }
+    setTimeout(doScan, 800);
+</script>
+</body>
+</html>
