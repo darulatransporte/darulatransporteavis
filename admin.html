@@ -2,218 +2,104 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darula Lager | Smart Check-In</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darula Logistik | Admin-Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --dark: #0f172a; --accent: #2563eb; --success: #10b981; --error: #ef4444; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--dark); 
-            color: white; 
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        /* High-End Card Design */
-        .admin-card {
-            width: 95%;
-            max-width: 500px;
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4rem;
-            padding: 3.5rem;
-            text-align: center;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Status Animationen */
-        .status-icon-container {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 35px;
-            transition: all 0.5s ease;
-        }
-
-        .pulse-emerald { animation: pulse-emerald 2s infinite; background: var(--success); }
-        .pulse-red { animation: pulse-red 2s infinite; background: var(--error); }
-        
-        @keyframes pulse-emerald {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); transform: scale(1); }
-            70% { box-shadow: 0 0 0 30px rgba(16, 185, 129, 0); transform: scale(1.05); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
-        }
-
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            70% { box-shadow: 0 0 0 30px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        /* Detail-Liste nach Erfolg */
-        .info-grid {
-            margin-top: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            text-align: left;
-            display: none; /* Erst nach Erfolg sichtbar */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-item { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .info-item:last-child { border: none; }
-        .label { font-weight: 800; text-transform: uppercase; font-size: 10px; color: rgba(255, 255, 255, 0.4); letter-spacing: 0.1em; }
-        .value { font-weight: 700; font-size: 13px; font-style: italic; }
-
-        .loader-spin {
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--accent);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-reload {
-            margin-top: 2.5rem;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1.25rem;
-            border-radius: 1.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.2em;
-            transition: all 0.3s;
-        }
-        .btn-reload:hover { background: rgba(255, 255, 255, 0.2); }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .table-container { background: white; border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-10">
 
-    <div id="adminCard" class="admin-card">
-        <div id="statusIcon" class="status-icon-container">
-            <div id="spinner" class="loader-spin"></div>
-            <svg id="checkIcon" class="hidden w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-            <svg id="errorIcon" class="hidden w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-4xl font-900 uppercase italic tracking-tighter">Admin <span class="text-blue-600">Übersicht</span></h1>
+                <p class="text-slate-500 font-bold text-xs uppercase tracking-widest mt-1">Eingehende Avisierungen</p>
+            </div>
+            <button onclick="fetchData()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Aktualisieren</button>
+        </header>
+
+        <div class="table-container">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-black uppercase text-slate-400 tracking-widest">
+                        <th class="p-6">Datum</th>
+                        <th class="p-6">Firma</th>
+                        <th class="p-6">Paletten</th>
+                        <th class="p-6">Typ</th>
+                        <th class="p-6">BE-Nummer</th>
+                        <th class="p-6">Status</th>
+                        <th class="p-6 text-right">Aktion</th>
+                    </tr>
+                </thead>
+                <tbody id="data-body" class="divide-y divide-slate-50">
+                    </tbody>
+            </table>
         </div>
-
-        <h1 id="mainTitle" class="text-4xl font-900 uppercase italic tracking-tighter leading-none mb-3">Verarbeitung</h1>
-        <p id="subTitle" class="text-slate-400 font-bold uppercase text-[10px] tracking-[0.4em] italic mb-6">Prüfe Datenbank-Eintrag</p>
-
-        <div id="details" class="info-grid animate-pop">
-            <div class="info-item">
-                <span class="label">Firma</span>
-                <span class="value" id="valCompany">---</span>
-            </div>
-            <div class="info-item">
-                <span class="label">BE-Nummer</span>
-                <span class="value" id="valBe">---</span>
-            </div>
-            <div class="info-item">
-                <span class="label">Ladung</span>
-                <span class="value" id="valPal">---</span>
-            </div>
-            <div class="info-item">
-                <span class="label">Status</span>
-                <span class="value text-emerald-400" id="valStatus">ARCHIVIERT</span>
-            </div>
-        </div>
-
-        <button onclick="location.reload()" class="btn-reload">Nächster Scan</button>
     </div>
 
-<script>
-    // Konfiguration
-    const CFG = {
-        U: "https://navhxyadbifllpopumfz.supabase.co",
-        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
-    };
+    <script>
+        // Supabase Konfiguration
+        const supabaseUrl = "https://navhxyadbifllpopumfz.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY";
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const sb = supabase.createClient(CFG.U, CFG.K);
-    const scanId = new URLSearchParams(window.location.search).get('id');
+        async function fetchData() {
+            const { data, error } = await _supabase
+                .from('avisierung')
+                .select('*')
+                .order('liefer_datum', { ascending: true });
 
-    async function processCheckIn() {
-        if(!scanId) {
-            updateUI("Fehler", "Keine ID gefunden", "error");
-            return;
-        }
-
-        // 1. Suche den Eintrag & Update Status auf 'archiv'
-        const { data, error } = await sb.from('avisierung')
-            .update({ 
-                status: 'archiv', 
-                archiviert_am: new Date().toISOString() 
-            })
-            .eq('id', scanId)
-            .select();
-
-        if(!error && data?.length > 0) {
-            const entry = data[0];
-            
-            // UI Update bei Erfolg
-            document.getElementById('valCompany').innerText = entry.firma;
-            document.getElementById('valBe').innerText = entry.be_nummer;
-            document.getElementById('valPal').innerText = `${entry.palettes} Pal. (${entry.fahrzeug_typ})`;
-            
-            updateUI("Einfahrt OK", "LKW Erfolgreich erfasst", "success");
-
-            // iPhone haptisches Feedback (Vibration)
-            if ("vibrate" in navigator) {
-                navigator.vibrate([100, 30, 100, 30, 100]);
+            if (error) {
+                console.error('Fehler:', error);
+                return;
             }
-        } else {
-            updateUI("Ungültig", "Beleg nicht in Datenbank", "error");
+
+            const tbody = document.getElementById('data-body');
+            tbody.innerHTML = '';
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                
+                const statusColor = row.status === 'archiv' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700';
+
+                tr.innerHTML = `
+                    <td class="p-6 font-bold text-slate-700">${row.liefer_datum}</td>
+                    <td class="p-6 font-black uppercase italic text-blue-600">${row.firma}</td>
+                    <td class="p-6 font-bold">${row.palettes}</td>
+                    <td class="p-6 text-slate-500 text-sm font-medium">${row.fahrzeug_typ}</td>
+                    <td class="p-6 font-mono text-xs text-slate-400">${row.be_nummer}</td>
+                    <td class="p-6">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusColor}">
+                            ${row.status}
+                        </span>
+                    </td>
+                    <td class="p-6 text-right">
+                        <button onclick="deleteEntry('${row.id}')" class="text-red-400 hover:text-red-600 font-bold text-xs uppercase">Löschen</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
-    }
 
-    function updateUI(title, sub, type) {
-        const spinner = document.getElementById('spinner');
-        const checkIcon = document.getElementById('checkIcon');
-        const errorIcon = document.getElementById('errorIcon');
-        const statusIcon = document.getElementById('statusIcon');
-        const details = document.getElementById('details');
-        const card = document.getElementById('adminCard');
+        async function deleteEntry(id) {
+            if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+                const { error } = await _supabase
+                    .from('avisierung')
+                    .delete()
+                    .eq('id', id);
 
-        spinner.classList.add('hidden');
-
-        if(type === "success") {
-            statusIcon.classList.add('pulse-emerald');
-            checkIcon.classList.remove('hidden');
-            details.style.display = 'block';
-            document.getElementById('mainTitle').innerText = title;
-            document.getElementById('mainTitle').classList.add('text-emerald-400');
-            document.getElementById('subTitle').innerText = sub;
-            card.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-        } else {
-            statusIcon.classList.add('pulse-red');
-            errorIcon.classList.remove('hidden');
-            document.getElementById('mainTitle').innerText = title;
-            document.getElementById('mainTitle').classList.add('text-red-500');
-            document.getElementById('subTitle').innerText = sub;
-            card.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                if (!error) fetchData();
+            }
         }
-    }
 
-    // Start nach kurzem "Apple-Style" Delay für die Optik
-    setTimeout(processCheckIn, 1200);
-</script>
+        // Initiales Laden
+        fetchData();
+    </script>
 </body>
 </html>
