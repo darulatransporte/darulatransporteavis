@@ -6,116 +6,155 @@
     <title>Darula Transporte | Avisierung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; }
+        :root { --brand-blue: #2563eb; --brand-dark: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        
         .day-card { 
-            background: white; border-radius: 20px; padding: 18px; min-height: 120px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid #e2e8f0;
+            background: white; border-radius: 16px; padding: 16px; min-height: 110px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0;
             display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
         }
-        .day-card:not(.disabled):hover { transform: translateY(-6px); border-color: #2563eb; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .day-card.selected { border-color: #2563eb; background: #eff6ff; ring: 3px #2563eb; }
-        .day-card.disabled { opacity: 0.35; cursor: not-allowed !important; background: #f8fafc; filter: grayscale(1); }
-        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fee2e2; background-color: #fff1f1; }
-        .progress-bar { height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; transition: width 0.8s ease-in-out; }
+        
+        .day-card:not(.disabled):not(.lkw-blocked):hover { 
+            transform: translateY(-4px); border-color: var(--brand-blue); 
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .day-card.selected { 
+            border-color: var(--brand-blue); background: #eff6ff; 
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        .day-card.disabled { opacity: 0.3; cursor: not-allowed !important; background: #f1f5f9; }
+        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fca5a5; background-color: #fff1f1; }
+        
+        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; transition: width 0.6s ease; }
+
+        #rekaNotice { transition: all 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
+        #rekaNotice.visible { max-height: 100px; opacity: 1; margin-top: 12px; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="antialiased min-h-screen pb-12 text-slate-800">
+<body class="antialiased min-h-screen pb-12">
 
-    <nav class="bg-white border-b border-slate-200 mb-10 sticky top-0 z-50">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-xl font-900 tracking-tighter uppercase italic">Darula <span class="text-blue-600">Transporte</span></a>
-            <div id="toast" class="hidden fixed top-8 right-8 bg-slate-900 text-white px-8 py-4 rounded-2xl text-xs font-900 uppercase tracking-widest shadow-2xl z-[100]"></div>
+            <a href="#" onclick="location.reload()" class="text-xl font-900 tracking-tighter uppercase italic">
+                Darula <span class="text-blue-600">Transporte</span>
+            </a>
+            <div id="toast" class="hidden fixed top-6 right-6 px-6 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-2xl z-[100] animate-fade-in"></div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <main class="max-w-7xl mx-auto px-6 mt-10">
+        
+        <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">1</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Datum wählen</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Klicken Sie auf einen verfügbaren Tag im Kalender. Grüne Tage haben freie Kapazitäten.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">2</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Daten eingeben</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Füllen Sie das Formular aus. Lieferscheine können als PDF oder Bild hochgeladen werden.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">3</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Bestätigung</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Nach dem Absenden erhalten Sie eine Bestätigung auf dem Bildschirm. Der Termin ist dann fixiert.</p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             
             <div class="lg:col-span-8">
-                <div class="flex justify-between items-end mb-10">
+                <div class="flex justify-between items-center mb-8">
                     <div>
-                        <h2 id="monthLabel" class="text-5xl font-900 uppercase italic tracking-tighter text-slate-900">Ladeplan</h2>
-                        <p class="text-[10px] font-900 text-slate-400 uppercase tracking-[0.3em] mt-2 italic"></p>
+                        <h2 id="monthLabel" class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900">Ladeplan</h2>
+                        <div class="flex items-center gap-4 mt-2">
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Frei</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Voll</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div><span class="text-[9px] font-bold uppercase text-slate-400">Reserviert</span></div>
+                        </div>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="changeMonth(-1)" class="p-4 bg-white border border-slate-200 rounded-2xl hover:bg-blue-600 hover:text-white transition-all font-black">←</button>
-                        <button onclick="changeMonth(1)" class="p-4 bg-white border border-slate-200 rounded-2xl hover:bg-blue-600 hover:text-white transition-all font-black">→</button>
+                    <div class="flex gap-2">
+                        <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">←</button>
+                        <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">→</button>
                     </div>
                 </div>
 
-                <div class="calendar-grid mb-10" id="calendarGrid"></div>
+                <div class="calendar-grid mb-8" id="calendarGrid"></div>
 
-                <div class="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm space-y-8">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-emerald-500"></div> Frei (LKW)</div>
-                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-red-500"></div> Tag Belegt</div>
-                        <div class="flex items-center gap-3 text-[10px] font-900 uppercase tracking-widest"><div class="w-4 h-4 rounded-full bg-blue-600"></div> Reserviert</div>
-                        <div class="text-[11px] font-bold text-slate-400 italic">📦 Stückgut immer möglich</div>
-                    </div>
-                    
-                    <div class="pt-6 border-t border-slate-100">
-                        <h4 class="text-[11px] font-900 uppercase tracking-[0.2em] mb-4 text-blue-600 italic">So buchen Sie richtig:</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-[11px] font-bold text-slate-500 uppercase tracking-wider leading-relaxed">
-                            <div class="flex gap-4">
-                                <span class="text-blue-600 font-900 text-lg">01</span>
-                                <p>Geben Sie zuerst die <span class="text-slate-900">Palettenzahl & Art</span> im Formular rechts ein.</p>
-                            </div>
-                            <div class="flex gap-4">
-                                <span class="text-blue-600 font-900 text-lg">02</span>
-                                <p>Wählen Sie im Kalender einen <span class="text-slate-900">verfügbaren Tag</span> (Grün) aus.</p>
-                            </div>
-                            <div class="flex gap-4">
-                                <span class="text-blue-600 font-900 text-lg">03</span>
-                                <p>Füllen Sie alle Felder aus und klicken Sie auf <span class="text-slate-900">"Avisierung jetzt Senden"</span>.</p>
-                            </div>
+                <div class="bg-blue-600 rounded-[2rem] p-6 text-white flex items-center justify-between shadow-lg shadow-blue-200">
+                    <div class="flex items-center gap-4">
+                        <div class="text-2xl">📦</div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Hinweis</p>
+                            <p class="text-sm font-bold italic">Stückgut anlieferung ohne Avisierung möglich!</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-4">
-                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-2xl sticky top-28">
-                    <h3 class="text-3xl font-900 uppercase italic tracking-tighter mb-8 text-slate-900 border-b pb-4">Avisierung</h3>
-                    <form id="avisForm" class="space-y-6">
+                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl sticky top-24">
+                    <h3 class="text-2xl font-900 uppercase italic tracking-tighter mb-6 text-slate-900 pb-4 border-b">Avisierung</h3>
+                    
+                    <form id="avisForm" class="space-y-4">
                         <input type="hidden" id="fDate">
                         
                         <div>
-                            <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Spedition / Firma</label>
-                            <input type="text" id="fCompany" required placeholder="Name der Firma" class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold transition-all outline-none italic">
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Spedition / Firma</label>
+                            <input type="text" id="fCompany" required placeholder="Firmenname" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
+                            <div id="rekaNotice" class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                                <p class="text-[10px] font-900 uppercase text-amber-700 leading-tight italic">⚠️ REKA: Anlieferung bis 12:00 Uhr!</p>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">E-Mail für Rückfragen</label>
+                            <input type="email" id="fEmail" required placeholder="dispo@firma.de" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Anzahl Paletten</label>
-                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold transition-all outline-none italic">
+                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Paletten</label>
+                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold transition-all outline-none italic text-sm">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-900 uppercase text-slate-400 mb-2 tracking-widest italic">Fahrzeugtyp</label>
-                                <select id="fType" required class="w-full p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none appearance-none cursor-pointer italic text-slate-500">
-                                    <option value="" disabled selected>Art wählen...</option>
-                                    <option value="Stückgut" class="text-slate-800">Stückgut</option>
-                                    <option value="Teillieferung" class="text-slate-800">Teillieferung</option>
-                                    <option value="Komplettlieferung" class="text-slate-800">Komplettlieferung</option>
+                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Fahrzeug</label>
+                                <select id="fType" required class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs text-slate-500">
+                                    <option value="" disabled selected>Wählen...</option>
+                                    <option value="Stückgut">Stückgut</option>
+                                    <option value="Teillieferung">Teillieferung</option>
+                                    <option value="Komplettlieferung">Komplettlieferung</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="fBe" placeholder="BE-Nummer" required class="p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none italic">
-                            <input type="text" id="fArt" placeholder="Art-Nr." required class="p-5 bg-slate-50 border-2 border-transparent focus:border-blue-600 rounded-2xl font-bold outline-none italic">
+                        <div>
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Lieferschein (PDF/Bild)</label>
+                            <input type="file" id="fDoc" accept=".pdf,image/*" required class="w-full p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl font-bold text-[10px] uppercase">
                         </div>
 
-                        <div id="statusBox" class="p-5 rounded-2xl text-center text-[11px] font-900 uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 italic">
-                            Wählen Sie einen Tag
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="fBe" placeholder="BE-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
+                            <input type="text" id="fArt" placeholder="Art-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
                         </div>
 
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-6 rounded-[1.5rem] font-900 uppercase text-xs tracking-[0.3em] transition-all shadow-xl active:scale-95 italic">
-                            Avisierung jetzt Senden
-                        </button>
+                        <div id="statusBox" class="p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 italic">Datum im Kalender wählen</div>
+
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-5 rounded-2xl font-900 uppercase text-[11px] tracking-[0.2em] transition-all shadow-lg active:scale-95 italic disabled:opacity-50 disabled:cursor-not-allowed">Avisierung absenden</button>
                     </form>
                 </div>
             </div>
@@ -127,7 +166,7 @@
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
         MAX_LKW: 3, 
-        LKW_LIMIT_PAL: 11 
+        LKW_MIN_LE: 11
     };
 
     const sb = supabase.createClient(CFG.U, CFG.K);
@@ -139,29 +178,46 @@
         await loadData();
         renderCalendar();
         
+        document.getElementById('fCompany').addEventListener('input', (e) => {
+            document.getElementById('rekaNotice').classList.toggle('visible', e.target.value.toLowerCase().includes('reka'));
+        });
+        
         document.getElementById('fType').addEventListener('change', (e) => {
             e.target.classList.remove('text-slate-500');
-            e.target.classList.add('text-slate-800');
             renderCalendar();
         });
+
         document.getElementById('fPalettes').addEventListener('input', renderCalendar);
     }
 
     async function loadData() {
-        const { data } = await sb.from('avisierung').select('liefer_datum, palettes, firma, fahrzeug_typ');
-        stats = {};
-        data?.forEach(r => {
-            const d = r.liefer_datum;
-            if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
-            const isLkwSlot = parseInt(r.palettes) >= CFG.LKW_LIMIT_PAL || r.fahrzeug_typ !== 'Stückgut';
-            if(isLkwSlot) stats[d].lkw_count++;
-            if(r.firma?.toLowerCase().includes('monowell')) stats[d].is_blocked = true;
-        });
+        try {
+            const { data, error } = await sb.from('avisierung').select('liefer_datum, palettes, fahrzeug_typ, firma');
+            if(error) throw error;
+            
+            stats = {};
+            (data || []).forEach(r => {
+                const d = r.liefer_datum;
+                if(!d) return;
+                if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
+                
+                const pCount = parseInt(r.palettes) || 0;
+                // Ein LKW Slot wird belegt, wenn > 11 Paletten ODER wenn kein Stückgut gewählt wurde
+                if(pCount >= CFG.LKW_MIN_LE || (r.fahrzeug_typ && r.fahrzeug_typ !== 'Stückgut')) {
+                    stats[d].lkw_count++;
+                }
+                if(r.firma?.toLowerCase().includes('monowell')) stats[d].is_blocked = true;
+            });
+        } catch (e) {
+            showToast("Verbindung fehlgeschlagen", true);
+        }
     }
 
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
+        if(!grid) return;
         grid.innerHTML = '';
+        
         const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
         document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentViewDate);
 
@@ -169,9 +225,9 @@
         const daysInMonth = new Date(y, m + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
-        const currentPalettes = parseInt(document.getElementById('fPalettes').value) || 0;
-        const currentType = document.getElementById('fType').value;
-        const userInputIsLkw = currentType !== "" && (currentPalettes >= CFG.LKW_LIMIT_PAL || currentType !== 'Stückgut');
+        const curPal = parseInt(document.getElementById('fPalettes').value) || 0;
+        const curTyp = document.getElementById('fType').value;
+        const inputIsLkw = curTyp !== "" && (curPal >= CFG.LKW_MIN_LE || curTyp !== 'Stückgut');
 
         for(let i=0; i<firstDayIdx; i++) grid.innerHTML += `<div></div>`;
 
@@ -180,46 +236,35 @@
             const info = stats[dStr] || { lkw_count: 0, is_blocked: false };
             const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
             const isPast = dStr < todayStr || isWeekend;
-
             const isFull = info.lkw_count >= CFG.MAX_LKW;
-            const denyAccess = userInputIsLkw && (isFull || info.is_blocked);
+            const deny = inputIsLkw && (isFull || info.is_blocked);
 
             const card = document.createElement('div');
-            card.className = `day-card ${isPast ? 'disabled' : ''} ${selectedDateStr === dStr ? 'selected' : ''} ${denyAccess ? 'lkw-blocked' : ''}`;
+            card.className = `day-card ${isPast?'disabled':''} ${selectedDateStr===dStr?'selected':''} ${deny?'lkw-blocked':''}`;
             
-            let colorClass = "bg-emerald-500";
-            let statusLabel = `${info.lkw_count} / ${CFG.MAX_LKW} belegt`;
-
-            if(info.is_blocked) {
-                colorClass = "bg-blue-600";
-                statusLabel = "RESERVIERT";
-            } else if(isFull) {
-                colorClass = "bg-red-500";
-                statusLabel = "TAG VOLL";
-            }
-
+            let color = info.is_blocked ? "bg-blue-600" : (isFull ? "bg-red-500" : "bg-emerald-500");
+            
             card.innerHTML = `
                 <div class="flex justify-between items-start">
-                    <span class="text-2xl font-900 italic tracking-tighter">${d}</span>
-                    <div class="w-3 h-3 rounded-full ${colorClass}"></div>
+                    <span class="text-xl font-900 italic tracking-tighter">${d}</span>
+                    <div class="w-2.5 h-2.5 rounded-full ${color}"></div>
                 </div>
                 <div>
-                    <div class="text-[8px] font-black uppercase text-slate-400 tracking-widest italic">${statusLabel}</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill ${colorClass}" style="width: ${info.is_blocked ? 100 : (info.lkw_count/CFG.MAX_LKW)*100}%"></div>
+                    <div class="text-[7px] font-black uppercase text-slate-400 italic">
+                        ${info.is_blocked ? 'RESERVIERT' : info.lkw_count+'/'+CFG.MAX_LKW+' LKW'}
                     </div>
-                </div>
-            `;
+                    <div class="progress-bar">
+                        <div class="progress-fill ${color}" style="width:${Math.min((info.lkw_count/CFG.MAX_LKW)*100, 100)}%"></div>
+                    </div>
+                </div>`;
 
             if(!isPast) {
                 card.onclick = () => {
-                    if(denyAccess) {
-                        showToast("Tag für LKW-Ladungen voll belegt.", true);
-                        return;
-                    }
+                    if(deny) return showToast("Termin für LKW voll belegt!", true);
                     selectedDateStr = dStr;
                     document.getElementById('fDate').value = dStr;
                     document.getElementById('statusBox').innerHTML = `<span class="text-blue-600 font-black">${d}.${m+1}.</span> AUSGEWÄHLT`;
+                    document.getElementById('statusBox').className = "p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-200 italic";
                     renderCalendar();
                 };
             }
@@ -229,52 +274,65 @@
 
     async function handleForm(e) {
         e.preventDefault();
-        const type = document.getElementById('fType').value;
-        if(!type) return showToast("Bitte Fahrzeugtyp wählen!", true);
-        if(!selectedDateStr) return showToast("Bitte Tag im Kalender wählen!", true);
-
-        const palettes = parseInt(document.getElementById('fPalettes').value);
-        const isLkw = palettes >= CFG.LKW_LIMIT_PAL || type !== 'Stückgut';
-        const dayInfo = stats[selectedDateStr] || { lkw_count: 0, is_blocked: false };
-
-        if(isLkw && (dayInfo.lkw_count >= CFG.MAX_LKW || dayInfo.is_blocked)) {
-            showToast("Fehler: Keine LKW-Kapazität!", true);
-            return;
-        }
-
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "VERARBEITE...";
+        if(!selectedDateStr) return showToast("Bitte wählen Sie ein Datum!", true);
+        if(btn.disabled) return;
 
-        const payload = {
-            liefer_datum: selectedDateStr,
-            firma: document.getElementById('fCompany').value,
-            palettes: palettes,
-            fahrzeug_typ: type,
-            be_nummer: document.getElementById('fBe').value,
-            artikel_nr: document.getElementById('fArt').value,
-            status: 'angemeldet'
-        };
+        const file = document.getElementById('fDoc').files[0];
+        if(file && file.size > 10 * 1024 * 1024) return showToast("Datei zu groß (max 10MB)!", true);
 
-        const { error } = await sb.from('avisierung').insert([payload]);
-        if(!error) {
-            showToast("Tag erfolgreich reserviert!");
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showToast("Fehler: " + error.message, true);
-            btn.disabled = false;
-            btn.innerText = "Avisierung jetzt Senden";
+        btn.disabled = true; 
+        btn.innerText = "WIRD ÜBERMITTELT...";
+
+        try {
+            let fileUrl = null;
+            if(file) {
+                const fExt = file.name.split('.').pop();
+                const fPath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fExt}`;
+                const { error: upErr } = await sb.storage.from('lieferscheine').upload(fPath, file);
+                if(upErr) throw upErr;
+                const { data: urlData } = sb.storage.from('lieferscheine').getPublicUrl(fPath);
+                fileUrl = urlData.publicUrl;
+            }
+
+            const payload = {
+                liefer_datum: selectedDateStr,
+                firma: document.getElementById('fCompany').value,
+                email: document.getElementById('fEmail').value,
+                palettes: parseInt(document.getElementById('fPalettes').value) || 1,
+                fahrzeug_typ: document.getElementById('fType').value,
+                be_nummer: document.getElementById('fBe').value,
+                artikel_nr: document.getElementById('fArt').value,
+                lieferschein_url: fileUrl,
+                status: 'angemeldet'
+            };
+
+            const { error: insErr } = await sb.from('avisierung').insert([payload]);
+            if(insErr) throw insErr;
+
+            showToast("Avisierung erfolgreich!");
+            setTimeout(() => location.reload(), 2000);
+        } catch (err) {
+            showToast("Fehler beim Senden!", true);
+            btn.disabled = false; 
+            btn.innerText = "Avisierung absenden";
         }
     }
 
     function showToast(m, err=false) {
         const t = document.getElementById('toast');
+        if(!t) return;
         t.innerText = m; 
-        t.className = `fixed top-8 right-8 px-8 py-4 rounded-2xl text-xs font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
-        t.classList.remove('hidden');
-        setTimeout(() => t.classList.add('hidden'), 3500);
+        t.className = `fixed top-6 right-6 px-8 py-4 rounded-2xl text-[10px] font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
+        t.classList.remove('hidden'); 
+        setTimeout(() => t.classList.add('hidden'), 4000);
     }
 
-    window.changeMonth = (v) => { currentViewDate.setMonth(currentViewDate.getMonth() + v); renderCalendar(); };
+    window.changeMonth = (v) => { 
+        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
+        renderCalendar(); 
+    };
+
     document.getElementById('avisForm').onsubmit = handleForm;
     init();
 </script>
