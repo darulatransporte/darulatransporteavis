@@ -65,10 +65,12 @@
             </div>
 
             <div class="bg-white rounded-[3rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-                <table class="w-full text-left border-collapse">
-                    <thead id="table-head" class="bg-slate-50 border-b border-slate-100 text-[10px] font-900 uppercase tracking-[0.2em] text-slate-400 italic"></thead>
-                    <tbody id="table-body" class="divide-y divide-slate-50"></tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead id="table-head" class="bg-slate-50 border-b border-slate-100 text-[10px] font-900 uppercase tracking-[0.2em] text-slate-400 italic"></thead>
+                        <tbody id="table-body" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
                 <div id="no-data" class="hidden py-32 text-center">
                     <p class="text-slate-300 font-900 uppercase italic tracking-widest">Keine Daten für diesen Bereich</p>
                 </div>
@@ -103,8 +105,8 @@
                         <input type="number" id="m-pal" placeholder="Anzahl" class="w-full p-5 bg-slate-100 rounded-2xl font-bold italic outline-none">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-2 block italic">BE-Nummer</label>
-                        <input type="text" id="m-be" placeholder="Referenz" class="w-full p-5 bg-slate-100 rounded-2xl font-bold italic outline-none">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-2 block italic">Email</label>
+                        <input type="email" id="m-email" placeholder="kontakt@beispiel.de" class="w-full p-5 bg-slate-100 rounded-2xl font-bold italic outline-none">
                     </div>
                 </div>
                 <div class="flex gap-4 pt-6">
@@ -200,7 +202,9 @@
                 </tr>`;
             });
         } else {
-            head.innerHTML = `<tr><th class="px-10 py-6">Datum / Typ</th><th class="px-10 py-6">Spedition</th><th class="px-10 py-6 text-center">Paletten</th><th class="px-10 py-6">BE-Nr.</th><th class="px-10 py-6 text-right">Aktion</th></tr>`;
+            // ERWEITERTER HEADER FÜR EMAIL UND DATEI
+            head.innerHTML = `<tr><th class="px-10 py-6">Datum / Typ</th><th class="px-10 py-6">Spedition</th><th class="px-10 py-6 text-center">Paletten</th><th class="px-10 py-6">Kontakt & Dokument</th><th class="px-10 py-6">BE-Nr.</th><th class="px-10 py-6 text-right">Aktion</th></tr>`;
+            
             const todayStr = new Date().toISOString().split('T')[0];
             let filtered = (currentTab === 'today') ? avisData.filter(x => x.liefer_datum === todayStr) : avisData;
 
@@ -212,6 +216,13 @@
             filtered.forEach(r => {
                 const partner = partnerData.find(p => p.name.toLowerCase() === r.firma.toLowerCase());
                 const isWarning = partner && /sperr|achtung|negativ|problem|stopp/i.test(partner.regelung);
+                
+                // Email und Datei-Logik (Prüft auf r.email und r.datei_url)
+                const emailDisplay = r.email ? r.email : '<span class="text-slate-300">keine Mail</span>';
+                const fileDisplay = r.datei_url ? 
+                    `<a href="${r.datei_url}" target="_blank" class="block mt-1 text-blue-600 hover:underline font-black text-[10px] uppercase">📎 Dokument öffnen</a>` : 
+                    '<span class="block mt-1 text-slate-300 text-[9px] uppercase">Kein Anhang</span>';
+
                 body.innerHTML += `
                 <tr class="${isWarning ? 'negative-warning' : 'hover:bg-slate-50'} transition-all">
                     <td class="px-10 py-8">
@@ -220,7 +231,11 @@
                     </td>
                     <td class="px-10 py-8 font-900 uppercase italic text-slate-800">${r.firma} ${isWarning ? '⚠️' : ''}</td>
                     <td class="px-10 py-8 text-center font-900 italic text-xl text-slate-900">${r.palettes}</td>
-                    <td class="px-10 py-8 font-mono text-xs text-slate-400">${r.be_nummer}</td>
+                    <td class="px-10 py-8">
+                        <div class="text-[11px] font-bold text-slate-600 lowercase truncate max-w-[150px]">${emailDisplay}</div>
+                        ${fileDisplay}
+                    </td>
+                    <td class="px-10 py-8 font-mono text-xs text-slate-400">${r.be_nummer || '-'}</td>
                     <td class="px-10 py-8 text-right"><button onclick="delAvis('${r.id}')" class="text-slate-200 hover:text-red-600 font-black text-[10px] italic transition-all">LÖSCHEN</button></td>
                 </tr>`;
             });
@@ -255,20 +270,13 @@
             liefer_datum: document.getElementById('m-date').value,
             fahrzeug_typ: document.getElementById('m-typ').value,
             palettes: document.getElementById('m-pal').value,
-            be_nummer: document.getElementById('m-be').value
+            email: document.getElementById('m-email').value,
+            be_nummer: "MANUAL-" + Math.floor(Math.random()*1000)
         };
         if(!payload.firma || !payload.palettes) return alert("Fehlende Daten!");
         await _sb.from('avisierung').insert([payload]);
         closeAvisModal();
         fetchData();
-    }
-
-    async function addNewPartner() {
-        const n = prompt("Name der neuen Spedition:");
-        if(n) {
-            await _sb.from('lieferanten').insert([{ name: n, code: 'DAR-'+Math.floor(100+Math.random()*899), zuverlaessigkeit: 100 }]);
-            fetchData();
-        }
     }
 
     // ENTER TASTE IM LOGIN
