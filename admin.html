@@ -110,7 +110,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-2 block italic">Lieferschein URL (Dokument)</label>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-2 block italic">Lieferschein Link (URL)</label>
                     <input type="text" id="m-url" placeholder="https://..." class="w-full p-5 bg-slate-100 rounded-2xl font-bold italic outline-none">
                 </div>
                 <div class="flex gap-4 pt-6">
@@ -129,7 +129,7 @@
     
     // Mapping der Spaltennamen aus Supabase
     const COLUMN_NAME_EMAIL = "email";
-    const COLUMN_NAME_LINK = "Lieferschein_url"; // Hier angepasst auf deinen Datenbank-Namen
+    const COLUMN_NAME_LINK = "lieferschein_url"; // Hier jetzt mit kleinem 'l'
 
     const _sb = supabase.createClient(SB_URL, SB_KEY);
 
