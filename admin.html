@@ -122,9 +122,15 @@
     </div>
 
 <script>
+    // --- KONFIGURATION ---
     const MASTER_PW = "Sommer2026";
     const SB_URL = "https://navhxyadbifllpopumfz.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY";
+    
+    // Mapping der Spaltennamen aus Supabase
+    const COLUMN_NAME_EMAIL = "email";
+    const COLUMN_NAME_LINK = "Lieferschein_url"; // Hier angepasst auf deinen Datenbank-Namen
+
     const _sb = supabase.createClient(SB_URL, SB_KEY);
 
     let currentTab = 'today';
@@ -214,11 +220,14 @@
                 const partner = partnerData.find(p => p.name.toLowerCase() === r.firma.toLowerCase());
                 const isWarning = partner && /sperr|achtung|negativ|problem|stopp/i.test(partner.regelung);
                 
-                const emailDisplay = r.email ? `<span class="text-[11px] font-bold text-slate-600 lowercase">${r.email}</span>` : '<span class="text-slate-300 italic text-[10px]">nicht hinterlegt</span>';
+                const mailVal = r[COLUMN_NAME_EMAIL];
+                const linkVal = r[COLUMN_NAME_LINK];
+
+                const emailDisplay = mailVal ? `<span class="text-[11px] font-bold text-slate-600 lowercase">${mailVal}</span>` : '<span class="text-slate-300 italic text-[10px]">nicht hinterlegt</span>';
                 
-                const fileDisplay = r.datei_url ? 
-                    `<a href="${r.datei_url}" target="_blank" class="inline-flex items-center justify-center bg-blue-50 text-blue-600 px-3 py-2 rounded-xl font-900 text-[10px] uppercase hover:bg-blue-600 hover:text-white transition-all">Ansehen</a>` : 
-                    '<span class="text-slate-300 font-black text-[10px] uppercase">Fehlt</span>';
+                const fileDisplay = (linkVal && linkVal.trim() !== "") ? 
+                    `<a href="${linkVal}" target="_blank" class="inline-flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-xl font-900 text-[10px] uppercase shadow-md hover:bg-slate-900 transition-all">Lieferschein ↗</a>` : 
+                    '<span class="text-slate-300 font-black text-[10px] uppercase">Kein Link</span>';
 
                 body.innerHTML += `
                 <tr class="${isWarning ? 'negative-warning' : 'hover:bg-slate-50'} transition-all">
@@ -263,8 +272,8 @@
             liefer_datum: document.getElementById('m-date').value,
             fahrzeug_typ: document.getElementById('m-typ').value,
             palettes: document.getElementById('m-pal').value,
-            email: document.getElementById('m-email').value,
-            datei_url: document.getElementById('m-url').value,
+            [COLUMN_NAME_EMAIL]: document.getElementById('m-email').value,
+            [COLUMN_NAME_LINK]: document.getElementById('m-url').value,
             be_nummer: "MANUAL-" + Math.floor(Math.random()*1000)
         };
         if(!payload.firma || !payload.palettes) return alert("Fehlende Daten!");
