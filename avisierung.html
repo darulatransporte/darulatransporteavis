@@ -143,8 +143,8 @@
                         </div>
 
                         <div>
-                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Lieferschein (PDF/Bild)</label>
-                            <input type="file" id="fDoc" accept=".pdf,image/*" required class="w-full p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl font-bold text-[10px] uppercase">
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Lieferschein (PDF/Bild) - Optional</label>
+                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl font-bold text-[10px] uppercase">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -167,7 +167,7 @@
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
         MAX_LKW: 3, 
         LKW_MIN_LE: 11,
-        NTFY_TOPIC: "darula_logistik_2026_dispatch" // Hier dein iPhone ntfy-Topic
+        NTFY_TOPIC: "darula_logistik_2026_dispatch"
     };
 
     const sb = supabase.createClient(CFG.U, CFG.K);
@@ -307,11 +307,9 @@
                 status: 'angemeldet'
             };
 
-            // 1. In Supabase speichern
             const { error: insErr } = await sb.from('avisierung').insert([payload]);
             if(insErr) throw insErr;
 
-            // 2. NEU: Benachrichtigung an iPhone senden
             try {
                 await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
                     method: 'POST',
