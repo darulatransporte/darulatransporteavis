@@ -6,6 +6,7 @@
     <title>Darula Transporte | Avisierung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root { --brand-blue: #2563eb; --brand-dark: #0f172a; }
@@ -281,12 +282,19 @@
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
+        // EmailJS Konfiguration
+        EJS_PUBLIC: "9k_7oaGp1Gon8adoH",
+        EJS_SERVICE: "service_o9opzuf",
+        EJS_TEMPLATE: "template_avisierung",
         MAX_LKW: 3, 
         LKW_MIN_LE: 11,
         NTFY_TOPIC: "darula_logistik_2026_dispatch"
     };
 
     const sb = supabase.createClient(CFG.U, CFG.K);
+    // EmailJS initialisieren
+    emailjs.init(CFG.EJS_PUBLIC);
+
     let currentViewDate = new Date();
     let selectedDateStr = null;
     let stats = {};
@@ -399,7 +407,7 @@
         if(btn.disabled) return;
 
         const file = document.getElementById('fDoc').files[0];
-        btn.disabled = true; 
+        btn.disabled = true; 
         btn.innerText = "WIRD ÜBERMITTELT...";
 
         try {
@@ -424,8 +432,25 @@
                 status: 'angemeldet'
             };
 
+            // Supabase Eintrag
             await sb.from('avisierung').insert([payload]);
 
+            // EmailJS Versand
+            const isReka = payload.firma.toLowerCase().includes('reka');
+            const timeWindow = isReka ? "07:00 - 12:00 Uhr" : "07:00 - 14:00 Uhr";
+
+            await emailjs.send(CFG.EJS_SERVICE, CFG.EJS_TEMPLATE, {
+                email: payload.email,
+                company_name: payload.firma,
+                delivery_date: new Date(selectedDateStr).toLocaleDateString('de-DE'),
+                palettes: payload.palettes,
+                vehicle_type: payload.fahrzeug_typ,
+                be_number: payload.be_nummer,
+                art_number: payload.artikel_nr,
+                time_window: timeWindow
+            });
+
+            // NTFY Push
             try {
                 await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
                     method: 'POST',
@@ -439,7 +464,7 @@
 
         } catch (err) {
             showToast("Fehler beim Senden!", true);
-            btn.disabled = false; 
+            btn.disabled = false; 
             btn.innerText = "Avisierung absenden";
         }
     }
@@ -460,15 +485,15 @@
     function showToast(m, err=false) {
         const t = document.getElementById('toast');
         if(!t) return;
-        t.innerText = m; 
+        t.innerText = m; 
         t.className = `fixed top-6 right-6 px-8 py-4 rounded-2xl text-[10px] font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
-        t.classList.remove('hidden'); 
+        t.classList.remove('hidden'); 
         setTimeout(() => t.classList.add('hidden'), 4000);
     }
 
-    window.changeMonth = (v) => { 
-        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
-        renderCalendar(); 
+    window.changeMonth = (v) => { 
+        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
+        renderCalendar(); 
     };
 
     document.getElementById('avisForm').onsubmit = handleForm;
