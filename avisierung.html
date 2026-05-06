@@ -1,480 +1,549 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Avisierung</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --brand-blue: #2563eb; --brand-dark: #0f172a; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        
-        .day-card { 
-            background: white; border-radius: 16px; padding: 16px; min-height: 110px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
-        }
-        
-        .day-card:not(.disabled):not(.lkw-blocked):hover { 
-            transform: translateY(-4px); border-color: var(--brand-blue); 
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
-        }
-        
-        .day-card.selected { 
-            border-color: var(--brand-blue); background: #eff6ff; 
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-        
-        .day-card.disabled { opacity: 0.3; cursor: not-allowed !important; background: #f1f5f9; }
-        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fca5a5; background-color: #fff1f1; }
-        
-        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-        .progress-fill { height: 100%; transition: width 0.6s ease; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darula Transporte | Avisierung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --brand-blue: #2563eb; --brand-dark: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        
+        .day-card { 
+            background: white; border-radius: 16px; padding: 16px; min-height: 110px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
+        }
+        
+        .day-card:not(.disabled):not(.lkw-blocked):hover { 
+            transform: translateY(-4px); border-color: var(--brand-blue); 
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .day-card.selected { 
+            border-color: var(--brand-blue); background: #eff6ff; 
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+        
+        .day-card.disabled { opacity: 0.3; cursor: not-allowed !important; background: #f1f5f9; }
+        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fca5a5; background-color: #fff1f1; }
+        
+        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; transition: width 0.6s ease; }
 
-        #rekaNotice { transition: all 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
-        #rekaNotice.visible { max-height: 100px; opacity: 1; margin-top: 12px; }
+        #rekaNotice { transition: all 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
+        #rekaNotice.visible { max-height: 100px; opacity: 1; margin-top: 12px; }
 
-        /* Styles für die Bestätigung (A4 Modal) */
-        #confirmationOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.8);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 40px 20px;
-            backdrop-filter: blur(4px);
-        }
+        /* Feedback Overlay Styles */
+        #feedbackOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-        .a4-container {
-            background: white;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 20mm;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            position: relative;
-            color: #1e293b;
-            font-size: 12pt;
-        }
+        #feedbackPopup {
+            background: white;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--brand-blue);
+            transform: scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-        @media print {
-            body * { visibility: hidden; }
-            #confirmationOverlay, #confirmationOverlay * { visibility: visible; }
-            #confirmationOverlay { position: absolute; left: 0; top: 0; background: white; padding: 0; }
-            .a4-container { box-shadow: none; margin: 0; width: 100%; padding: 10mm; min-height: auto; }
-            .no-print { display: none !important; }
-        }
+        #feedbackOverlay.active { display: flex; }
+        #feedbackOverlay.active #feedbackPopup { transform: scale(1); }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
+        /* Styles für die Bestätigung (A4 Modal) */
+        #confirmationOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .a4-container {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            color: #1e293b;
+            font-size: 12pt;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #confirmationOverlay, #confirmationOverlay * { visibility: visible; }
+            #confirmationOverlay { position: absolute; left: 0; top: 0; background: white; padding: 0; }
+            .a4-container { box-shadow: none; margin: 0; width: 100%; padding: 10mm; min-height: auto; }
+            .no-print { display: none !important; }
+            #feedbackOverlay { display: none !important; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </head>
 <body class="antialiased min-h-screen pb-12">
 
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" onclick="location.reload()" class="text-xl font-900 tracking-tighter uppercase italic">
-                Darula <span class="text-blue-600">Transporte</span>
-            </a>
-            <div id="toast" class="hidden fixed top-6 right-6 px-6 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-2xl z-[100] animate-fade-in"></div>
-        </div>
-    </nav>
+    <!-- Feedback Pop-up beim Öffnen -->
+    <div id="feedbackOverlay">
+        <div id="feedbackPopup">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner">🚀</div>
+                <h3 class="text-2xl font-900 uppercase italic tracking-tight text-slate-900 mb-2">Logistik weiterdenken.</h3>
+                <p class="text-slate-500 text-sm mb-8 leading-relaxed">
+                    Wir arbeiten täglich an der <strong>Exzellenz unserer Prozesse</strong>. Haben Sie Ideen, wie wir unsere Plattform oder den Ablauf noch effizienter für Sie gestalten können?
+                </p>
+                
+                <form action="https://formspree.io/f/mvzloqla" method="POST" class="w-full space-y-5 text-left">
+                    <div>
+                        <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Ansprechpartner / E-Mail</label>
+                        <input type="email" name="email" required placeholder="Ihre E-Mail für Rückfragen" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Was können wir optimieren?</label>
+                        <textarea name="message" required placeholder="Ihr Feedback zu Funktionen, Design oder Abläufen..." rows="4" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm resize-none"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-4 rounded-2xl font-900 uppercase text-[11px] tracking-[0.2em] transition-all shadow-lg active:scale-95 italic">Vorschlag einreichen</button>
+                    
+                    <button type="button" onclick="closeFeedback()" class="w-full py-2 text-slate-400 font-bold uppercase text-[9px] tracking-widest hover:text-slate-600 transition-colors">Zurück zur Avisierung</button>
+                </form>
+                <div class="mt-4 pt-4 border-t border-slate-100 w-full">
+                    <p class="text-[10px] text-slate-400 font-black italic uppercase tracking-tighter">Direkter Kontakt: <a href="mailto:d.darulatransporte@gmail.com" class="text-blue-600">d.darulatransporte@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <main class="max-w-7xl mx-auto px-6 mt-10">
-        
-        <section class="mb-8">
-            <div class="bg-amber-50 border-l-8 border-amber-500 p-6 rounded-2xl shadow-sm flex items-center gap-6">
-                <div class="bg-amber-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg shrink-0">📅</div>
-                <div>
-                    <h3 class="text-amber-900 font-900 uppercase italic tracking-tight text-lg">Wichtiger Hinweis: Brückentag im Mai</h3>
-                    <p class="text-amber-800 text-sm leading-relaxed mt-1">
-                        Aufgrund des Brückentags bleibt unser Betrieb am <strong>Freitag, den 15.05.2026</strong> geschlossen. 
-                        Die letzte Anlieferungsmöglichkeit in dieser Woche ist <strong>Mittwoch, der 13.05.2026</strong>. 
-                        Bitte planen Sie Ihre Transporte entsprechend ein.
-                    </p>
-                </div>
-            </div>
-        </section>
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" onclick="location.reload()" class="text-xl font-900 tracking-tighter uppercase italic">
+                Darula <span class="text-blue-600">Transporte</span>
+            </a>
+            <div id="toast" class="hidden fixed top-6 right-6 px-6 py-3 rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-2xl z-[100] animate-fade-in"></div>
+        </div>
+    </nav>
 
-        <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">1</div>
-                <h4 class="font-900 uppercase italic text-sm mb-2">Datum wählen</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">Klicken Sie auf einen verfügbaren Tag im Kalender. Grüne Tage haben freie Kapazitäten.</p>
-            </div>
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">2</div>
-                <h4 class="font-900 uppercase italic text-sm mb-2">Daten eingeben</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">Füllen Sie das Formular aus. Lieferscheine können als PDF oder Bild hochgeladen werden.</p>
-            </div>
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">3</div>
-                <h4 class="font-900 uppercase italic text-sm mb-2">Bestätigung</h4>
-                <p class="text-xs text-slate-500 leading-relaxed">Nach dem Absenden erhalten Sie eine Bestätigung auf dem Bildschirm. Der Termin ist dann fixiert.</p>
-            </div>
-        </section>
+    <main class="max-w-7xl mx-auto px-6 mt-10">
+        
+        <section class="mb-8">
+            <div class="bg-amber-50 border-l-8 border-amber-500 p-6 rounded-2xl shadow-sm flex items-center gap-6">
+                <div class="bg-amber-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-lg shrink-0">📅</div>
+                <div>
+                    <h3 class="text-amber-900 font-900 uppercase italic tracking-tight text-lg">Wichtiger Hinweis: Brückentag im Mai</h3>
+                    <p class="text-amber-800 text-sm leading-relaxed mt-1">
+                        Aufgrund des Brückentags bleibt unser Betrieb am <strong>Freitag, den 15.05.2026</strong> geschlossen. 
+                        Die letzte Anlieferungsmöglichkeit in dieser Woche ist <strong>Mittwoch, der 13.05.2026</strong>. 
+                        Bitte planen Sie Ihre Transporte entsprechend ein.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <div class="lg:col-span-8">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 id="monthLabel" class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900">Ladeplan</h2>
-                        <div class="flex items-center gap-4 mt-2">
-                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Frei</span></div>
-                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Voll</span></div>
-                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div><span class="text-[9px] font-bold uppercase text-slate-400">Reserviert</span></div>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">←</button>
-                        <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">→</button>
-                    </div>
-                </div>
+        <section class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">1</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Datum wählen</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Klicken Sie auf einen verfügbaren Tag im Kalender. Grüne Tage haben freie Kapazitäten.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">2</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Daten eingeben</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Füllen Sie das Formular aus. Lieferscheine können als PDF oder Bild hochgeladen werden.</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mb-4 text-lg">3</div>
+                <h4 class="font-900 uppercase italic text-sm mb-2">Bestätigung</h4>
+                <p class="text-xs text-slate-500 leading-relaxed">Nach dem Absenden erhalten Sie eine Bestätigung auf dem Bildschirm. Der Termin ist dann fixiert.</p>
+            </div>
+        </section>
 
-                <div class="calendar-grid mb-8" id="calendarGrid"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 id="monthLabel" class="text-4xl font-900 uppercase italic tracking-tighter text-slate-900">Ladeplan</h2>
+                        <div class="flex items-center gap-4 mt-2">
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Frei</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div><span class="text-[9px] font-bold uppercase text-slate-400">Voll</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div><span class="text-[9px] font-bold uppercase text-slate-400">Reserviert</span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="changeMonth(-1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">←</button>
+                        <button onclick="changeMonth(1)" class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-xl hover:bg-slate-900 hover:text-white transition-all">→</button>
+                    </div>
+                </div>
 
-                <div class="bg-blue-600 rounded-[2rem] p-6 text-white flex items-center justify-between shadow-lg shadow-blue-200">
-                    <div class="flex items-center gap-4">
-                        <div class="text-2xl">📦</div>
-                        <div>
-                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Hinweis</p>
-                            <p class="text-sm font-bold italic">Stückgut anlieferung ohne Avisierung möglich!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="calendar-grid mb-8" id="calendarGrid"></div>
 
-            <div class="lg:col-span-4">
-                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl sticky top-24">
-                    <h3 class="text-2xl font-900 uppercase italic tracking-tighter mb-6 text-slate-900 pb-4 border-b">Avisierung</h3>
-                    
-                    <form id="avisForm" class="space-y-4">
-                        <input type="hidden" id="fDate">
-                        
-                        <div>
-                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Spedition / Firma</label>
-                            <input type="text" id="fCompany" required placeholder="Firmenname" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
-                            <div id="rekaNotice" class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
-                                <p class="text-[10px] font-900 uppercase text-amber-700 leading-tight italic">⚠️ REKA: Anlieferung bis 12:00 Uhr!</p>
-                            </div>
-                        </div>
+                <div class="bg-blue-600 rounded-[2rem] p-6 text-white flex items-center justify-between shadow-lg shadow-blue-200">
+                    <div class="flex items-center gap-4">
+                        <div class="text-2xl">📦</div>
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">Hinweis</p>
+                            <p class="text-sm font-bold italic">Stückgut anlieferung ohne Avisierung möglich!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div>
-                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">E-Mail für Rückfragen</label>
-                            <input type="email" id="fEmail" required placeholder="dispo@firma.de" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
-                        </div>
+            <div class="lg:col-span-4">
+                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-xl sticky top-24">
+                    <h3 class="text-2xl font-900 uppercase italic tracking-tighter mb-6 text-slate-900 pb-4 border-b">Avisierung</h3>
+                    
+                    <form id="avisForm" class="space-y-4">
+                        <input type="hidden" id="fDate">
+                        
+                        <div>
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Spedition / Firma</label>
+                            <input type="text" id="fCompany" required placeholder="Firmenname" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
+                            <div id="rekaNotice" class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                                <p class="text-[10px] font-900 uppercase text-amber-700 leading-tight italic">⚠️ REKA: Anlieferung bis 12:00 Uhr!</p>
+                            </div>
+                        </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Paletten</label>
-                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold transition-all outline-none italic text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Fahrzeug</label>
-                                <select id="fType" required class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs text-slate-500">
-                                    <option value="" disabled selected>Wählen...</option>
-                                    <option value="Stückgut">Stückgut</option>
-                                    <option value="Teillieferung">Teillieferung</option>
-                                    <option value="Komplettlieferung">Komplettlieferung</option>
-                                </select>
-                            </div>
-                        </div>
+                        <div>
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">E-Mail für Rückfragen</label>
+                            <input type="email" id="fEmail" required placeholder="dispo@firma.de" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 focus:bg-white rounded-xl font-bold transition-all outline-none italic text-sm">
+                        </div>
 
-                        <div>
-                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Lieferschein (PDF/Bild) - Optional</label>
-                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl font-bold text-[10px] uppercase">
-                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Paletten</label>
+                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold transition-all outline-none italic text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Fahrzeug</label>
+                                <select id="fType" required class="w-full p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs text-slate-500">
+                                    <option value="" disabled selected>Wählen...</option>
+                                    <option value="Stückgut">Stückgut</option>
+                                    <option value="Teillieferung">Teillieferung</option>
+                                    <option value="Komplettlieferung">Komplettlieferung</option>
+                                </select>
+                            </div>
+                        </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <input type="text" id="fBe" placeholder="BE-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
-                            <input type="text" id="fArt" placeholder="Art-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
-                        </div>
+                        <div>
+                            <label class="block text-[9px] font-900 uppercase text-slate-400 mb-1.5 tracking-widest italic ml-1">Lieferschein (PDF/Bild) - Optional</label>
+                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl font-bold text-[10px] uppercase">
+                        </div>
 
-                        <div id="statusBox" class="p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 italic">Datum im Kalender wählen</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="text" id="fBe" placeholder="BE-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
+                            <input type="text" id="fArt" placeholder="Art-Nr." required class="p-4 bg-slate-50 border border-slate-100 focus:border-blue-600 rounded-xl font-bold outline-none italic text-xs">
+                        </div>
 
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-5 rounded-2xl font-900 uppercase text-[11px] tracking-[0.2em] transition-all shadow-lg active:scale-95 italic disabled:opacity-50 disabled:cursor-not-allowed">Avisierung absenden</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </main>
+                        <div id="statusBox" class="p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-slate-100 text-slate-500 border border-slate-200 italic">Datum im Kalender wählen</div>
 
-    <div id="confirmationOverlay">
-        <div class="no-print max-w-[210mm] mx-auto mb-6 flex justify-between items-center bg-white p-4 rounded-2xl shadow-xl">
-            <p class="text-sm font-bold text-slate-600 ml-2">Ihre Anmeldung war erfolgreich.</p>
-            <div class="flex gap-3">
-                <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                    Drucken / Speichern
-                </button>
-                <button onclick="location.reload()" class="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition-all text-sm">Schließen</button>
-            </div>
-        </div>
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-slate-900 text-white py-5 rounded-2xl font-900 uppercase text-[11px] tracking-[0.2em] transition-all shadow-lg active:scale-95 italic disabled:opacity-50 disabled:cursor-not-allowed">Avisierung absenden</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
 
-        <div class="a4-container">
-            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-8 mb-10">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight text-slate-900">BESTÄTIGUNG</h1>
-                    <p class="text-slate-500 font-medium mt-1">Übermittlung der Avisierungsdaten</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-bold text-lg">Darula Transporte</p>
-                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Wareneingangsbestätigung</p>
-                </div>
-            </div>
+    <div id="confirmationOverlay">
+        <div class="no-print max-w-[210mm] mx-auto mb-6 flex justify-between items-center bg-white p-4 rounded-2xl shadow-xl">
+            <p class="text-sm font-bold text-slate-600 ml-2">Ihre Anmeldung war erfolgreich.</p>
+            <div class="flex gap-3">
+                <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Drucken / Speichern
+                </button>
+                <button onclick="location.reload()" class="bg-slate-100 text-slate-600 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition-all text-sm">Schließen</button>
+            </div>
+        </div>
 
-            <div class="grid grid-cols-2 gap-12 mb-12">
-                <div class="space-y-1">
-                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Auftraggeber / Firma</h4>
-                    <p id="confCompany" class="text-xl font-bold"></p>
-                    <p id="confEmail" class="text-slate-500"></p>
-                </div>
-                <div class="space-y-1">
-                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bestätigter Termin</h4>
-                    <p id="confDate" class="text-xl font-bold text-blue-600"></p>
-                    <p class="text-slate-500 text-xs font-medium italic">Anlieferung bitte im Zeitfenster 07:00 - 15:00 Uhr</p>
-                </div>
-            </div>
+        <div class="a4-container">
+            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-8 mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-slate-900">BESTÄTIGUNG</h1>
+                    <p class="text-slate-500 font-medium mt-1">Übermittlung der Avisierungsdaten</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-lg">Darula Transporte</p>
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Wareneingangsbestätigung</p>
+                </div>
+            </div>
 
-            <div class="border border-slate-200 rounded-2xl p-8 mb-10">
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Details zur Sendung</h4>
-                <div class="grid grid-cols-2 gap-y-6">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Menge</p>
-                        <p id="confPal" class="font-bold"></p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Fahrzeugtyp</p>
-                        <p id="confType" class="font-bold"></p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Referenz (BE-Nr.)</p>
-                        <p id="confBe" class="font-bold"></p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Artikel-Nummer</p>
-                        <p id="confArt" class="font-bold"></p>
-                    </div>
-                </div>
-            </div>
+            <div class="grid grid-cols-2 gap-12 mb-12">
+                <div class="space-y-1">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Auftraggeber / Firma</h4>
+                    <p id="confCompany" class="text-xl font-bold"></p>
+                    <p id="confEmail" class="text-slate-500"></p>
+                </div>
+                <div class="space-y-1">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bestätigter Termin</h4>
+                    <p id="confDate" class="text-xl font-bold text-blue-600"></p>
+                    <p class="text-slate-500 text-xs font-medium italic">Anlieferung bitte im Zeitfenster 07:00 - 14:00 Uhr</p>
+                </div>
+            </div>
 
-            <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t border-slate-100 pt-6">
-                <div class="text-[9px] text-slate-400 font-medium leading-relaxed">
-                    <strong>Darula Transporte</strong><br>
-                    Thoner Weg 23, 90425 Nürnberg<br>
-                    T: +49 911 30039794 | E: lagerbrangs@gmx.de
-                </div>
-                <div class="text-[9px] text-slate-300 font-bold uppercase italic">
-                    Bestätigung automatisch generiert
-                </div>
-            </div>
-        </div>
-    </div>
+            <div class="border border-slate-200 rounded-2xl p-8 mb-10">
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Details zur Sendung</h4>
+                <div class="grid grid-cols-2 gap-y-6">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Menge</p>
+                        <p id="confPal" class="font-bold"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Fahrzeugtyp</p>
+                        <p id="confType" class="font-bold"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Referenz (BE-Nr.)</p>
+                        <p id="confBe" class="font-bold"></p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Artikel-Nummer</p>
+                        <p id="confArt" class="font-bold"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t border-slate-100 pt-6">
+                <div class="text-[9px] text-slate-400 font-medium leading-relaxed">
+                    <strong>Darula Transporte</strong><br>
+                    Thoner Weg 23, 90425 Nürnberg<br>
+                    T: +49 911 30039794 | E: lagerbrangs@gmx.de
+                </div>
+                <div class="text-[9px] text-slate-300 font-bold uppercase italic">
+                    Bestätigung automatisch generiert
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
-    const CFG = {
-        U: "https://navhxyadbifllpopumfz.supabase.co",
-        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        MAX_LKW: 3, 
-        LKW_MIN_LE: 11,
-        NTFY_TOPIC: "darula_logistik_2026_dispatch"
-    };
+    const CFG = {
+        U: "https://navhxyadbifllpopumfz.supabase.co",
+        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
+        MAX_LKW: 3, 
+        LKW_MIN_LE: 11,
+        NTFY_TOPIC: "darula_logistik_2026_dispatch"
+    };
 
-    const sb = supabase.createClient(CFG.U, CFG.K);
-    let currentViewDate = new Date();
-    let selectedDateStr = null;
-    let stats = {};
+    const sb = supabase.createClient(CFG.U, CFG.K);
+    let currentViewDate = new Date();
+    let selectedDateStr = null;
+    let stats = {};
 
-    async function init() {
-        await loadData();
-        renderCalendar();
-        
-        document.getElementById('fCompany').addEventListener('input', (e) => {
-            document.getElementById('rekaNotice').classList.toggle('visible', e.target.value.toLowerCase().includes('reka'));
-        });
-        
-        document.getElementById('fType').addEventListener('change', (e) => {
-            e.target.classList.remove('text-slate-500');
-            renderCalendar();
-        });
+    async function init() {
+        await loadData();
+        renderCalendar();
+        
+        // Feedback Popup direkt anzeigen
+        setTimeout(() => {
+            document.getElementById('feedbackOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }, 1500);
 
-        document.getElementById('fPalettes').addEventListener('input', renderCalendar);
-    }
+        document.getElementById('fCompany').addEventListener('input', (e) => {
+            document.getElementById('rekaNotice').classList.toggle('visible', e.target.value.toLowerCase().includes('reka'));
+        });
+        
+        document.getElementById('fType').addEventListener('change', (e) => {
+            e.target.classList.remove('text-slate-500');
+            renderCalendar();
+        });
 
-    async function loadData() {
-        try {
-            const { data, error } = await sb.from('avisierung').select('liefer_datum, palettes, fahrzeug_typ, firma');
-            if(error) throw error;
-            
-            stats = {};
-            (data || []).forEach(r => {
-                const d = r.liefer_datum;
-                if(!d) return;
-                if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
-                
-                const pCount = parseInt(r.palettes) || 0;
-                if(pCount >= CFG.LKW_MIN_LE || (r.fahrzeug_typ && r.fahrzeug_typ !== 'Stückgut')) {
-                    stats[d].lkw_count++;
-                }
-                if(r.firma?.toLowerCase().includes('monowell')) stats[d].is_blocked = true;
-            });
-        } catch (e) {
-            showToast("Verbindung fehlgeschlagen", true);
-        }
-    }
+        document.getElementById('fPalettes').addEventListener('input', renderCalendar);
+    }
 
-    function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        if(!grid) return;
-        grid.innerHTML = '';
-        
-        const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
-        document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentViewDate);
+    function closeFeedback() {
+        document.getElementById('feedbackOverlay').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
 
-        const firstDayIdx = (new Date(y, m, 1).getDay() + 6) % 7;
-        const daysInMonth = new Date(y, m + 1, 0).getDate();
-        const todayStr = new Date().toISOString().split('T')[0];
+    async function loadData() {
+        try {
+            const { data, error } = await sb.from('avisierung').select('liefer_datum, palettes, fahrzeug_typ, firma');
+            if(error) throw error;
+            
+            stats = {};
+            (data || []).forEach(r => {
+                const d = r.liefer_datum;
+                if(!d) return;
+                if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
+                
+                const pCount = parseInt(r.palettes) || 0;
+                if(pCount >= CFG.LKW_MIN_LE || (r.fahrzeug_typ && r.fahrzeug_typ !== 'Stückgut')) {
+                    stats[d].lkw_count++;
+                }
+                if(r.firma?.toLowerCase().includes('monowell')) stats[d].is_blocked = true;
+            });
+        } catch (e) {
+            showToast("Verbindung fehlgeschlagen", true);
+        }
+    }
 
-        const curPal = parseInt(document.getElementById('fPalettes').value) || 0;
-        const curTyp = document.getElementById('fType').value;
-        const inputIsLkw = curTyp !== "" && (curPal >= CFG.LKW_MIN_LE || curTyp !== 'Stückgut');
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        
+        const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
+        document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentViewDate);
 
-        for(let i=0; i<firstDayIdx; i++) grid.innerHTML += `<div></div>`;
+        const firstDayIdx = (new Date(y, m, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
+        const todayStr = new Date().toISOString().split('T')[0];
 
-        for(let d=1; d<=daysInMonth; d++) {
-            const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const info = stats[dStr] || { lkw_count: 0, is_blocked: false };
-            const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
-            
-            const isBridgeDay = (dStr === '2026-05-14' || dStr === '2026-05-15');
-            
-            const isPast = dStr < todayStr || isWeekend || isBridgeDay;
-            const isFull = info.lkw_count >= CFG.MAX_LKW;
-            const deny = inputIsLkw && (isFull || info.is_blocked);
+        const curPal = parseInt(document.getElementById('fPalettes').value) || 0;
+        const curTyp = document.getElementById('fType').value;
+        const inputIsLkw = curTyp !== "" && (curPal >= CFG.LKW_MIN_LE || curTyp !== 'Stückgut');
 
-            const card = document.createElement('div');
-            card.className = `day-card ${isPast?'disabled':''} ${selectedDateStr===dStr?'selected':''} ${deny?'lkw-blocked':''}`;
-            
-            let color = info.is_blocked ? "bg-blue-600" : (isFull ? "bg-red-500" : "bg-emerald-500");
-            if(isBridgeDay) color = "bg-slate-300";
+        for(let i=0; i<firstDayIdx; i++) grid.innerHTML += `<div></div>`;
 
-            card.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <span class="text-xl font-900 italic tracking-tighter">${d}</span>
-                    <div class="w-2.5 h-2.5 rounded-full ${color}"></div>
-                </div>
-                <div>
-                    <div class="text-[7px] font-black uppercase text-slate-400 italic">
-                        ${isBridgeDay ? 'GESCHLOSSEN' : (info.is_blocked ? 'RESERVIERT' : info.lkw_count+'/'+CFG.MAX_LKW+' LKW')}
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill ${color}" style="width:${isBridgeDay ? 100 : Math.min((info.lkw_count/CFG.MAX_LKW)*100, 100)}%"></div>
-                    </div>
-                </div>`;
+        for(let d=1; d<=daysInMonth; d++) {
+            const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const info = stats[dStr] || { lkw_count: 0, is_blocked: false };
+            const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
+            
+            const isBridgeDay = (dStr === '2026-05-14' || dStr === '2026-05-15');
+            
+            const isPast = dStr < todayStr || isWeekend || isBridgeDay;
+            const isFull = info.lkw_count >= CFG.MAX_LKW;
+            const deny = inputIsLkw && (isFull || info.is_blocked);
 
-            if(!isPast) {
-                card.onclick = () => {
-                    if(deny) return showToast("Termin für LKW voll belegt!", true);
-                    selectedDateStr = dStr;
-                    document.getElementById('fDate').value = dStr;
-                    document.getElementById('statusBox').innerHTML = `<span class="text-blue-600 font-black">${d}.${m+1}.</span> AUSGEWÄHLT`;
-                    document.getElementById('statusBox').className = "p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-200 italic";
-                    renderCalendar();
-                };
-            }
-            grid.appendChild(card);
-        }
-    }
+            const card = document.createElement('div');
+            card.className = `day-card ${isPast?'disabled':''} ${selectedDateStr===dStr?'selected':''} ${deny?'lkw-blocked':''}`;
+            
+            let color = info.is_blocked ? "bg-blue-600" : (isFull ? "bg-red-500" : "bg-emerald-500");
+            if(isBridgeDay) color = "bg-slate-300";
 
-    async function handleForm(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        if(!selectedDateStr) return showToast("Bitte wählen Sie ein Datum!", true);
-        if(btn.disabled) return;
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="text-xl font-900 italic tracking-tighter">${d}</span>
+                    <div class="w-2.5 h-2.5 rounded-full ${color}"></div>
+                </div>
+                <div>
+                    <div class="text-[7px] font-black uppercase text-slate-400 italic">
+                        ${isBridgeDay ? 'GESCHLOSSEN' : (info.is_blocked ? 'RESERVIERT' : info.lkw_count+'/'+CFG.MAX_LKW+' LKW')}
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${color}" style="width:${isBridgeDay ? 100 : Math.min((info.lkw_count/CFG.MAX_LKW)*100, 100)}%"></div>
+                    </div>
+                </div>`;
 
-        const file = document.getElementById('fDoc').files[0];
-        btn.disabled = true; 
-        btn.innerText = "WIRD ÜBERMITTELT...";
+            if(!isPast) {
+                card.onclick = () => {
+                    if(deny) return showToast("Termin für LKW voll belegt!", true);
+                    selectedDateStr = dStr;
+                    document.getElementById('fDate').value = dStr;
+                    document.getElementById('statusBox').innerHTML = `<span class="text-blue-600 font-black">${d}.${m+1}.</span> AUSGEWÄHLT`;
+                    document.getElementById('statusBox').className = "p-4 rounded-xl text-center text-[10px] font-900 uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-200 italic";
+                    renderCalendar();
+                };
+            }
+            grid.appendChild(card);
+        }
+    }
 
-        try {
-            let fileUrl = null;
-            if(file) {
-                const fExt = file.name.split('.').pop();
-                const fPath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fExt}`;
-                await sb.storage.from('lieferscheine').upload(fPath, file);
-                const { data: urlData } = sb.storage.from('lieferscheine').getPublicUrl(fPath);
-                fileUrl = urlData.publicUrl;
-            }
+    async function handleForm(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        if(!selectedDateStr) return showToast("Bitte wählen Sie ein Datum!", true);
+        if(btn.disabled) return;
 
-            const payload = {
-                liefer_datum: selectedDateStr,
-                firma: document.getElementById('fCompany').value,
-                email: document.getElementById('fEmail').value,
-                palettes: parseInt(document.getElementById('fPalettes').value) || 1,
-                fahrzeug_typ: document.getElementById('fType').value,
-                be_nummer: document.getElementById('fBe').value,
-                artikel_nr: document.getElementById('fArt').value,
-                lieferschein_url: fileUrl,
-                status: 'angemeldet'
-            };
+        const file = document.getElementById('fDoc').files[0];
+        btn.disabled = true; 
+        btn.innerText = "WIRD ÜBERMITTELT...";
 
-            await sb.from('avisierung').insert([payload]);
+        try {
+            let fileUrl = null;
+            if(file) {
+                const fExt = file.name.split('.').pop();
+                const fPath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fExt}`;
+                await sb.storage.from('lieferscheine').upload(fPath, file);
+                const { data: urlData } = sb.storage.from('lieferscheine').getPublicUrl(fPath);
+                fileUrl = urlData.publicUrl;
+            }
 
-            try {
-                await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
-                    method: 'POST',
-                    body: `🚚 Neue Avisierung erhalten!\n\nFirma: ${payload.firma}\nDatum: ${payload.liefer_datum}`,
-                    headers: { 'Title': 'Darula Logistik', 'Priority': 'high' }
-                });
-            } catch (ntfyErr) {}
+            const payload = {
+                liefer_datum: selectedDateStr,
+                firma: document.getElementById('fCompany').value,
+                email: document.getElementById('fEmail').value,
+                palettes: parseInt(document.getElementById('fPalettes').value) || 1,
+                fahrzeug_typ: document.getElementById('fType').value,
+                be_nummer: document.getElementById('fBe').value,
+                artikel_nr: document.getElementById('fArt').value,
+                lieferschein_url: fileUrl,
+                status: 'angemeldet'
+            };
 
-            showToast("Avisierung erfolgreich!");
-            showConfirmation(payload);
+            await sb.from('avisierung').insert([payload]);
 
-        } catch (err) {
-            showToast("Fehler beim Senden!", true);
-            btn.disabled = false; 
-            btn.innerText = "Avisierung absenden";
-        }
-    }
+            try {
+                await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
+                    method: 'POST',
+                    body: `🚚 Neue Avisierung erhalten!\n\nFirma: ${payload.firma}\nDatum: ${payload.liefer_datum}`,
+                    headers: { 'Title': 'Darula Logistik', 'Priority': 'high' }
+                });
+            } catch (ntfyErr) {}
 
-    function showConfirmation(data) {
-        document.getElementById('confCompany').innerText = data.firma;
-        document.getElementById('confEmail').innerText = data.email;
-        document.getElementById('confDate').innerText = new Date(data.liefer_datum).toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
-        document.getElementById('confPal').innerText = data.palettes + " Paletten";
-        document.getElementById('confType').innerText = data.fahrzeug_typ;
-        document.getElementById('confBe').innerText = data.be_nummer;
-        document.getElementById('confArt').innerText = data.artikel_nr;
+            showToast("Avisierung erfolgreich!");
+            showConfirmation(payload);
 
-        document.getElementById('confirmationOverlay').style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
+        } catch (err) {
+            showToast("Fehler beim Senden!", true);
+            btn.disabled = false; 
+            btn.innerText = "Avisierung absenden";
+        }
+    }
 
-    function showToast(m, err=false) {
-        const t = document.getElementById('toast');
-        if(!t) return;
-        t.innerText = m; 
-        t.className = `fixed top-6 right-6 px-8 py-4 rounded-2xl text-[10px] font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
-        t.classList.remove('hidden'); 
-        setTimeout(() => t.classList.add('hidden'), 4000);
-    }
+    function showConfirmation(data) {
+        document.getElementById('confCompany').innerText = data.firma;
+        document.getElementById('confEmail').innerText = data.email;
+        document.getElementById('confDate').innerText = new Date(data.liefer_datum).toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
+        document.getElementById('confPal').innerText = data.palettes + " Paletten";
+        document.getElementById('confType').innerText = data.fahrzeug_typ;
+        document.getElementById('confBe').innerText = data.be_nummer;
+        document.getElementById('confArt').innerText = data.artikel_nr;
 
-    window.changeMonth = (v) => { 
-        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
-        renderCalendar(); 
-    };
+        document.getElementById('confirmationOverlay').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
 
-    document.getElementById('avisForm').onsubmit = handleForm;
-    init();
+    function showToast(m, err=false) {
+        const t = document.getElementById('toast');
+        if(!t) return;
+        t.innerText = m; 
+        t.className = `fixed top-6 right-6 px-8 py-4 rounded-2xl text-[10px] font-900 uppercase tracking-widest shadow-2xl z-[100] ${err?'bg-red-500':'bg-slate-900'} text-white italic`;
+        t.classList.remove('hidden'); 
+        setTimeout(() => t.classList.add('hidden'), 4000);
+    }
+
+    window.changeMonth = (v) => { 
+        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
+        renderCalendar(); 
+    };
+
+    document.getElementById('avisForm').onsubmit = handleForm;
+    init();
 </script>
 </body>
 </html>
-
-
