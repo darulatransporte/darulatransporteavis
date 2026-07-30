@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stellenangebote | Darula Transporte</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <header>
+    <div class="logo-area">
+      <h1>Darula Transporte</h1>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Startseite</a></li>
+        <li><a href="avisierung.html">Warenannahme</a></li>
+        <li><a href="stellenangebote.html">Karriere</a></li>
+        <li><a href="impressum.html">Impressum</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section" style="text-align: center; margin-bottom: 3rem;">
+      <h2>Karriere im Fuhrpark (3,5t – 7,5t)</h2>
+      <p>Moderne 3,5- bis 7,5-Tonner Fahrzeuge, geregelte Arbeitszeiten und ein starkes Team erwarten Sie bei Darula Transporte in Nürnberg. Keine 40-Tonner!</p>
+    </section>
+
+    <div id="job-listings">
+      <!-- Stellen werden dynamisch und fehlerfrei über JS geladen -->
+    </div>
+
+    <section class="card" id="application-section">
+      <h3>Bewerbungsformular</h3>
+      <form id="job-application-form" enctype="multipart/form-data">
+        <div style="margin-bottom: 1rem;">
+          <label for="position-select">Gewünschte Stelle:</label>
+          <select id="position-select" name="position" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+            <option value="">Bitte wählen...</option>
+            <option value="Fahrer 3,5t bis 7,5-Tonner (m/w/d)">Fahrer 3,5t bis 7,5-Tonner (m/w/d)</option>
+            <option value="Fahrer 7,5-Tonner (m/w/d)">Fahrer 7,5-Tonner (m/w/d)</option>
+            <option value="Lagerhelfer (m/w/d)">Lagerhelfer (m/w/d)</option>
+            <option value="Praktikanten (m/w/d)">Praktikanten (m/w/d)</option>
+            <option value="Ferienjobber (m/w/d)">Ferienjobber (m/w/d)</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label for="applicant-name">Vollständiger Name:</label>
+          <input type="text" id="applicant-name" name="name" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label for="applicant-email">E-Mail-Adresse:</label>
+          <input type="email" id="applicant-email" name="email" required style="width: 100%; padding: 0.5rem; margin-top: 0.25rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label for="applicant-file">Lebenslauf & Anlagen (PDF, max. 5MB):</label>
+          <input type="file" id="applicant-file" name="file" accept=".pdf" required style="width: 100%; margin-top: 0.25rem;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label>
+            <input type="checkbox" id="dsgvo-check" required> Ich stimme der DSGVO-konformen Verarbeitung meiner personenbezogenen Daten zum Zwecke des Bewerbungsverfahrens zu.
+          </label>
+        </div>
+        <button type="submit" class="btn">Bewerbung absenden</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Darula Transporte. Alle Rechte vorbehalten. | <a href="impressum.html" style="color: inherit;">Impressum & Datenschutz</a></p>
+  </footer>
+
+  <script src="js/core.js"></script>
+  <script src="js/jobs.js"></script>
+</body>
+</html>
