@@ -26,6 +26,7 @@
         .step-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Print Styles for Receipt */
         @media print { 
             body * { visibility: hidden; } 
             #receiptArea, #receiptArea * { visibility: visible; } 
@@ -36,10 +37,12 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
+    <!-- Alert Banner -->
     <div class="bg-[#171717] text-white text-sm font-medium py-2.5 px-4 text-center tracking-wide">
         Inventur am <span class="text-brand-orange">11.11.2026</span> - Buchungen für diesen Tag sind gesperrt.
     </div>
 
+    <!-- Navigation -->
     <nav class="bg-white border-b border-subtle sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3">
@@ -50,8 +53,11 @@
     </nav>
 
     <main class="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
+        
+        <!-- Booking Wizard -->
         <div class="bg-white border border-subtle rounded-lg p-8 shadow-sm">
             
+            <!-- STEP 1: Date Selection -->
             <div id="step1" class="step-container active">
                 <div class="flex justify-between items-end mb-6">
                     <div>
@@ -74,6 +80,7 @@
                 </div>
             </div>
 
+            <!-- STEP 2: Form Data -->
             <div id="step2" class="step-container">
                 <h2 class="text-xl font-semibold mb-1">Schritt 2: Sendungsdaten</h2>
                 <p class="text-sm text-[#737373] mb-6">Gewähltes Datum: <span id="lblSelectedDate" class="font-semibold text-[#171717]"></span></p>
@@ -97,10 +104,6 @@
                             <input type="text" id="fBe" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Bemerkung (Optional)</label>
-                            <textarea id="fBemerkung" rows="2" placeholder="Hinweise zur Lieferung..." class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue resize-none"></textarea>
-                        </div>
-                        <div class="md:col-span-2">
                             <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Lieferschein (PDF/Bild)</label>
                             <input type="file" id="fDoc" class="w-full text-sm text-[#525252] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#f5f5f5] file:text-[#171717] hover:file:bg-[#e5e5e5]">
                         </div>
@@ -113,6 +116,7 @@
                 </form>
             </div>
 
+            <!-- STEP 3: Receipt -->
             <div id="step3" class="step-container text-center py-8">
                 <div id="receiptArea" class="text-left bg-white border border-subtle p-8 rounded-lg max-w-lg mx-auto">
                     <div class="border-b border-subtle pb-4 mb-6">
@@ -125,7 +129,6 @@
                         <div class="flex justify-between"><span class="text-[#737373]">Spedition:</span> <strong id="rCompany"></strong></div>
                         <div class="flex justify-between"><span class="text-[#737373]">BE-Nummer:</span> <strong id="rBe"></strong></div>
                         <div class="flex justify-between"><span class="text-[#737373]">Menge:</span> <strong id="rPalettes"></strong></div>
-                        <div class="flex justify-between"><span class="text-[#737373]">Bemerkung:</span> <strong id="rBemerkung" class="text-right max-w-[200px] truncate" title=""></strong></div>
                     </div>
                 </div>
                 <div class="mt-8 space-x-4 no-print">
@@ -138,6 +141,7 @@
     </main>
 
 <script>
+    // System Config
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
@@ -149,14 +153,17 @@
     let selectedDate = null;
     let bookedData = {};
 
+    // Initialization
     window.onload = async () => {
         sb = supabase.createClient(CFG.U, CFG.K);
         await fetchAvailability();
         renderCalendar();
     };
 
+    // Helper: Generate Ticket ID
     const generateId = () => `DAR-${new Date().toISOString().slice(2,10).replace(/-/g,'')}-${Math.random().toString(36).substr(2,4).toUpperCase()}`;
 
+    // Logic: Fetch Data
     async function fetchAvailability() {
         try {
             const { data } = await sb.from('avisierung').select('liefer_datum');
@@ -167,6 +174,7 @@
         } catch (e) { console.error("DB Error"); }
     }
 
+    // Logic: Render Calendar
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
@@ -180,8 +188,10 @@
         const daysInMonth = new Date(y, m + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
+        // Empty padding cells
         for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-day disabled"></div>`;
 
+        // Day cells
         for(let d=1; d<=daysInMonth; d++) {
             const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const count = bookedData[dStr] || 0;
@@ -219,6 +229,7 @@
         renderCalendar();
     }
 
+    // Wizard Navigation
     function goToStep2() {
         document.getElementById('step1').classList.remove('active');
         document.getElementById('step2').classList.add('active');
@@ -230,6 +241,7 @@
         document.getElementById('step1').classList.add('active');
     }
 
+    // Form Submission
     document.getElementById('avisForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -253,13 +265,13 @@
                 email: document.getElementById('fEmail').value,
                 palettes: document.getElementById('fPalettes').value,
                 be_nummer: document.getElementById('fBe').value,
-                bemerkung: document.getElementById('fBemerkung').value,
                 lieferschein_url: fileUrl,
                 status: 'gebucht'
             };
 
             await sb.from('avisierung').insert([payload]);
 
+            // Show Receipt
             document.getElementById('step2').classList.remove('active');
             document.getElementById('step3').classList.add('active');
             
@@ -268,10 +280,6 @@
             document.getElementById('rCompany').innerText = payload.firma;
             document.getElementById('rBe').innerText = payload.be_nummer;
             document.getElementById('rPalettes').innerText = payload.palettes;
-            
-            const bemerkungElem = document.getElementById('rBemerkung');
-            bemerkungElem.innerText = payload.bemerkung || '-';
-            bemerkungElem.title = payload.bemerkung || '';
 
         } catch (error) {
             alert("Fehler beim Speichern. Bitte versuchen Sie es erneut.");
