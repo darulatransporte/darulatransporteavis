@@ -3,488 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avisierungs-Portal | Darula Transporte</title>
-    
-    <link rel="preconnect" href="https://navhxyadbifllpopumfz.supabase.co">
-    <link rel="preload" as="image" href="darula_logo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <title>Avisierung | Darula Transporte</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: { blue: '#209fd9', darkblue: '#187fb0', orange: '#f39200', darkorange: '#cc7a00' } },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
-                }
-            }
+            theme: { extend: { colors: { brand: { blue: '#209fd9', orange: '#f39200' } }, fontFamily: { sans: ['Inter', 'sans-serif'] } } }
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .day-card { background: white; border-radius: 14px; padding: 14px; min-height: 100px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
-        .day-card:not(.disabled):not(.lkw-blocked):hover { border-color: #209fd9; box-shadow: 0 10px 15px -3px rgba(32, 159, 217, 0.15); transform: translateY(-3px); }
-        .day-card.selected { border-color: #209fd9; background: #f0f9ff; box-shadow: 0 0 0 2px rgba(32, 159, 217, 0.4); transform: scale(1.02); }
-        .day-card.disabled { opacity: 0.4; cursor: not-allowed !important; background: #f1f5f9; border-color: #f1f5f9; }
-        .day-card.lkw-blocked { cursor: not-allowed; border-color: #fca5a5; background-color: #fef2f2; }
+        body { font-family: 'Inter', sans-serif; background-color: #fafafa; color: #171717; }
+        .border-subtle { border: 1px solid #e5e5e5; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; }
+        .cal-day { background: white; padding: 12px; min-height: 90px; cursor: pointer; transition: background 0.15s; }
+        .cal-day:hover:not(.disabled) { background: #f8fafc; }
+        .cal-day.disabled { background: #f5f5f5; color: #a3a3a3; cursor: not-allowed; }
+        .cal-day.selected { background: #eff6ff; box-shadow: inset 0 0 0 2px #209fd9; }
+        .cal-day.inventur { background: #fef2f2; color: #dc2626; cursor: not-allowed; }
         
-        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; transition: width 0.5s ease-in-out; }
-        
-        /* Modern Glass Overlays */
-        #feedbackOverlay, #confirmationOverlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
-        
-        /* Druckbeleg Styling */
-        .a4-container { background: white; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; color: #0f172a; border-radius: 12px; }
-        .ticket-id-box { border: 2px dashed #cbd5e1; background: #f8fafc; padding: 10px 15px; text-align: center; border-radius: 8px; }
-        
+        .step-container { display: none; }
+        .step-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Print Styles for Receipt */
         @media print { 
             body * { visibility: hidden; } 
-            #confirmationOverlay, #confirmationOverlay * { visibility: visible; } 
-            #confirmationOverlay { position: absolute; left: 0; top: 0; background: white; padding: 0; backdrop-filter: none; display: block !important; } 
-            .a4-container { box-shadow: none; margin: 0; width: 100%; padding: 15mm; border-radius: 0; } 
-            .no-print { display: none !important; } 
-            .ticket-id-box { border: 2px solid #000; background: #fff; }
+            #receiptArea, #receiptArea * { visibility: visible; } 
+            #receiptArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; } 
+            .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col bg-slate-50 animate-fade-in">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <!-- FEEDBACK OVERLAY -->
-    <div id="feedbackOverlay">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl border border-slate-200">
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-                <h3 class="text-xl font-extrabold text-slate-900">Prozess-Feedback</h3>
-                <button type="button" onclick="closeFeedback()" class="text-slate-400 hover:text-brand-orange font-bold text-2xl leading-none transition-colors">&times;</button>
-            </div>
-            <form action="https://formspree.io/f/mvzloqla" method="POST" class="space-y-5">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">E-Mail für Rückfragen</label>
-                    <input type="email" name="email" required placeholder="dispo@firma.de" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Ihre Anmerkung</label>
-                    <textarea name="message" required placeholder="Vorschläge zur Optimierung..." rows="3" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all resize-none"></textarea>
-                </div>
-                <div class="flex gap-4 pt-2">
-                    <button type="submit" class="flex-1 bg-brand-blue hover:bg-brand-darkblue text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-brand-blue/30 hover:-translate-y-0.5">Senden</button>
-                    <button type="button" onclick="closeFeedback()" class="px-6 py-3.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors">Abbrechen</button>
-                </div>
-            </form>
-        </div>
+    <!-- Alert Banner -->
+    <div class="bg-[#171717] text-white text-sm font-medium py-2.5 px-4 text-center tracking-wide">
+        Inventur am <span class="text-brand-orange">11.11.2026</span> - Buchungen für diesen Tag sind gesperrt.
     </div>
 
-    <!-- NAVIGATION -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex justify-between items-center relative">
-            <a href="index.html" class="flex items-center">
-                <!-- LOGO: Groß & Sichtbar -->
-                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-14 md:h-16 object-contain">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-subtle sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="darula_logo.jpg" alt="Logo" class="h-8 object-contain">
             </a>
-            <div class="flex items-center gap-6 text-sm font-semibold">
-                <a href="index.html" class="text-slate-600 hover:text-brand-blue transition-colors">Zurück zur Startseite</a>
-                <span class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold border border-emerald-100">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Portal Online
-                </span>
-            </div>
-            <div id="toast" class="hidden absolute top-20 right-4 md:right-6 px-6 py-3.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-2xl z-[100] transition-all"></div>
+            <span class="text-sm font-medium text-[#737373]">Avisierungs-Portal</span>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full mb-16">
+    <main class="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
         
-        <div class="mb-10 text-center md:text-left">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Elektronische Avisierung</h1>
-            <p class="text-base text-slate-500 mt-2 font-medium">Sichern Sie sich Ihren Stellplatz für den gewünschten Anliefertag.</p>
-        </div>
+        <!-- Booking Wizard -->
+        <div class="bg-white border border-subtle rounded-lg p-8 shadow-sm">
+            
+            <!-- STEP 1: Date Selection -->
+            <div id="step1" class="step-container active">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-xl font-semibold">Schritt 1: Datum wählen</h2>
+                        <p class="text-sm text-[#737373] mt-1">Wählen Sie einen verfügbaren Anliefertag.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="changeMonth(-1)" class="px-3 py-1.5 border border-subtle rounded text-sm hover:bg-gray-50">&larr;</button>
+                        <span id="monthLabel" class="px-3 py-1.5 font-medium text-sm w-32 text-center"></span>
+                        <button onclick="changeMonth(1)" class="px-3 py-1.5 border border-subtle rounded text-sm hover:bg-gray-50">&rarr;</button>
+                    </div>
+                </div>
+                
+                <div class="cal-grid rounded-md overflow-hidden" id="calendarGrid"></div>
+                
+                <div class="mt-6 flex justify-end">
+                    <button onclick="goToStep2()" id="btnNext" disabled class="bg-brand-blue text-white px-6 py-2.5 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                        Weiter zu den Details
+                    </button>
+                </div>
+            </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <!-- KALENDER -->
-            <div class="lg:col-span-8">
-                <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <!-- STEP 2: Form Data -->
+            <div id="step2" class="step-container">
+                <h2 class="text-xl font-semibold mb-1">Schritt 2: Sendungsdaten</h2>
+                <p class="text-sm text-[#737373] mb-6">Gewähltes Datum: <span id="lblSelectedDate" class="font-semibold text-[#171717]"></span></p>
+                
+                <form id="avisForm" class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <h2 id="monthLabel" class="text-2xl font-bold text-slate-900">Ladeplan</h2>
-                            <div class="flex items-center gap-5 mt-3">
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Frei</span></div>
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-orange shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Ausgebucht</span></div>
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-600 shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Gesperrt</span></div>
-                            </div>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Firma *</label>
+                            <input type="text" id="fCompany" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="changeMonth(-1)" class="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-brand-blue hover:text-white hover:border-brand-blue text-sm font-bold transition-all">&larr;</button>
-                            <button onclick="changeMonth(1)" class="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-brand-blue hover:text-white hover:border-brand-blue text-sm font-bold transition-all">Nächster Monat &rarr;</button>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">E-Mail *</label>
+                            <input type="email" id="fEmail" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Paletten *</label>
+                            <input type="number" id="fPalettes" min="1" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">BE-Nummer *</label>
+                            <input type="text" id="fBe" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Lieferschein (PDF/Bild)</label>
+                            <input type="file" id="fDoc" class="w-full text-sm text-[#525252] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#f5f5f5] file:text-[#171717] hover:file:bg-[#e5e5e5]">
                         </div>
                     </div>
 
-                    <div class="calendar-grid mb-2" id="calendarGrid"></div>
+                    <div class="flex justify-between pt-4 mt-2 border-t border-subtle">
+                        <button type="button" onclick="goToStep1()" class="px-5 py-2.5 border border-subtle rounded text-sm font-medium hover:bg-gray-50">Zurück</button>
+                        <button type="submit" id="submitBtn" class="bg-[#171717] hover:bg-[#262626] text-white px-6 py-2.5 rounded text-sm font-medium">Verbindlich Buchen</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- STEP 3: Receipt -->
+            <div id="step3" class="step-container text-center py-8">
+                <div id="receiptArea" class="text-left bg-white border border-subtle p-8 rounded-lg max-w-lg mx-auto">
+                    <div class="border-b border-subtle pb-4 mb-6">
+                        <h2 class="text-2xl font-semibold text-[#171717]">Buchungsbeleg</h2>
+                        <p class="text-sm text-[#737373]">Darula Transporte - Warenannahme</p>
+                    </div>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between"><span class="text-[#737373]">Ticket-ID:</span> <strong id="rId" class="font-mono"></strong></div>
+                        <div class="flex justify-between"><span class="text-[#737373]">Anlieferdatum:</span> <strong id="rDate"></strong></div>
+                        <div class="flex justify-between"><span class="text-[#737373]">Spedition:</span> <strong id="rCompany"></strong></div>
+                        <div class="flex justify-between"><span class="text-[#737373]">BE-Nummer:</span> <strong id="rBe"></strong></div>
+                        <div class="flex justify-between"><span class="text-[#737373]">Menge:</span> <strong id="rPalettes"></strong></div>
+                    </div>
+                </div>
+                <div class="mt-8 space-x-4 no-print">
+                    <button onclick="window.print()" class="px-6 py-2.5 bg-[#171717] text-white rounded text-sm font-medium">Beleg Drucken</button>
+                    <button onclick="location.reload()" class="px-6 py-2.5 border border-subtle rounded text-sm font-medium">Neue Buchung</button>
                 </div>
             </div>
 
-            <!-- FORMULAR -->
-            <div class="lg:col-span-4">
-                <div class="bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl p-6 md:p-8 sticky top-28">
-                    <h3 class="text-xl font-extrabold text-slate-900 pb-4 border-b border-slate-100 mb-6">Sendungsdaten erfassen</h3>
-                    
-                    <form id="avisForm" class="space-y-5">
-                        <input type="hidden" id="fDate">
-                        
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Spedition / Frachtführer *</label>
-                            <input type="text" id="fCompany" required placeholder="Firmenname eintragen" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">E-Mail (für Bestätigung) *</label>
-                            <input type="email" id="fEmail" required placeholder="dispo@spedition.de" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Paletten *</label>
-                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Lieferart *</label>
-                                <select id="fType" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-700">
-                                    <option value="" disabled selected>Wählen...</option>
-                                    <option value="Stückgut">Stückgut</option>
-                                    <option value="Teillieferung">Teillieferung</option>
-                                    <option value="Komplettlieferung">Komplettlieferung</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Lieferschein (PDF/Bild)</label>
-                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 transition-all cursor-pointer">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">BE-Nummer *</label>
-                                <input type="text" id="fBe" placeholder="Referenz" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Artikel-Nr. *</label>
-                                <input type="text" id="fArt" placeholder="Art.-Nr." required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
-                            </div>
-                        </div>
-
-                        <div id="statusBox" class="p-4 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-400 border border-slate-200 transition-all">
-                            Datum im Kalender wählen
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white py-4 rounded-xl font-bold uppercase text-sm tracking-widest transition-all shadow-lg hover:shadow-brand-blue/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-                            Verbindlich Buchen
-                        </button>
-                    </form>
-                </div>
-            </div>
         </div>
     </main>
 
-    <!-- CONFIRMATION OVERLAY (A4 DRUCKBELEG) -->
-    <div id="confirmationOverlay">
-        <div class="w-full max-w-[210mm] mx-auto mb-4 flex justify-between items-center bg-white p-5 rounded-2xl shadow-xl border border-slate-200 no-print">
-            <p class="text-sm font-bold text-slate-800 flex items-center gap-2"><span class="text-emerald-500 text-xl">✓</span> Avisierung erfolgreich registriert.</p>
-            <div class="flex gap-3">
-                <button onclick="window.print()" class="bg-brand-blue text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-brand-darkblue transition-all shadow-md">Beleg Drucken</button>
-                <button onclick="location.reload()" class="bg-slate-100 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">Schließen</button>
-            </div>
-        </div>
-        
-        <div class="a4-container">
-            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-8 mb-8">
-                <div>
-                    <!-- LOGO GROSS AUF DRUCKBELEG -->
-                    <img src="darula_logo.jpg" alt="Logo" class="h-20 mb-6 object-contain">
-                    <h1 class="text-3xl font-black tracking-tight text-brand-blue uppercase">Avisierungs-Ticket</h1>
-                    <p class="text-slate-500 text-sm font-bold mt-1 tracking-widest uppercase">Warenannahme Nürnberg</p>
-                </div>
-                <div class="text-right mt-2 flex flex-col items-end">
-                    <div class="ticket-id-box mb-3">
-                        <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Avis-ID (Ticket-Nr.)</p>
-                        <p id="confAvisId" class="text-2xl font-mono font-black text-slate-900 tracking-wider"></p>
-                    </div>
-                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Generiert am: <span id="confPrintTime"></span></p>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-10 mb-10">
-                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                    <h4 class="text-xs font-bold text-brand-orange uppercase tracking-widest mb-3">Frachtführer / Absender</h4>
-                    <p id="confCompany" class="text-2xl font-black text-slate-900"></p>
-                    <p id="confEmail" class="text-sm text-slate-500 mt-2 font-medium"></p>
-                </div>
-                <div class="bg-brand-blue/5 p-6 rounded-2xl border border-brand-blue/20">
-                    <h4 class="text-xs font-bold text-brand-blue uppercase tracking-widest mb-3">Bestätigter Anliefertag</h4>
-                    <p id="confDate" class="text-2xl font-black text-brand-darkblue"></p>
-                    <div class="mt-3 inline-block bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-bold">
-                        Zeitfenster: Mo-Do 07:00-14:00 | Fr 07:00-12:00
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-2 border-slate-100 rounded-2xl p-8 mb-10 bg-white">
-                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-widest mb-6 pb-3 border-b border-slate-100">Wichtige Sendungsdetails</h4>
-                <div class="grid grid-cols-2 gap-y-8 text-sm">
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Menge / Einheiten</p>
-                        <p id="confPal" class="font-black text-slate-800 text-xl"></p>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Fahrzeugtyp</p>
-                        <p id="confType" class="font-black text-slate-800 text-xl"></p>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Referenz (BE-Nummer)</p>
-                        <p id="confBe" class="font-mono font-black text-slate-800 text-xl bg-slate-100 inline-block px-2 py-1 rounded"></p>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Artikel-Nummer</p>
-                        <p id="confArt" class="font-black text-slate-800 text-xl"></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="absolute bottom-12 left-12 right-12 flex justify-between items-end border-t-2 border-slate-100 pt-8">
-                <div class="text-xs text-slate-500 font-medium leading-relaxed">
-                    <strong class="text-slate-800 text-sm">Darula Transporte</strong><br>
-                    Thoner Weg 23, 90425 Nürnberg<br>
-                    Tel: +49 911 30039794 &bull; E-Mail: d.darulatransporte@gmail.com
-                </div>
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-right">
-                    Bitte diesen Beleg bei<br>Ankunft bereithalten.
-                </div>
-            </div>
-        </div>
-    </div>
-
 <script>
+    // System Config
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
-        MAX_LKW: 3, 
-        LKW_MIN_LE: 11,
-        NTFY_TOPIC: "darula_logistik_2026_dispatch"
+        MAX_LKW: 3
     };
 
     let sb = null;
-    let currentViewDate = new Date();
-    let selectedDateStr = null;
-    let stats = {};
+    let currentDate = new Date();
+    let selectedDate = null;
+    let bookedData = {};
 
-    function generateAvisId() {
-        const d = new Date();
-        const yy = String(d.getFullYear()).slice(2);
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        const rnd = Math.random().toString(36).substring(2, 6).toUpperCase();
-        return `DAR-${yy}${mm}${dd}-${rnd}`;
-    }
-
-    async function init() {
-        // Init Supabase after script load (defer)
+    // Initialization
+    window.onload = async () => {
         sb = supabase.createClient(CFG.U, CFG.K);
-        await loadData();
+        await fetchAvailability();
         renderCalendar();
-        
-        // Sanfter Hinweis auf das Feedback-System
-        setTimeout(() => {
-            document.getElementById('feedbackOverlay').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }, 3000);
+    };
 
-        document.getElementById('fType').addEventListener('change', renderCalendar);
-        document.getElementById('fPalettes').addEventListener('input', renderCalendar);
-    }
+    // Helper: Generate Ticket ID
+    const generateId = () => `DAR-${new Date().toISOString().slice(2,10).replace(/-/g,'')}-${Math.random().toString(36).substr(2,4).toUpperCase()}`;
 
-    function closeFeedback() {
-        document.getElementById('feedbackOverlay').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    async function loadData() {
+    // Logic: Fetch Data
+    async function fetchAvailability() {
         try {
-            const { data, error } = await sb.from('avisierung').select('liefer_datum, palettes, fahrzeug_typ, firma');
-            if(error) throw error;
-            stats = {};
-            (data || []).forEach(r => {
-                const d = r.liefer_datum;
-                if(!d) return;
-                if(!stats[d]) stats[d] = { lkw_count: 0, is_blocked: false };
-                const pCount = parseInt(r.palettes) || 0;
-                if(pCount >= CFG.LKW_MIN_LE || (r.fahrzeug_typ && r.fahrzeug_typ !== 'Stückgut')) {
-                    stats[d].lkw_count++;
-                }
-                if(r.firma?.toLowerCase().includes('sperre')) stats[d].is_blocked = true;
+            const { data } = await sb.from('avisierung').select('liefer_datum');
+            bookedData = {};
+            (data || []).forEach(row => {
+                bookedData[row.liefer_datum] = (bookedData[row.liefer_datum] || 0) + 1;
             });
-        } catch (e) {
-            showToast("Verbindung fehlgeschlagen", true);
-        }
+        } catch (e) { console.error("DB Error"); }
     }
 
+    // Logic: Render Calendar
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
-        if(!grid) return;
         grid.innerHTML = '';
         
-        const y = currentViewDate.getFullYear(), m = currentViewDate.getMonth();
-        document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentViewDate);
+        const y = currentDate.getFullYear();
+        const m = currentDate.getMonth();
+        
+        document.getElementById('monthLabel').innerText = new Intl.DateTimeFormat('de-DE', {month:'long', year:'numeric'}).format(currentDate);
 
-        const firstDayIdx = (new Date(y, m, 1).getDay() + 6) % 7;
+        const firstDay = (new Date(y, m, 1).getDay() + 6) % 7;
         const daysInMonth = new Date(y, m + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
-        const curPal = parseInt(document.getElementById('fPalettes').value) || 0;
-        const curTyp = document.getElementById('fType').value;
-        const inputIsLkw = curTyp !== "" && (curPal >= CFG.LKW_MIN_LE || curTyp !== 'Stückgut');
+        // Empty padding cells
+        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-day disabled"></div>`;
 
-        for(let i=0; i<firstDayIdx; i++) grid.innerHTML += `<div></div>`;
-
+        // Day cells
         for(let d=1; d<=daysInMonth; d++) {
             const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            const info = stats[dStr] || { lkw_count: 0, is_blocked: false };
+            const count = bookedData[dStr] || 0;
             const isWeekend = [0, 6].includes(new Date(y, m, d).getDay());
-            
+            const isInventur = (dStr === '2026-11-11');
             const isPast = dStr < todayStr || isWeekend;
-            const isFull = info.lkw_count >= CFG.MAX_LKW;
-            const deny = inputIsLkw && (isFull || info.is_blocked);
+            const isFull = count >= CFG.MAX_LKW;
 
-            const card = document.createElement('div');
-            card.className = `day-card ${isPast?'disabled':''} ${selectedDateStr===dStr?'selected':''} ${deny?'lkw-blocked':''}`;
+            const div = document.createElement('div');
             
-            let color = info.is_blocked ? "bg-red-600" : (isFull ? "bg-brand-orange" : "bg-emerald-400");
-
-            card.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <span class="text-base font-extrabold text-slate-800">${d}</span>
-                    <div class="w-3 h-3 rounded-full ${color} shadow-sm"></div>
-                </div>
-                <div>
-                    <div class="text-[10px] font-bold uppercase text-slate-500 mb-1.5 tracking-wider">
-                        ${info.is_blocked ? 'GESPERRT' : info.lkw_count+'/'+CFG.MAX_LKW+' LKW'}
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill ${color}" style="width:${Math.min((info.lkw_count/CFG.MAX_LKW)*100, 100)}%"></div>
-                    </div>
-                </div>`;
-
-            if(!isPast) {
-                card.onclick = () => {
-                    if(deny) return showToast("Termin für LKW voll belegt!", true);
-                    selectedDateStr = dStr;
-                    document.getElementById('fDate').value = dStr;
-                    
-                    const statusBox = document.getElementById('statusBox');
-                    statusBox.innerHTML = `Gewähltes Datum: <span class="text-brand-blue font-black text-sm ml-2">${d}.${m+1}.${y}</span>`;
-                    statusBox.className = "p-4 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-brand-blue/10 text-brand-darkblue border border-brand-blue/30 transition-all";
-                    
+            if(isInventur) {
+                div.className = 'cal-day inventur';
+                div.innerHTML = `<span class="font-medium">${d}</span><div class="text-[10px] mt-2 font-semibold">INVENTUR</div>`;
+            } else if(isPast || isFull) {
+                div.className = 'cal-day disabled';
+                div.innerHTML = `<span class="font-medium">${d}</span><div class="text-[10px] mt-2">${isFull ? 'Belegt' : ''}</div>`;
+            } else {
+                div.className = `cal-day ${selectedDate === dStr ? 'selected' : ''}`;
+                div.innerHTML = `
+                    <div class="flex justify-between"><span class="font-medium">${d}</span> <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></div></div>
+                    <div class="text-[10px] mt-4 text-[#737373]">${count}/${CFG.MAX_LKW} belegt</div>
+                `;
+                div.onclick = () => {
+                    selectedDate = dStr;
+                    document.getElementById('btnNext').disabled = false;
                     renderCalendar();
                 };
             }
-            grid.appendChild(card);
+            grid.appendChild(div);
         }
     }
 
-    async function handleForm(e) {
+    function changeMonth(dir) {
+        currentDate.setMonth(currentDate.getMonth() + dir);
+        renderCalendar();
+    }
+
+    // Wizard Navigation
+    function goToStep2() {
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        document.getElementById('lblSelectedDate').innerText = selectedDate.split('-').reverse().join('.');
+    }
+    
+    function goToStep1() {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+    }
+
+    // Form Submission
+    document.getElementById('avisForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        if(!selectedDateStr) return showToast("Bitte wählen Sie ein Datum im Kalender!", true);
-        if(btn.disabled) return;
+        btn.disabled = true; btn.innerText = "Speichere...";
 
         const file = document.getElementById('fDoc').files[0];
-        btn.disabled = true; 
-        btn.innerText = "WIRD GESENDET...";
+        let fileUrl = null;
 
         try {
-            let fileUrl = null;
             if(file) {
-                const fExt = file.name.split('.').pop();
-                const fPath = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fExt}`;
+                const fPath = `${Date.now()}_${file.name}`;
                 await sb.storage.from('lieferscheine').upload(fPath, file);
-                const { data: urlData } = sb.storage.from('lieferscheine').getPublicUrl(fPath);
-                fileUrl = urlData.publicUrl;
+                const { data } = sb.storage.from('lieferscheine').getPublicUrl(fPath);
+                fileUrl = data.publicUrl;
             }
 
-            const newAvisId = generateAvisId();
-
             const payload = {
-                avis_id: newAvisId, // NEU: Speichern der ID
-                liefer_datum: selectedDateStr,
+                avis_id: generateId(),
+                liefer_datum: selectedDate,
                 firma: document.getElementById('fCompany').value,
                 email: document.getElementById('fEmail').value,
-                palettes: parseInt(document.getElementById('fPalettes').value) || 1,
-                fahrzeug_typ: document.getElementById('fType').value,
+                palettes: document.getElementById('fPalettes').value,
                 be_nummer: document.getElementById('fBe').value,
-                artikel_nr: document.getElementById('fArt').value,
                 lieferschein_url: fileUrl,
-                status: 'angemeldet'
+                status: 'gebucht'
             };
 
             await sb.from('avisierung').insert([payload]);
 
-            try {
-                await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
-                    method: 'POST',
-                    body: `Neue Avisierung! [${newAvisId}]\nFirma: ${payload.firma}\nDatum: ${payload.liefer_datum}`,
-                    headers: { 'Title': 'Darula Logistik Portal', 'Priority': 'high' }
-                });
-            } catch (ntfyErr) {}
+            // Show Receipt
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step3').classList.add('active');
+            
+            document.getElementById('rId').innerText = payload.avis_id;
+            document.getElementById('rDate').innerText = payload.liefer_datum.split('-').reverse().join('.');
+            document.getElementById('rCompany').innerText = payload.firma;
+            document.getElementById('rBe').innerText = payload.be_nummer;
+            document.getElementById('rPalettes').innerText = payload.palettes;
 
-            showToast("Erfolgreich gebucht!");
-            showConfirmation(payload);
-
-        } catch (err) {
-            console.error(err);
-            showToast("Fehler! Evtl. fehlt die 'avis_id' Spalte in der DB.", true);
-            btn.disabled = false; 
-            btn.innerText = "Verbindlich Buchen";
+        } catch (error) {
+            alert("Fehler beim Speichern. Bitte versuchen Sie es erneut.");
+            btn.disabled = false; btn.innerText = "Verbindlich Buchen";
         }
-    }
-
-    function showConfirmation(data) {
-        document.getElementById('confAvisId').innerText = data.avis_id;
-        document.getElementById('confCompany').innerText = data.firma;
-        document.getElementById('confEmail').innerText = data.email;
-        document.getElementById('confDate').innerText = new Date(data.liefer_datum).toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
-        document.getElementById('confPal').innerText = data.palettes + " Paletten (LE)";
-        document.getElementById('confType').innerText = data.fahrzeug_typ;
-        document.getElementById('confBe').innerText = data.be_nummer;
-        document.getElementById('confArt').innerText = data.artikel_nr;
-        document.getElementById('confPrintTime').innerText = new Date().toLocaleString('de-DE');
-
-        document.getElementById('confirmationOverlay').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function showToast(m, err=false) {
-        const t = document.getElementById('toast');
-        if(!t) return;
-        t.innerText = m; 
-        t.className = `fixed top-20 right-4 md:right-6 px-6 py-3.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-2xl z-[100] transition-all ${err?'bg-red-500 text-white':'bg-emerald-500 text-white'}`;
-        t.classList.remove('hidden'); 
-        setTimeout(() => t.classList.add('hidden'), 4500);
-    }
-
-    window.changeMonth = (v) => { 
-        currentViewDate.setMonth(currentViewDate.getMonth() + v); 
-        renderCalendar(); 
-    };
-
-    // Ensure DOM is fully loaded before attaching events
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('avisForm').onsubmit = handleForm;
     });
-    
-    // Wait for supabase script to load before init
-    window.addEventListener('load', init);
 </script>
 </body>
 </html>
