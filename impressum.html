@@ -3,66 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Impressum</title>
-    
-    <link rel="preload" as="image" href="darula_logo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Impressum | Darula Transporte</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: { blue: '#209fd9', orange: '#f39200' } },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    animation: { 'fade-in': 'fadeIn 0.6s ease-out forwards' },
-                    keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .glass-panel { background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        h3 { font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; color: #0f172a; margin-top: 2.5rem; margin-bottom: 1rem; border-left: 5px solid #209fd9; padding-left: 14px; }
-        p { font-size: 15px; color: #475569; margin-bottom: 1rem; line-height: 1.8; font-medium; }
-        strong { color: #0f172a; font-weight: 700; }
-        .legal-link { color: #209fd9; font-weight: 700; text-decoration: none; transition: color 0.2s; }
-        .legal-link:hover { color: #187fb0; text-decoration: underline; }
+        body { font-family: 'Inter', sans-serif; background-color: #fafafa; color: #171717; }
+        .border-subtle { border: 1px solid #e5e5e5; }
+        h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2rem; margin-bottom: 0.75rem; color: #171717; }
+        p { font-size: 14px; color: #525252; line-height: 1.6; margin-bottom: 1rem; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col animate-fade-in">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <!-- NAVIGATION -->
-    <nav class="glass-panel sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-            <a href="index.html" class="flex items-center">
-                <!-- LOGO GROSS -->
-                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-16 object-contain">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-subtle sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="darula_logo.jpg" alt="Logo" class="h-8 object-contain">
             </a>
-            <div class="flex items-center gap-6 text-sm font-semibold">
-                <a href="index.html" class="text-slate-600 hover:text-brand-blue transition-colors">Startseite</a>
-                <a href="avisierung.html" class="bg-brand-blue text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-darkblue transition-all shadow-lg hover:shadow-brand-blue/30 hover:-translate-y-0.5">
-                    Portal &rarr;
-                </a>
-            </div>
+            <a href="index.html" class="text-sm font-medium text-[#737373] hover:text-[#171717]">Zurück zur Startseite</a>
         </div>
     </nav>
 
-    <!-- HEADER -->
-    <header class="bg-slate-900 text-white pt-20 pb-16 text-center">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">Impressum & Datenschutz</h1>
-        <p class="text-slate-400 mt-3 font-bold uppercase tracking-widest text-sm">Verpflichtende Angaben nach deutschem Telemedienrecht</p>
-    </header>
-
-    <!-- CONTENT -->
-    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 py-12 w-full -mt-10">
-        <div class="bg-white border border-slate-200 rounded-3xl p-8 md:p-14 shadow-2xl">
+    <main class="flex-grow max-w-4xl mx-auto px-6 py-16 w-full">
+        <div class="bg-white border border-subtle rounded-lg p-8 md:p-12">
+            
+            <h1 class="text-2xl font-semibold mb-8 border-b border-subtle pb-4">Impressum & Datenschutz</h1>
             
             <section>
                 <h3>Angaben gemäß § 5 TMG</h3>
                 <p>
-                    <strong>Tibor Darula</strong><br>
+                    Tibor Darula<br>
                     Darula Transporte<br>
                     Thoner Weg 23<br>
                     90425 Nürnberg
@@ -70,59 +41,33 @@
             </section>
 
             <section>
-                <h3>Kontaktmöglichkeiten</h3>
+                <h3>Kontakt</h3>
                 <p>
-                    <strong>Telefon:</strong> +49 911 30039794<br>
-                    <strong>E-Mail:</strong> <a href="mailto:d.darulatransporte@gmail.com" class="legal-link">d.darulatransporte@gmail.com</a><br>
-                    <strong>Webseite:</strong> <a href="https://www.darulatransporte.de/" class="legal-link">www.darulatransporte.de</a>
+                    Telefon: +49 911 30039794<br>
+                    E-Mail: <a href="mailto:d.darulatransporte@gmail.com" class="text-blue-600 hover:underline">d.darulatransporte@gmail.com</a><br>
+                    Webseite: www.darulatransporte.de
                 </p>
             </section>
 
             <section>
                 <h3>Verantwortlich für den Inhalt</h3>
-                <p>
-                    <strong>Tibor Darula</strong><br>
-                    Thoner Weg 23<br>
-                    90425 Nürnberg<br>
-                    (Verantwortlich gemäß § 18 Abs. 2 MStV)
-                </p>
+                <p>Tibor Darula, Thoner Weg 23, 90425 Nürnberg</p>
             </section>
 
-            <section class="mt-12 pt-8 border-t border-slate-100">
-                <h3>EU-Streitschlichtung</h3>
+            <section class="mt-8 pt-8 border-t border-subtle">
+                <h3>EU-Streitschlichtung & Verbraucherstreitbeilegung</h3>
                 <p>
-                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
-                    <a href="https://ec.europa.eu/consumers/odr/" target="_blank" class="legal-link">https://ec.europa.eu/consumers/odr/</a>.<br>
-                    Unsere E-Mail-Adresse finden Sie oben im Impressum.
-                </p>
-                <h3>Verbraucherstreitbeilegung</h3>
-                <p>
+                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr/" target="_blank" class="text-blue-600 hover:underline">https://ec.europa.eu/consumers/odr/</a>.<br>
                     Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
                 </p>
             </section>
 
-            <section class="mt-12 pt-8 border-t border-slate-100">
-                <h3>Haftung für Inhalte</h3>
-                <p>
-                    Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen.
-                </p>
-                
-                <h3>Haftung für Links</h3>
-                <p>
-                    Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen.
-                </p>
-
-                <h3>Urheberrecht</h3>
-                <p>
-                    Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung bedürfen der schriftlichen Zustimmung.
-                </p>
-            </section>
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500 font-medium">
-            <span class="font-extrabold text-slate-800 uppercase tracking-widest">Darula Transporte</span> | Nürnberg &copy; 2026
+    <footer class="bg-white border-t border-subtle mt-auto py-6">
+        <div class="max-w-4xl mx-auto px-6 text-sm text-[#737373]">
+            &copy; 2026 Darula Transporte
         </div>
     </footer>
 </body>
