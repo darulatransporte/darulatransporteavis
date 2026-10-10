@@ -4,143 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avisierungs-Portal | Darula Transporte</title>
+    
+    <link rel="preconnect" href="https://navhxyadbifllpopumfz.supabase.co">
+    <link rel="preload" as="image" href="darula_logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: { brand: { blue: '#209fd9', darkblue: '#187fb0', orange: '#f39200', darkorange: '#cc7a00' } },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' },
+                    keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } }
                 }
             }
         }
     </script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .day-card { background: white; border-radius: 12px; padding: 12px; min-height: 96px; transition: all 0.2s ease; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
-        .day-card:not(.disabled):not(.lkw-blocked):hover { border-color: #209fd9; box-shadow: 0 4px 12px rgba(32, 159, 217, 0.15); transform: translateY(-2px); }
-        .day-card.selected { border-color: #209fd9; background: #f0f9ff; box-shadow: 0 0 0 2px rgba(32, 159, 217, 0.3); }
-        .day-card.disabled { opacity: 0.4; cursor: not-allowed !important; background: #f1f5f9; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        .day-card { background: white; border-radius: 14px; padding: 14px; min-height: 100px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+        .day-card:not(.disabled):not(.lkw-blocked):hover { border-color: #209fd9; box-shadow: 0 10px 15px -3px rgba(32, 159, 217, 0.15); transform: translateY(-3px); }
+        .day-card.selected { border-color: #209fd9; background: #f0f9ff; box-shadow: 0 0 0 2px rgba(32, 159, 217, 0.4); transform: scale(1.02); }
+        .day-card.disabled { opacity: 0.4; cursor: not-allowed !important; background: #f1f5f9; border-color: #f1f5f9; }
         .day-card.lkw-blocked { cursor: not-allowed; border-color: #fca5a5; background-color: #fef2f2; }
-        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-top: 8px; }
-        .progress-fill { height: 100%; transition: width 0.4s ease; }
         
-        #feedbackOverlay, #confirmationOverlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
-        #feedbackOverlay.active { display: flex; }
-        .a4-container { background: white; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; color: #0f172a; font-size: 11pt; border-radius: 8px; }
+        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; transition: width 0.5s ease-in-out; }
+        
+        /* Modern Glass Overlays */
+        #feedbackOverlay, #confirmationOverlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
+        
+        /* Druckbeleg Styling */
+        .a4-container { background: white; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; color: #0f172a; border-radius: 12px; }
+        .ticket-id-box { border: 2px dashed #cbd5e1; background: #f8fafc; padding: 10px 15px; text-align: center; border-radius: 8px; }
         
         @media print { 
             body * { visibility: hidden; } 
             #confirmationOverlay, #confirmationOverlay * { visibility: visible; } 
-            #confirmationOverlay { position: absolute; left: 0; top: 0; background: white; padding: 0; } 
-            .a4-container { box-shadow: none; margin: 0; width: 100%; padding: 10mm; min-height: auto; border-radius: 0; } 
+            #confirmationOverlay { position: absolute; left: 0; top: 0; background: white; padding: 0; backdrop-filter: none; display: block !important; } 
+            .a4-container { box-shadow: none; margin: 0; width: 100%; padding: 15mm; border-radius: 0; } 
             .no-print { display: none !important; } 
-            #feedbackOverlay { display: none !important; } 
+            .ticket-id-box { border: 2px solid #000; background: #fff; }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col bg-slate-50">
+<body class="antialiased min-h-screen flex flex-col bg-slate-50 animate-fade-in">
 
     <!-- FEEDBACK OVERLAY -->
     <div id="feedbackOverlay">
-        <div class="bg-white rounded-2xl p-6 md:p-8 w-full max-w-lg shadow-2xl border border-slate-200">
-            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                <h3 class="text-lg font-bold text-slate-900">Prozess-Feedback</h3>
-                <button type="button" onclick="closeFeedback()" class="text-slate-400 hover:text-brand-orange font-bold text-xl leading-none">&times;</button>
+        <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                <h3 class="text-xl font-extrabold text-slate-900">Prozess-Feedback</h3>
+                <button type="button" onclick="closeFeedback()" class="text-slate-400 hover:text-brand-orange font-bold text-2xl leading-none transition-colors">&times;</button>
             </div>
-            <p class="text-sm text-slate-600 mb-5 leading-relaxed">
-                Wir optimieren die Abwicklungsschritte fortlaufend. Teilen Sie uns Anmerkungen zur Portalnutzung oder zum Rampenablauf mit.
-            </p>
-            <form action="https://formspree.io/f/mvzloqla" method="POST" class="space-y-4">
+            <form action="https://formspree.io/f/mvzloqla" method="POST" class="space-y-5">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">E-Mail für Rückfragen</label>
-                    <input type="email" name="email" required placeholder="dispo@firma.de" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">E-Mail für Rückfragen</label>
+                    <input type="email" name="email" required placeholder="dispo@firma.de" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Anmerkung</label>
-                    <textarea name="message" required placeholder="Vorschläge zur Systemfunktion..." rows="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all resize-none"></textarea>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Ihre Anmerkung</label>
+                    <textarea name="message" required placeholder="Vorschläge zur Optimierung..." rows="3" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all resize-none"></textarea>
                 </div>
-                <div class="flex gap-3 pt-2">
-                    <button type="submit" class="flex-1 bg-brand-blue hover:bg-brand-darkblue text-white py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors shadow-md">Senden</button>
-                    <button type="button" onclick="closeFeedback()" class="px-6 py-3 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors">Abbrechen</button>
+                <div class="flex gap-4 pt-2">
+                    <button type="submit" class="flex-1 bg-brand-blue hover:bg-brand-darkblue text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-brand-blue/30 hover:-translate-y-0.5">Senden</button>
+                    <button type="button" onclick="closeFeedback()" class="px-6 py-3.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors">Abbrechen</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- NAVIGATION -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center relative">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex justify-between items-center relative">
             <a href="index.html" class="flex items-center">
-                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-10 md:h-12 object-contain">
+                <!-- LOGO: Groß & Sichtbar -->
+                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-14 md:h-16 object-contain">
             </a>
             <div class="flex items-center gap-6 text-sm font-semibold">
-                <a href="index.html" class="text-slate-600 hover:text-brand-blue transition-colors">Startseite</a>
-                <span class="hidden md:inline-block px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold">Portal Live</span>
+                <a href="index.html" class="text-slate-600 hover:text-brand-blue transition-colors">Zurück zur Startseite</a>
+                <span class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-bold border border-emerald-100">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Portal Online
+                </span>
             </div>
-            <div id="toast" class="hidden absolute top-16 right-4 md:right-6 px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider shadow-xl z-[100] transition-all"></div>
+            <div id="toast" class="hidden absolute top-20 right-4 md:right-6 px-6 py-3.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-2xl z-[100] transition-all"></div>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full mb-16">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-10 w-full mb-16">
         
-        <div class="mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Elektronische Avisierung</h1>
-            <p class="text-sm text-slate-500 mt-1">Sichern Sie sich Ihren Stellplatz für den gewünschten Anliefertag.</p>
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Elektronische Avisierung</h1>
+            <p class="text-base text-slate-500 mt-2 font-medium">Sichern Sie sich Ihren Stellplatz für den gewünschten Anliefertag.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <!-- KALENDER -->
             <div class="lg:col-span-8">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                         <div>
-                            <h2 id="monthLabel" class="text-xl font-bold text-slate-900">Ladeplan</h2>
-                            <div class="flex items-center gap-4 mt-2">
-                                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-emerald-400"></div><span class="text-xs font-bold uppercase text-slate-500">Frei</span></div>
-                                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-brand-orange"></div><span class="text-xs font-bold uppercase text-slate-500">Ausgebucht</span></div>
-                                <div class="flex items-center gap-1.5"><div class="w-3 h-3 rounded-full bg-red-600"></div><span class="text-xs font-bold uppercase text-slate-500">Gesperrt</span></div>
+                            <h2 id="monthLabel" class="text-2xl font-bold text-slate-900">Ladeplan</h2>
+                            <div class="flex items-center gap-5 mt-3">
+                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Frei</span></div>
+                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-orange shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Ausgebucht</span></div>
+                                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-600 shadow-sm"></div><span class="text-xs font-bold uppercase text-slate-500">Gesperrt</span></div>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="changeMonth(-1)" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 text-sm font-bold transition-colors">&larr;</button>
-                            <button onclick="changeMonth(1)" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 text-sm font-bold transition-colors">Nächster Monat &rarr;</button>
+                            <button onclick="changeMonth(-1)" class="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-brand-blue hover:text-white hover:border-brand-blue text-sm font-bold transition-all">&larr;</button>
+                            <button onclick="changeMonth(1)" class="px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl hover:bg-brand-blue hover:text-white hover:border-brand-blue text-sm font-bold transition-all">Nächster Monat &rarr;</button>
                         </div>
                     </div>
 
-                    <div class="calendar-grid mb-4" id="calendarGrid"></div>
+                    <div class="calendar-grid mb-2" id="calendarGrid"></div>
                 </div>
             </div>
 
             <!-- FORMULAR -->
             <div class="lg:col-span-4">
-                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 sticky top-24">
-                    <h3 class="text-lg font-bold text-slate-900 pb-3 border-b border-slate-100 mb-5">Daten erfassen</h3>
+                <div class="bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl p-6 md:p-8 sticky top-28">
+                    <h3 class="text-xl font-extrabold text-slate-900 pb-4 border-b border-slate-100 mb-6">Sendungsdaten erfassen</h3>
                     
-                    <form id="avisForm" class="space-y-4">
+                    <form id="avisForm" class="space-y-5">
                         <input type="hidden" id="fDate">
                         
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Spedition / Frachtführer *</label>
-                            <input type="text" id="fCompany" required placeholder="Firmenname eintragen" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Spedition / Frachtführer *</label>
+                            <input type="text" id="fCompany" required placeholder="Firmenname eintragen" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">E-Mail (für Bestätigung) *</label>
-                            <input type="email" id="fEmail" required placeholder="dispo@spedition.de" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">E-Mail (für Bestätigung) *</label>
+                            <input type="email" id="fEmail" required placeholder="dispo@spedition.de" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Paletten *</label>
-                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Paletten *</label>
+                                <input type="number" id="fPalettes" value="1" min="1" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lieferart *</label>
-                                <select id="fType" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all text-slate-700">
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Lieferart *</label>
+                                <select id="fType" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-700">
                                     <option value="" disabled selected>Wählen...</option>
                                     <option value="Stückgut">Stückgut</option>
                                     <option value="Teillieferung">Teillieferung</option>
@@ -150,24 +161,28 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lieferschein (PDF/Bild)</label>
-                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-blue file:text-white hover:file:bg-brand-darkblue transition-all cursor-pointer">
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Lieferschein (PDF/Bild)</label>
+                            <input type="file" id="fDoc" accept=".pdf,image/*" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 transition-all cursor-pointer">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">BE-Nummer *</label>
-                                <input type="text" id="fBe" placeholder="Referenz" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">BE-Nummer *</label>
+                                <input type="text" id="fBe" placeholder="Referenz" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Artikel-Nr. *</label>
-                                <input type="text" id="fArt" placeholder="Art.-Nr." required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 transition-all">
+                                <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Artikel-Nr. *</label>
+                                <input type="text" id="fArt" placeholder="Art.-Nr." required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium">
                             </div>
                         </div>
 
-                        <div id="statusBox" class="p-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-400 border border-slate-200">Datum im Kalender wählen</div>
+                        <div id="statusBox" class="p-4 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-400 border border-slate-200 transition-all">
+                            Datum im Kalender wählen
+                        </div>
 
-                        <button type="submit" id="submitBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white py-3.5 rounded-xl font-bold uppercase text-sm tracking-wider transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">Avisierung verbindlich buchen</button>
+                        <button type="submit" id="submitBtn" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white py-4 rounded-xl font-bold uppercase text-sm tracking-widest transition-all shadow-lg hover:shadow-brand-blue/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            Verbindlich Buchen
+                        </button>
                     </form>
                 </div>
             </div>
@@ -176,58 +191,76 @@
 
     <!-- CONFIRMATION OVERLAY (A4 DRUCKBELEG) -->
     <div id="confirmationOverlay">
-        <div class="w-full max-w-[210mm] mx-auto mb-4 flex justify-between items-center bg-white p-4 rounded-xl shadow-lg border border-slate-200 no-print">
-            <p class="text-sm font-bold text-slate-700">Avisierung registriert &ndash; Beleg zur Mitführung ausdrucken.</p>
+        <div class="w-full max-w-[210mm] mx-auto mb-4 flex justify-between items-center bg-white p-5 rounded-2xl shadow-xl border border-slate-200 no-print">
+            <p class="text-sm font-bold text-slate-800 flex items-center gap-2"><span class="text-emerald-500 text-xl">✓</span> Avisierung erfolgreich registriert.</p>
             <div class="flex gap-3">
-                <button onclick="window.print()" class="bg-brand-blue text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-brand-darkblue transition-all shadow-md">Drucken / PDF</button>
-                <button onclick="location.reload()" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">Schließen</button>
+                <button onclick="window.print()" class="bg-brand-blue text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-brand-darkblue transition-all shadow-md">Beleg Drucken</button>
+                <button onclick="location.reload()" class="bg-slate-100 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all">Schließen</button>
             </div>
         </div>
+        
         <div class="a4-container">
-            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-6 mb-8">
+            <div class="flex justify-between items-start border-b-2 border-slate-200 pb-8 mb-8">
                 <div>
-                    <img src="darula_logo.jpg" alt="Logo" class="h-12 mb-4">
-                    <h1 class="text-2xl font-bold tracking-tight text-brand-blue">AVISIERUNGSBESTÄTIGUNG</h1>
-                    <p class="text-slate-500 text-sm font-medium mt-1">Rampenzeitfenster & Wareneingang</p>
+                    <!-- LOGO GROSS AUF DRUCKBELEG -->
+                    <img src="darula_logo.jpg" alt="Logo" class="h-20 mb-6 object-contain">
+                    <h1 class="text-3xl font-black tracking-tight text-brand-blue uppercase">Avisierungs-Ticket</h1>
+                    <p class="text-slate-500 text-sm font-bold mt-1 tracking-widest uppercase">Warenannahme Nürnberg</p>
                 </div>
-                <div class="text-right mt-2">
-                    <p class="font-bold text-lg text-slate-900">Darula Transporte</p>
-                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mt-1">Standort Nürnberg</p>
+                <div class="text-right mt-2 flex flex-col items-end">
+                    <div class="ticket-id-box mb-3">
+                        <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Avis-ID (Ticket-Nr.)</p>
+                        <p id="confAvisId" class="text-2xl font-mono font-black text-slate-900 tracking-wider"></p>
+                    </div>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider font-bold">Generiert am: <span id="confPrintTime"></span></p>
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-8 mb-10">
-                <div class="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                    <h4 class="text-xs font-bold text-brand-orange uppercase tracking-wider mb-2">Frachtführer</h4>
-                    <p id="confCompany" class="text-xl font-bold text-slate-900"></p>
-                    <p id="confEmail" class="text-sm text-slate-500 mt-1"></p>
+            <div class="grid grid-cols-2 gap-10 mb-10">
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <h4 class="text-xs font-bold text-brand-orange uppercase tracking-widest mb-3">Frachtführer / Absender</h4>
+                    <p id="confCompany" class="text-2xl font-black text-slate-900"></p>
+                    <p id="confEmail" class="text-sm text-slate-500 mt-2 font-medium"></p>
                 </div>
-                <div class="bg-brand-blue/5 p-5 rounded-xl border border-brand-blue/20">
-                    <h4 class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-2">Bestätigtes Datum</h4>
-                    <p id="confDate" class="text-xl font-bold text-brand-darkblue"></p>
-                    <p class="text-slate-600 text-xs font-medium mt-2">Mo-Do 07:00-14:00 | Fr 07:00-12:00</p>
-                </div>
-            </div>
-
-            <div class="border border-slate-200 rounded-xl p-8 mb-8">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 pb-2 border-b border-slate-100">Sendungsdetails</h4>
-                <div class="grid grid-cols-2 gap-y-6 text-sm">
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Menge / Einheiten</p><p id="confPal" class="font-bold text-slate-800 text-lg"></p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Fahrzeugkategorie</p><p id="confType" class="font-bold text-slate-800 text-lg"></p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Referenz (BE-Nr.)</p><p id="confBe" class="font-bold text-slate-800 text-lg"></p></div>
-                    <div><p class="text-xs font-bold text-slate-400 uppercase mb-1">Artikel-Nummer</p><p id="confArt" class="font-bold text-slate-800 text-lg"></p></div>
+                <div class="bg-brand-blue/5 p-6 rounded-2xl border border-brand-blue/20">
+                    <h4 class="text-xs font-bold text-brand-blue uppercase tracking-widest mb-3">Bestätigter Anliefertag</h4>
+                    <p id="confDate" class="text-2xl font-black text-brand-darkblue"></p>
+                    <div class="mt-3 inline-block bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-bold">
+                        Zeitfenster: Mo-Do 07:00-14:00 | Fr 07:00-12:00
+                    </div>
                 </div>
             </div>
 
-            <div class="absolute bottom-10 left-10 right-10 flex justify-between items-end border-t-2 border-slate-100 pt-6">
+            <div class="border-2 border-slate-100 rounded-2xl p-8 mb-10 bg-white">
+                <h4 class="text-sm font-bold text-slate-900 uppercase tracking-widest mb-6 pb-3 border-b border-slate-100">Wichtige Sendungsdetails</h4>
+                <div class="grid grid-cols-2 gap-y-8 text-sm">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Menge / Einheiten</p>
+                        <p id="confPal" class="font-black text-slate-800 text-xl"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Fahrzeugtyp</p>
+                        <p id="confType" class="font-black text-slate-800 text-xl"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Referenz (BE-Nummer)</p>
+                        <p id="confBe" class="font-mono font-black text-slate-800 text-xl bg-slate-100 inline-block px-2 py-1 rounded"></p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Artikel-Nummer</p>
+                        <p id="confArt" class="font-black text-slate-800 text-xl"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-12 left-12 right-12 flex justify-between items-end border-t-2 border-slate-100 pt-8">
                 <div class="text-xs text-slate-500 font-medium leading-relaxed">
-                    <strong class="text-slate-700">Darula Transporte</strong><br>
+                    <strong class="text-slate-800 text-sm">Darula Transporte</strong><br>
                     Thoner Weg 23, 90425 Nürnberg<br>
                     Tel: +49 911 30039794 &bull; E-Mail: d.darulatransporte@gmail.com
                 </div>
                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-right">
-                    Generiert: <span id="confPrintTime"></span><br>
-                    System-ID: DAR-AVIS-2026
+                    Bitte diesen Beleg bei<br>Ankunft bereithalten.
                 </div>
             </div>
         </div>
@@ -242,12 +275,23 @@
         NTFY_TOPIC: "darula_logistik_2026_dispatch"
     };
 
-    const sb = supabase.createClient(CFG.U, CFG.K);
+    let sb = null;
     let currentViewDate = new Date();
     let selectedDateStr = null;
     let stats = {};
 
+    function generateAvisId() {
+        const d = new Date();
+        const yy = String(d.getFullYear()).slice(2);
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const rnd = Math.random().toString(36).substring(2, 6).toUpperCase();
+        return `DAR-${yy}${mm}${dd}-${rnd}`;
+    }
+
     async function init() {
+        // Init Supabase after script load (defer)
+        sb = supabase.createClient(CFG.U, CFG.K);
         await loadData();
         renderCalendar();
         
@@ -255,7 +299,7 @@
         setTimeout(() => {
             document.getElementById('feedbackOverlay').style.display = 'flex';
             document.body.style.overflow = 'hidden';
-        }, 2000);
+        }, 3000);
 
         document.getElementById('fType').addEventListener('change', renderCalendar);
         document.getElementById('fPalettes').addEventListener('input', renderCalendar);
@@ -320,11 +364,11 @@
 
             card.innerHTML = `
                 <div class="flex justify-between items-start">
-                    <span class="text-sm font-bold text-slate-800">${d}</span>
-                    <div class="w-2.5 h-2.5 rounded-full ${color} shadow-sm"></div>
+                    <span class="text-base font-extrabold text-slate-800">${d}</span>
+                    <div class="w-3 h-3 rounded-full ${color} shadow-sm"></div>
                 </div>
                 <div>
-                    <div class="text-[10px] font-bold uppercase text-slate-500 mb-1">
+                    <div class="text-[10px] font-bold uppercase text-slate-500 mb-1.5 tracking-wider">
                         ${info.is_blocked ? 'GESPERRT' : info.lkw_count+'/'+CFG.MAX_LKW+' LKW'}
                     </div>
                     <div class="progress-bar">
@@ -337,8 +381,11 @@
                     if(deny) return showToast("Termin für LKW voll belegt!", true);
                     selectedDateStr = dStr;
                     document.getElementById('fDate').value = dStr;
-                    document.getElementById('statusBox').innerHTML = `Ausgewählt: <span class="text-brand-blue font-bold text-sm">${d}.${m+1}.${y}</span>`;
-                    document.getElementById('statusBox').className = "p-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-brand-blue/10 text-brand-darkblue border border-brand-blue/30";
+                    
+                    const statusBox = document.getElementById('statusBox');
+                    statusBox.innerHTML = `Gewähltes Datum: <span class="text-brand-blue font-black text-sm ml-2">${d}.${m+1}.${y}</span>`;
+                    statusBox.className = "p-4 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-brand-blue/10 text-brand-darkblue border border-brand-blue/30 transition-all";
+                    
                     renderCalendar();
                 };
             }
@@ -366,7 +413,10 @@
                 fileUrl = urlData.publicUrl;
             }
 
+            const newAvisId = generateAvisId();
+
             const payload = {
+                avis_id: newAvisId, // NEU: Speichern der ID
                 liefer_datum: selectedDateStr,
                 firma: document.getElementById('fCompany').value,
                 email: document.getElementById('fEmail').value,
@@ -383,7 +433,7 @@
             try {
                 await fetch(`https://ntfy.sh/${CFG.NTFY_TOPIC}`, {
                     method: 'POST',
-                    body: `Neue Avisierung!\nFirma: ${payload.firma}\nDatum: ${payload.liefer_datum}`,
+                    body: `Neue Avisierung! [${newAvisId}]\nFirma: ${payload.firma}\nDatum: ${payload.liefer_datum}`,
                     headers: { 'Title': 'Darula Logistik Portal', 'Priority': 'high' }
                 });
             } catch (ntfyErr) {}
@@ -392,17 +442,19 @@
             showConfirmation(payload);
 
         } catch (err) {
-            showToast("Fehler beim Senden!", true);
+            console.error(err);
+            showToast("Fehler! Evtl. fehlt die 'avis_id' Spalte in der DB.", true);
             btn.disabled = false; 
-            btn.innerText = "Avisierung verbindlich buchen";
+            btn.innerText = "Verbindlich Buchen";
         }
     }
 
     function showConfirmation(data) {
+        document.getElementById('confAvisId').innerText = data.avis_id;
         document.getElementById('confCompany').innerText = data.firma;
         document.getElementById('confEmail').innerText = data.email;
         document.getElementById('confDate').innerText = new Date(data.liefer_datum).toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
-        document.getElementById('confPal').innerText = data.palettes + " Paletten";
+        document.getElementById('confPal').innerText = data.palettes + " Paletten (LE)";
         document.getElementById('confType').innerText = data.fahrzeug_typ;
         document.getElementById('confBe').innerText = data.be_nummer;
         document.getElementById('confArt').innerText = data.artikel_nr;
@@ -416,9 +468,9 @@
         const t = document.getElementById('toast');
         if(!t) return;
         t.innerText = m; 
-        t.className = `fixed top-16 right-4 md:right-6 px-5 py-3 rounded-xl text-sm font-bold uppercase tracking-wider shadow-xl z-[100] transition-all ${err?'bg-red-500 text-white':'bg-emerald-500 text-white'}`;
+        t.className = `fixed top-20 right-4 md:right-6 px-6 py-3.5 rounded-xl text-sm font-bold uppercase tracking-wider shadow-2xl z-[100] transition-all ${err?'bg-red-500 text-white':'bg-emerald-500 text-white'}`;
         t.classList.remove('hidden'); 
-        setTimeout(() => t.classList.add('hidden'), 4000);
+        setTimeout(() => t.classList.add('hidden'), 4500);
     }
 
     window.changeMonth = (v) => { 
@@ -426,8 +478,13 @@
         renderCalendar(); 
     };
 
-    document.getElementById('avisForm').onsubmit = handleForm;
-    init();
+    // Ensure DOM is fully loaded before attaching events
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('avisForm').onsubmit = handleForm;
+    });
+    
+    // Wait for supabase script to load before init
+    window.addEventListener('load', init);
 </script>
 </body>
 </html>
