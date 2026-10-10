@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Darula Logistik | Dispo-Control</title>
+    
+    <link rel="preconnect" href="https://navhxyadbifllpopumfz.supabase.co">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -21,129 +25,133 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
         .hidden-content { display: none !important; }
         .negative-warning { background-color: #fff7ed !important; border-left: 4px solid #f39200 !important; }
-        .tab-active { border-bottom: 3px solid #209fd9; color: #209fd9; font-weight: 700; }
+        .tab-active { border-bottom: 3px solid #209fd9; color: #209fd9; font-weight: 800; }
+        .glass-panel { background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <!-- LOGIN OVERLAY -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-        <div class="bg-white p-10 rounded-3xl max-w-sm w-full shadow-2xl text-center">
-            <img src="darula_logo.jpg" alt="Logo" class="h-12 mx-auto mb-6">
-            <div class="mb-8">
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white p-12 rounded-3xl max-w-md w-full shadow-2xl text-center transform transition-all">
+            <!-- LOGO GROSS -->
+            <img src="darula_logo.jpg" alt="Logo" class="h-20 mx-auto mb-8 object-contain">
+            <div class="mb-10">
                 <span class="text-xs font-bold uppercase text-brand-orange block tracking-widest mb-2">Control Center</span>
-                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Admin Login</h2>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Admin Login</h2>
             </div>
-            <input type="password" id="admin-pw" placeholder="Passwort eingeben" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-center mb-4 outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 text-lg transition-all">
-            <button onclick="checkAccess()" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white py-4 rounded-xl font-bold text-sm uppercase tracking-wider transition-all shadow-md">System Entsperren</button>
-            <p id="error-msg" class="text-brand-orange text-xs font-bold uppercase mt-4 hidden">Zugriff verweigert!</p>
-            <div class="mt-8 pt-6 border-t border-slate-100">
-                <a href="index.html" class="text-sm font-semibold text-slate-400 hover:text-brand-blue transition-colors">&larr; Zurück zur Website</a>
+            <input type="password" id="admin-pw" placeholder="Passwort eingeben" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-center mb-5 outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/20 text-lg transition-all tracking-widest">
+            <button onclick="checkAccess()" class="w-full bg-brand-blue hover:bg-brand-darkblue text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg hover:shadow-brand-blue/30 hover:-translate-y-0.5">System Entsperren</button>
+            <p id="error-msg" class="text-red-500 text-xs font-bold uppercase mt-5 hidden">Zugriff verweigert!</p>
+            <div class="mt-10 pt-6 border-t border-slate-100">
+                <a href="index.html" class="text-sm font-bold text-slate-400 hover:text-brand-blue transition-colors">&larr; Zurück zur Website</a>
             </div>
         </div>
     </div>
 
     <!-- MAIN ADMIN CONTENT -->
     <div id="admin-content" class="hidden-content flex flex-col min-h-screen">
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <header class="glass-panel sticky top-0 z-50">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center gap-10">
-                    <img src="darula_logo.jpg" alt="Logo" class="h-10">
-                    <nav class="hidden md:flex gap-8 text-sm font-semibold text-slate-500 mt-2">
+                    <img src="darula_logo.jpg" alt="Logo" class="h-14 object-contain">
+                    <nav class="hidden md:flex gap-8 text-sm font-bold text-slate-500 mt-2 tracking-wide">
                         <button onclick="switchTab('today')" id="tab-today" class="pb-3 tab-active transition-colors">Tagesplan (Heute)</button>
                         <button onclick="switchTab('partners')" id="tab-partners" class="pb-3 hover:text-brand-blue transition-colors">Partner-Netzwerk</button>
                         <button onclick="switchTab('all')" id="tab-all" class="pb-3 hover:text-brand-blue transition-colors">Gesamt-Archiv</button>
                     </nav>
                 </div>
                 <div class="flex gap-4 items-center">
-                    <button onclick="openAvisModal()" class="bg-brand-orange text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-brand-darkorange transition-all shadow-sm">+ Manuelle Avis</button>
-                    <button onclick="logout()" class="text-xs font-bold bg-slate-100 text-slate-600 px-5 py-2.5 rounded-xl hover:bg-slate-200 transition-colors">Logout</button>
+                    <button onclick="openAvisModal()" class="bg-brand-orange text-white px-6 py-3 rounded-xl text-xs font-bold hover:bg-brand-darkorange transition-all shadow-md hover:-translate-y-0.5 uppercase tracking-wider">+ Manuelle Avis</button>
+                    <button onclick="logout()" class="text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-600 px-6 py-3 rounded-xl hover:bg-slate-200 transition-colors">Logout</button>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-8 w-full flex-grow">
+        <main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-10 w-full flex-grow">
             <!-- KPI KENNZAHLEN -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold uppercase text-slate-400 mb-1 tracking-wider">Erwartete LKW (Heute)</p>
-                        <div class="text-4xl font-black text-slate-900" id="stat-count">0</div>
+                        <p class="text-xs font-bold uppercase text-slate-400 mb-2 tracking-widest">LKW (Heute)</p>
+                        <div class="text-5xl font-black text-slate-900" id="stat-count">0</div>
                     </div>
-                    <div class="w-12 h-12 bg-brand-blue/10 text-brand-blue rounded-full flex items-center justify-center text-xl">🚛</div>
+                    <div class="w-16 h-16 bg-brand-blue/10 text-brand-blue rounded-2xl flex items-center justify-center text-3xl">🚛</div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold uppercase text-slate-400 mb-1 tracking-wider">Geplante Paletten (LE)</p>
-                        <div class="text-4xl font-black text-brand-orange" id="stat-pal">0</div>
+                        <p class="text-xs font-bold uppercase text-slate-400 mb-2 tracking-widest">Paletten (LE)</p>
+                        <div class="text-5xl font-black text-brand-orange" id="stat-pal">0</div>
                     </div>
-                    <div class="w-12 h-12 bg-brand-orange/10 text-brand-orange rounded-full flex items-center justify-center text-xl">📦</div>
+                    <div class="w-16 h-16 bg-brand-orange/10 text-brand-orange rounded-2xl flex items-center justify-center text-3xl">📦</div>
                 </div>
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl text-white flex flex-col justify-center shadow-md">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Systemzeit (Nürnberg)</p>
-                    <div class="text-3xl font-mono font-bold tracking-widest text-brand-blue" id="live-clock">--:--:--</div>
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl text-white flex flex-col justify-center shadow-lg relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 text-7xl opacity-10">⏱️</div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Systemzeit</p>
+                    <div class="text-4xl font-mono font-black tracking-widest text-brand-blue" id="live-clock">--:--:--</div>
                 </div>
             </div>
 
             <!-- ECHTZEIT SUCHLEISTE -->
-            <div class="mb-6 flex justify-between items-center bg-white p-2 pl-4 rounded-2xl border border-slate-200 shadow-sm">
-                <input type="text" id="admin-search" onkeyup="filterTable()" placeholder="Suchen nach Spedition, E-Mail, BE-Nr..." class="w-full md:w-96 p-2 bg-transparent border-none text-sm outline-none font-medium text-slate-700">
-                <span class="text-xs font-bold text-white bg-slate-300 px-3 py-1.5 rounded-lg mr-2">Filter</span>
+            <div class="mb-6 flex justify-between items-center bg-white p-3 pl-6 rounded-2xl border border-slate-200 shadow-sm">
+                <input type="text" id="admin-search" onkeyup="filterTable()" placeholder="Suchen nach Avis-ID, Spedition, E-Mail, BE-Nr..." class="w-full md:w-[500px] p-2 bg-transparent border-none text-sm outline-none font-medium text-slate-700">
+                <span class="text-xs font-bold text-white bg-slate-300 px-4 py-2 rounded-xl mr-2 uppercase tracking-wider">Suche</span>
             </div>
 
             <!-- TABELLE -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="main-data-table">
-                        <thead id="table-head" class="bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500"></thead>
+                        <thead id="table-head" class="bg-slate-50 border-b border-slate-200 text-xs font-extrabold uppercase tracking-widest text-slate-500"></thead>
                         <tbody id="table-body" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
-                <div id="no-data" class="hidden py-20 text-center">
-                    <p class="text-slate-400 text-sm font-medium">Keine Einträge für diese Ansicht gefunden.</p>
+                <div id="no-data" class="hidden py-24 text-center">
+                    <p class="text-slate-400 text-sm font-bold uppercase tracking-widest">Keine Einträge gefunden.</p>
                 </div>
             </div>
         </main>
     </div>
 
     <!-- MODAL MANUAL AVIS -->
+    <!-- Unverändert zur Vorversion, nur styling upgrades -->
     <div id="avis-modal" class="fixed inset-0 z-[1000] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-lg rounded-2xl p-8 border border-slate-200 shadow-2xl">
-            <h3 class="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">Manuelle Avisierung</h3>
-            <div class="space-y-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl p-8 border border-slate-200 shadow-2xl">
+            <h3 class="text-2xl font-extrabold text-slate-900 mb-6 pb-4 border-b border-slate-100">Manuelle Avisierung</h3>
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Spedition / Partner *</label>
-                    <select id="m-partner" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue"></select>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Spedition / Partner *</label>
+                    <select id="m-partner" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-brand-blue font-medium"></select>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Datum *</label>
-                        <input type="date" id="m-date" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Datum *</label>
+                        <input type="date" id="m-date" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">LKW-Typ *</label>
-                        <select id="m-typ" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">LKW-Typ *</label>
+                        <select id="m-typ" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                             <option>Sattelzug</option><option>12t LKW</option><option>7.5t LKW</option><option>Sprinter</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Paletten *</label>
-                        <input type="number" id="m-pal" placeholder="Anzahl" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Paletten *</label>
+                        <input type="number" id="m-pal" placeholder="Anzahl" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">E-Mail</label>
-                        <input type="email" id="m-email" placeholder="kontakt@firma.de" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-2">E-Mail</label>
+                        <input type="email" id="m-email" placeholder="kontakt@firma.de" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lieferschein Link</label>
-                    <input type="text" id="m-url" placeholder="https://..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Lieferschein Link</label>
+                    <input type="text" id="m-url" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none font-medium">
                 </div>
                 <div class="flex gap-4 pt-4 mt-4 border-t border-slate-100">
-                    <button onclick="closeAvisModal()" class="flex-1 py-3 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-sm uppercase transition-colors">Abbrechen</button>
-                    <button onclick="saveManualAvis()" class="flex-1 bg-brand-blue text-white py-3 rounded-xl font-bold text-sm uppercase hover:bg-brand-darkblue transition-colors shadow-md">Speichern</button>
+                    <button onclick="closeAvisModal()" class="flex-1 py-3.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors">Abbrechen</button>
+                    <button onclick="saveManualAvis()" class="flex-1 bg-brand-blue text-white py-3.5 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-brand-darkblue transition-all shadow-md">Speichern</button>
                 </div>
             </div>
         </div>
@@ -153,7 +161,7 @@
     const MASTER_PW = "Sommer2026";
     const SB_URL = "https://navhxyadbifllpopumfz.supabase.co";
     const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY";
-    const _sb = supabase.createClient(SB_URL, SB_KEY);
+    let _sb = null;
 
     let currentTab = 'today';
     let avisData = [];
@@ -167,19 +175,24 @@
             document.getElementById('error-msg').classList.remove('hidden');
         }
     }
+    
     function unlockUI() {
         document.getElementById('login-overlay').classList.add('hidden-content');
         document.getElementById('admin-content').classList.remove('hidden-content');
+        _sb = supabase.createClient(SB_URL, SB_KEY);
         startClock();
         fetchData();
     }
+    
     function logout() { sessionStorage.clear(); location.reload(); }
-    if(sessionStorage.getItem('darula_admin_access') === 'true') unlockUI();
+    
+    window.addEventListener('load', () => {
+        if(sessionStorage.getItem('darula_admin_access') === 'true') unlockUI();
+        document.getElementById('admin-pw').focus();
+    });
 
     function startClock() {
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('de-DE');
-        }, 1000);
+        setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('de-DE'); }, 1000);
     }
 
     async function fetchData() {
@@ -205,28 +218,29 @@
         empty.classList.add('hidden');
 
         if(currentTab === 'partners') {
-            head.innerHTML = `<tr><th class="px-6 py-4">Code</th><th class="px-6 py-4">Partner Name</th><th class="px-6 py-4">Zuverlässigkeit</th><th class="px-6 py-4">Sonderregelung</th><th class="px-6 py-4 text-right">Aktion</th></tr>`;
+            head.innerHTML = `<tr><th class="px-6 py-5">Code</th><th class="px-6 py-5">Partner Name</th><th class="px-6 py-5">Zuverlässigkeit</th><th class="px-6 py-5">Sonderregelung</th><th class="px-6 py-5 text-right">Aktion</th></tr>`;
             partnerData.forEach(p => {
                 const isWarning = /sperr|achtung|negativ|problem|fehlt|stopp/i.test(p.regelung);
                 body.innerHTML += `
                 <tr class="${isWarning ? 'negative-warning' : 'hover:bg-slate-50'} transition-colors group">
-                    <td class="px-6 py-4 font-bold text-brand-blue font-mono">${p.code || 'DAR-NEW'}</td>
-                    <td class="px-6 py-4 font-bold uppercase text-slate-800">${p.name}</td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-5 font-bold text-brand-blue font-mono">${p.code || 'DAR-NEW'}</td>
+                    <td class="px-6 py-5 font-black uppercase text-slate-800">${p.name}</td>
+                    <td class="px-6 py-5">
                         <div class="flex items-center gap-3">
-                            <span class="font-bold text-lg ${p.zuverlaessigkeit > 80 ? 'text-emerald-500' : 'text-brand-orange'}">${p.zuverlaessigkeit}%</span>
+                            <span class="font-black text-xl ${p.zuverlaessigkeit > 80 ? 'text-emerald-500' : 'text-brand-orange'}">${p.zuverlaessigkeit}%</span>
                             <div class="flex flex-col text-[10px]">
                                 <button onclick="rank('${p.id}', 5)" class="hover:text-brand-blue font-bold">▲</button>
                                 <button onclick="rank('${p.id}', -5)" class="hover:text-brand-orange font-bold">▼</button>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4"><input onblur="updateReg('${p.id}', this.value)" value="${p.regelung || ''}" placeholder="Keine Beschränkung..." class="bg-white/80 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium w-full outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue"></td>
-                    <td class="px-6 py-4 text-right"><button onclick="delPart('${p.id}')" class="text-slate-400 hover:text-red-500 font-bold text-xs uppercase">Löschen</button></td>
+                    <td class="px-6 py-5"><input onblur="updateReg('${p.id}', this.value)" value="${p.regelung || ''}" placeholder="Keine Beschränkung..." class="bg-white/80 border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium w-full outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20"></td>
+                    <td class="px-6 py-5 text-right"><button onclick="delPart('${p.id}')" class="text-slate-400 hover:text-red-500 font-bold text-xs uppercase tracking-wider">Löschen</button></td>
                 </tr>`;
             });
         } else {
-            head.innerHTML = `<tr><th class="px-6 py-4">Datum / Fzg.</th><th class="px-6 py-4">Spedition</th><th class="px-6 py-4 text-center">Paletten</th><th class="px-6 py-4">E-Mail</th><th class="px-6 py-4 text-center">Dokument</th><th class="px-6 py-4">BE-Nr.</th><th class="px-6 py-4 text-right">Aktion</th></tr>`;
+            // Added Avis-ID Column
+            head.innerHTML = `<tr><th class="px-6 py-5">Avis-ID</th><th class="px-6 py-5">Datum / Fzg.</th><th class="px-6 py-5">Spedition</th><th class="px-6 py-5 text-center">Paletten</th><th class="px-6 py-5">Referenzen</th><th class="px-6 py-5 text-center">Beleg</th><th class="px-6 py-5 text-right">Aktion</th></tr>`;
             
             const todayStr = new Date().toISOString().split('T')[0];
             let filtered = (currentTab === 'today') ? avisData.filter(x => x.liefer_datum === todayStr) : avisData;
@@ -240,26 +254,26 @@
                 const partner = partnerData.find(p => p.name.toLowerCase() === r.firma.toLowerCase());
                 const isWarning = partner && /sperr|achtung|negativ|problem|stopp/i.test(partner.regelung);
                 
-                const mailVal = r['email'];
                 const linkVal = r['lieferschein_url'];
-
-                const emailDisplay = mailVal ? `<span class="text-sm text-slate-600 lowercase">${mailVal}</span>` : '<span class="text-slate-400 text-xs italic">nicht hinterlegt</span>';
                 const fileDisplay = (linkVal && linkVal.trim() !== "") ? 
-                    `<a href="${linkVal}" target="_blank" class="inline-block bg-brand-blue/10 text-brand-darkblue px-3 py-1.5 rounded-lg font-bold text-xs uppercase hover:bg-brand-blue hover:text-white transition-colors">Anzeigen &rarr;</a>` : 
+                    `<a href="${linkVal}" target="_blank" class="inline-block bg-brand-blue/10 text-brand-darkblue px-4 py-2 rounded-xl font-bold text-xs uppercase hover:bg-brand-blue hover:text-white transition-colors">Anzeigen</a>` : 
                     '<span class="text-slate-400 text-xs">-</span>';
 
                 body.innerHTML += `
                 <tr class="${isWarning ? 'negative-warning' : 'hover:bg-slate-50'} transition-colors">
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-sm ${r.liefer_datum === todayStr ? 'text-brand-blue' : 'text-slate-800'}">${new Date(r.liefer_datum).toLocaleDateString('de-DE')}</div>
+                    <td class="px-6 py-5 font-mono font-bold text-slate-500 text-xs">${r.avis_id || '-'}</td>
+                    <td class="px-6 py-5">
+                        <div class="font-black text-sm ${r.liefer_datum === todayStr ? 'text-brand-blue' : 'text-slate-800'}">${new Date(r.liefer_datum).toLocaleDateString('de-DE')}</div>
                         <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider mt-1">${r.fahrzeug_typ}</div>
                     </td>
-                    <td class="px-6 py-4 font-bold uppercase text-slate-800">${r.firma} ${isWarning ? '⚠️' : ''}</td>
-                    <td class="px-6 py-4 text-center font-bold text-lg text-slate-900">${r.palettes}</td>
-                    <td class="px-6 py-4">${emailDisplay}</td>
-                    <td class="px-6 py-4 text-center">${fileDisplay}</td>
-                    <td class="px-6 py-4 font-mono text-sm text-slate-500">${r.be_nummer || '-'}</td>
-                    <td class="px-6 py-4 text-right"><button onclick="delAvis('${r.id}')" class="text-slate-400 hover:text-red-500 font-bold text-xs uppercase">Löschen</button></td>
+                    <td class="px-6 py-5 font-black uppercase text-slate-800">${r.firma} ${isWarning ? '⚠️' : ''}</td>
+                    <td class="px-6 py-5 text-center font-black text-xl text-slate-900">${r.palettes}</td>
+                    <td class="px-6 py-5">
+                        <div class="text-xs font-medium text-slate-600 lowercase">${r.email || '-'}</div>
+                        <div class="text-[10px] font-mono font-bold text-slate-400 mt-1">BE: ${r.be_nummer || '-'}</div>
+                    </td>
+                    <td class="px-6 py-5 text-center">${fileDisplay}</td>
+                    <td class="px-6 py-5 text-right"><button onclick="delAvis('${r.id}')" class="text-slate-400 hover:text-red-500 font-bold text-xs uppercase tracking-wider">Löschen</button></td>
                 </tr>`;
             });
         }
@@ -293,8 +307,15 @@
         s.innerHTML = '<option value="">-- Partner wählen --</option>';
         partnerData.forEach(p => s.innerHTML += `<option value="${p.name}">${p.name} (${p.code || 'NEW'})</option>`);
     }
+    
+    function generateAvisIdAdmin() {
+        const d = new Date();
+        return `DAR-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    }
+
     async function saveManualAvis() {
         const payload = {
+            avis_id: generateAvisIdAdmin(),
             firma: document.getElementById('m-partner').value,
             liefer_datum: document.getElementById('m-date').value,
             fahrzeug_typ: document.getElementById('m-typ').value,
@@ -310,7 +331,6 @@
     }
 
     document.getElementById('admin-pw').addEventListener('keypress', (e) => { if(e.key === 'Enter') checkAccess(); });
-    window.onload = () => document.getElementById('admin-pw').focus();
 </script>
 </body>
 </html>
