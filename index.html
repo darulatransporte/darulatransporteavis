@@ -3,125 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte</title>
+    <title>Warenannahme | Darula Transporte</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: { blue: '#209fd9', orange: '#f39200', black: '#0a0a0a' } },
-                    fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
+                    colors: { brand: { blue: '#209fd9', orange: '#f39200' }, slate: { 850: '#151e2e' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Space Grotesk', sans-serif; background-color: #fff; color: #0a0a0a; }
-        .grid-bg { background-image: linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px); background-size: 40px 40px; }
-        .border-hard { border: 2px solid #0a0a0a; }
-        .btn-brutal { transition: all 0s; box-shadow: 4px 4px 0px 0px #0a0a0a; }
-        .btn-brutal:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #0a0a0a; }
-        .btn-brutal:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px 0px #0a0a0a; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col grid-bg">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <!-- System Alert -->
-    <div class="bg-brand-orange text-brand-black border-b-2 border-brand-black font-mono text-xs md:text-sm uppercase tracking-widest py-2 px-4 flex justify-between items-center">
-        <span>SYS.ALERT //</span>
-        <span class="font-bold">Inventur am 11.11.2026 — Warenannahme gesperrt</span>
-        <span>// SYS.ALERT</span>
+    <!-- System Hinweis -->
+    <div class="bg-amber-50 border-b border-amber-200 text-amber-800 text-sm py-3 px-6 text-center flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="font-medium">Wichtige Information: Am 11.11.2026 findet unsere Inventur statt. Die Warenannahme bleibt an diesem Tag geschlossen.</span>
     </div>
 
     <!-- Navigation -->
-    <nav class="border-b-2 border-brand-black bg-white">
-        <div class="max-w-7xl mx-auto flex justify-between items-stretch h-20">
-            <a href="index.html" class="flex items-center px-6 border-r-2 border-brand-black hover:bg-gray-50">
-                <img src="darula_logo.jpg" alt="Darula" class="h-10 object-contain">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-10 object-contain">
             </a>
-            <div class="flex">
-                <a href="admin.html.html" class="hidden md:flex items-center px-8 border-l-2 border-brand-black font-mono text-sm uppercase hover:bg-brand-black hover:text-white transition-colors">Admin</a>
-                <a href="avisierung.html" class="flex items-center px-8 border-l-2 border-brand-black bg-brand-blue text-white font-bold text-sm uppercase hover:bg-brand-black transition-colors">
-                    Terminal Starten &rarr;
+            <div class="flex items-center gap-4">
+                <a href="admin.html.html" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors hidden md:block px-4">Intern</a>
+                <a href="avisierung.html" class="bg-brand-blue hover:bg-[#1b8bc0] text-white px-5 py-2.5 rounded-md text-sm font-medium transition-colors shadow-sm">
+                    Zum Buchungsportal
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero / Main Matrix -->
-    <main class="flex-grow max-w-7xl mx-auto w-full border-x-2 border-brand-black bg-white flex flex-col">
-        
-        <header class="p-8 md:p-16 border-b-2 border-brand-black relative overflow-hidden">
-            <div class="font-mono text-brand-blue font-bold mb-4">STATUS: ONLINE // RAMPEN-DISPOSITION</div>
-            <h1 class="text-5xl md:text-7xl font-bold uppercase leading-[0.9] tracking-tighter max-w-4xl">
-                Präzise Logistik.<br>
-                <span class="text-brand-orange">Keine Kompromisse.</span>
-            </h1>
-            <p class="mt-8 font-mono text-sm max-w-2xl text-gray-600 leading-relaxed border-l-4 border-brand-blue pl-4">
-                Dies ist das zentrale Avisierungs-Terminal der Darula Transporte. Alle Anlieferungen ab 11 Paletten erfordern eine zwingende System-Registrierung.
-            </p>
-            <div class="mt-12">
-                <a href="avisierung.html" class="inline-block bg-brand-black text-white font-bold uppercase tracking-wider px-8 py-4 border-hard btn-brutal">
-                    [ Slot Reservieren ]
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 py-16 md:py-24 w-full">
+            <div class="max-w-3xl">
+                <h1 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+                    Warenannahme
+                </h1>
+                <p class="text-lg text-slate-600 mb-10 leading-relaxed">
+                    Um einen reibungslosen und effizienten Ablauf an unserer Rampe zu gewährleisten, bitten wir alle Partner um Beachtung unserer Anlieferungsrichtlinien und die Nutzung unseres digitalen Avisierungssystems.
+                </p>
+                <a href="avisierung.html" class="inline-flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-md font-medium transition-colors shadow-sm text-base">
+                    Anlieferung avisieren
                 </a>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 divide-y-2 md:divide-y-0 md:divide-x-2 divide-brand-black flex-grow">
+    <!-- Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-16 w-full">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+            <div class="bg-white p-8 border border-slate-200 rounded-lg shadow-sm">
+                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Reguläre Annahme</h3>
+                <div class="text-slate-900 font-semibold mb-1">Montag — Donnerstag</div>
+                <div class="text-2xl text-brand-blue font-light">07:00 – 14:00 Uhr</div>
+            </div>
             
-            <!-- Time Matrix -->
-            <div class="p-8 bg-gray-50">
-                <h2 class="font-mono font-bold text-xl uppercase border-b-2 border-brand-black pb-2 mb-6">Betriebszeiten</h2>
-                <div class="space-y-6">
-                    <div>
-                        <div class="text-xs font-mono text-gray-500 mb-1">MONTAG — DONNERSTAG</div>
-                        <div class="text-4xl font-bold tracking-tighter">07:00<span class="text-brand-blue">-</span>14:00</div>
-                    </div>
-                    <div>
-                        <div class="text-xs font-mono text-gray-500 mb-1">FREITAG</div>
-                        <div class="text-4xl font-bold tracking-tighter">07:00<span class="text-brand-orange">-</span>12:00</div>
-                    </div>
-                    <div class="bg-brand-black text-white p-4 mt-8">
-                        <div class="text-xs font-mono text-brand-orange mb-1">REGEL 01 // KULANZ</div>
-                        <div class="text-sm">Maximal 30 Minuten Toleranz nach Annahmeschluss. Danach strikte Abweisung auf Folgetag.</div>
-                    </div>
-                </div>
+            <div class="bg-white p-8 border border-slate-200 rounded-lg shadow-sm">
+                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Verkürzte Annahme</h3>
+                <div class="text-slate-900 font-semibold mb-1">Freitag</div>
+                <div class="text-2xl text-brand-orange font-light">07:00 – 12:00 Uhr</div>
             </div>
 
-            <!-- Rules -->
-            <div class="p-8 col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <div class="w-10 h-10 border-2 border-brand-black rounded-full flex items-center justify-center font-mono font-bold mb-4">01</div>
-                    <h3 class="text-2xl font-bold uppercase mb-2">Ladungsverkehr</h3>
-                    <p class="font-mono text-sm text-gray-600">
-                        Teil- & Komplettladungen (ab 11 Paletten).<br><br>
-                        Avisierungspflicht über dieses Portal. Auswahl des Tages. 
-                        Flexibles Eintreffen innerhalb der Betriebszeiten.
-                    </p>
-                </div>
-                <div>
-                    <div class="w-10 h-10 border-2 border-brand-black rounded-full flex items-center justify-center font-mono font-bold mb-4">02</div>
-                    <h3 class="text-2xl font-bold uppercase mb-2">Stückgut</h3>
-                    <p class="font-mono text-sm text-gray-600">
-                        Kleinmengen (bis 10 Paletten).<br><br>
-                        Befreit von der verbindlichen System-Avisierung. Anmeldung zur Optimierung der Abfertigungszeiten dennoch empfohlen.
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t-2 border-brand-black bg-brand-black text-white">
-        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center font-mono text-xs uppercase tracking-widest">
-            <div>&copy; 2026 DARULA TRANSPORTE</div>
-            <div class="flex gap-8 mt-4 md:mt-0">
-                <a href="impressum.html" class="hover:text-brand-blue">Impressum</a>
-                <a href="admin.html.html" class="hover:text-brand-orange">Admin</a>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+            <div class="bg-slate-50 p-8
