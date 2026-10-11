@@ -16,7 +16,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #fafafa; color: #171717; }
         .border-subtle { border: 1px solid #e5e5e5; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e5e5; border: 1px solid #e5e5e5; }
-        .cal-day { background: white; padding: 12px; min-height: 90px; cursor: pointer; transition: background 0.15s; }
+        .cal-day { background: white; padding: 12px; min-height: 95px; cursor: pointer; transition: background 0.15s; display: flex; flex-direction: column; justify-content: space-between; }
         .cal-day:hover:not(.disabled) { background: #f8fafc; }
         .cal-day.disabled { background: #f5f5f5; color: #a3a3a3; cursor: not-allowed; }
         .cal-day.selected { background: #eff6ff; box-shadow: inset 0 0 0 2px #209fd9; }
@@ -26,7 +26,6 @@
         .step-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Styles for Receipt */
         @media print { 
             body * { visibility: hidden; } 
             #receiptArea, #receiptArea * { visibility: visible; } 
@@ -37,12 +36,10 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
-    <!-- Alert Banner -->
     <div class="bg-[#171717] text-white text-sm font-medium py-2.5 px-4 text-center tracking-wide">
         Inventur am <span class="text-brand-orange">11.11.2026</span> - Buchungen für diesen Tag sind gesperrt.
     </div>
 
-    <!-- Navigation -->
     <nav class="bg-white border-b border-subtle sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3">
@@ -54,26 +51,30 @@
 
     <main class="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
         
-        <!-- Booking Wizard -->
         <div class="bg-white border border-subtle rounded-lg p-8 shadow-sm">
             
             <!-- STEP 1: Date Selection -->
             <div id="step1" class="step-container active">
                 <div class="flex justify-between items-end mb-6">
                     <div>
-                        <h2 class="text-xl font-semibold">Schritt 1: Datum wählen</h2>
-                        <p class="text-sm text-[#737373] mt-1">Wählen Sie einen verfügbaren Anliefertag.</p>
+                        <h2 class="text-xl font-semibold">Schritt 1: Anlieferdatum wählen</h2>
+                        <p class="text-sm text-[#737373] mt-1">Wählen Sie einen freien Tag für Ihre Lieferung.</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="changeMonth(-1)" class="px-3 py-1.5 border border-subtle rounded text-sm hover:bg-gray-50">&larr;</button>
-                        <span id="monthLabel" class="px-3 py-1.5 font-medium text-sm w-32 text-center"></span>
+                        <span id="monthLabel" class="px-3 py-1.5 font-medium text-sm w-36 text-center"></span>
                         <button onclick="changeMonth(1)" class="px-3 py-1.5 border border-subtle rounded text-sm hover:bg-gray-50">&rarr;</button>
                     </div>
                 </div>
                 
-                <div class="cal-grid rounded-md overflow-hidden" id="calendarGrid"></div>
+                <div class="cal-grid rounded-md overflow-hidden text-xs" id="calendarGrid"></div>
                 
-                <div class="mt-6 flex justify-end">
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-xs text-[#737373] flex items-center gap-4">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Frei</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Ausgebucht</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> Inventur / Gesperrt</span>
+                    </div>
                     <button onclick="goToStep2()" id="btnNext" disabled class="bg-brand-blue text-white px-6 py-2.5 rounded text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed">
                         Weiter zu den Details
                     </button>
@@ -82,29 +83,29 @@
 
             <!-- STEP 2: Form Data -->
             <div id="step2" class="step-container">
-                <h2 class="text-xl font-semibold mb-1">Schritt 2: Sendungsdaten</h2>
+                <h2 class="text-xl font-semibold mb-1">Schritt 2: Sendungsdaten erfassen</h2>
                 <p class="text-sm text-[#737373] mb-6">Gewähltes Datum: <span id="lblSelectedDate" class="font-semibold text-[#171717]"></span></p>
                 
                 <form id="avisForm" class="space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Firma *</label>
-                            <input type="text" id="fCompany" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Speditionsfirma *</label>
+                            <input type="text" id="fCompany" required placeholder="z.B. Spedition Müller" class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">E-Mail *</label>
-                            <input type="email" id="fEmail" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">E-Mail für Bestätigung *</label>
+                            <input type="email" id="fEmail" required placeholder="dispo@spedition.de" class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Paletten *</label>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Anzahl Paletten *</label>
                             <input type="number" id="fPalettes" min="1" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">BE-Nummer *</label>
-                            <input type="text" id="fBe" required class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">BE-Nummer / Referenz *</label>
+                            <input type="text" id="fBe" required placeholder="z.B. BE-98321" class="w-full p-2.5 bg-[#fafafa] border border-subtle rounded text-sm outline-none focus:border-brand-blue">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Lieferschein (PDF/Bild)</label>
+                            <label class="block text-xs font-semibold text-[#525252] mb-1.5 uppercase tracking-wide">Lieferschein (PDF / Bild)</label>
                             <input type="file" id="fDoc" class="w-full text-sm text-[#525252] file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#f5f5f5] file:text-[#171717] hover:file:bg-[#e5e5e5]">
                         </div>
                     </div>
@@ -118,22 +119,25 @@
 
             <!-- STEP 3: Receipt -->
             <div id="step3" class="step-container text-center py-8">
-                <div id="receiptArea" class="text-left bg-white border border-subtle p-8 rounded-lg max-w-lg mx-auto">
-                    <div class="border-b border-subtle pb-4 mb-6">
-                        <h2 class="text-2xl font-semibold text-[#171717]">Buchungsbeleg</h2>
-                        <p class="text-sm text-[#737373]">Darula Transporte - Warenannahme</p>
+                <div id="receiptArea" class="text-left bg-white border border-subtle p-8 rounded-lg max-w-lg mx-auto shadow-sm">
+                    <div class="border-b border-subtle pb-4 mb-6 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-semibold text-[#171717]">Buchungsbeleg</h2>
+                            <p class="text-xs text-[#737373]">Darula Transporte - Warenannahme</p>
+                        </div>
+                        <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded">Erfolgreich</span>
                     </div>
-                    <div class="space-y-4 text-sm">
+                    <div class="space-y-3 text-sm">
                         <div class="flex justify-between"><span class="text-[#737373]">Ticket-ID:</span> <strong id="rId" class="font-mono"></strong></div>
                         <div class="flex justify-between"><span class="text-[#737373]">Anlieferdatum:</span> <strong id="rDate"></strong></div>
                         <div class="flex justify-between"><span class="text-[#737373]">Spedition:</span> <strong id="rCompany"></strong></div>
                         <div class="flex justify-between"><span class="text-[#737373]">BE-Nummer:</span> <strong id="rBe"></strong></div>
-                        <div class="flex justify-between"><span class="text-[#737373]">Menge:</span> <strong id="rPalettes"></strong></div>
+                        <div class="flex justify-between"><span class="text-[#737373]">Paletten:</span> <strong id="rPalettes"></strong></div>
                     </div>
                 </div>
                 <div class="mt-8 space-x-4 no-print">
                     <button onclick="window.print()" class="px-6 py-2.5 bg-[#171717] text-white rounded text-sm font-medium">Beleg Drucken</button>
-                    <button onclick="location.reload()" class="px-6 py-2.5 border border-subtle rounded text-sm font-medium">Neue Buchung</button>
+                    <button onclick="location.reload()" class="px-6 py-2.5 border border-subtle rounded text-sm font-medium">Weitere Buchung</button>
                 </div>
             </div>
 
@@ -141,7 +145,6 @@
     </main>
 
 <script>
-    // System Config
     const CFG = {
         U: "https://navhxyadbifllpopumfz.supabase.co",
         K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
@@ -153,17 +156,14 @@
     let selectedDate = null;
     let bookedData = {};
 
-    // Initialization
     window.onload = async () => {
         sb = supabase.createClient(CFG.U, CFG.K);
         await fetchAvailability();
         renderCalendar();
     };
 
-    // Helper: Generate Ticket ID
     const generateId = () => `DAR-${new Date().toISOString().slice(2,10).replace(/-/g,'')}-${Math.random().toString(36).substr(2,4).toUpperCase()}`;
 
-    // Logic: Fetch Data
     async function fetchAvailability() {
         try {
             const { data } = await sb.from('avisierung').select('liefer_datum');
@@ -171,10 +171,9 @@
             (data || []).forEach(row => {
                 bookedData[row.liefer_datum] = (bookedData[row.liefer_datum] || 0) + 1;
             });
-        } catch (e) { console.error("DB Error"); }
+        } catch (e) { console.error("DB Error", e); }
     }
 
-    // Logic: Render Calendar
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
@@ -188,10 +187,8 @@
         const daysInMonth = new Date(y, m + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
-        // Empty padding cells
         for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-day disabled"></div>`;
 
-        // Day cells
         for(let d=1; d<=daysInMonth; d++) {
             const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             const count = bookedData[dStr] || 0;
@@ -204,15 +201,18 @@
             
             if(isInventur) {
                 div.className = 'cal-day inventur';
-                div.innerHTML = `<span class="font-medium">${d}</span><div class="text-[10px] mt-2 font-semibold">INVENTUR</div>`;
-            } else if(isPast || isFull) {
+                div.innerHTML = `<span class="font-semibold text-red-600">${d}</span><div class="text-[10px] font-bold text-center mt-auto bg-red-100 py-0.5 rounded">INVENTUR</div>`;
+            } else if(isPast) {
                 div.className = 'cal-day disabled';
-                div.innerHTML = `<span class="font-medium">${d}</span><div class="text-[10px] mt-2">${isFull ? 'Belegt' : ''}</div>`;
+                div.innerHTML = `<span class="font-medium">${d}</span>`;
+            } else if(isFull) {
+                div.className = 'cal-day disabled';
+                div.innerHTML = `<span class="font-medium">${d}</span><div class="text-[10px] text-amber-600 font-medium text-center mt-auto bg-amber-50 py-0.5 rounded">Voll (${count}/${CFG.MAX_LKW})</div>`;
             } else {
                 div.className = `cal-day ${selectedDate === dStr ? 'selected' : ''}`;
                 div.innerHTML = `
-                    <div class="flex justify-between"><span class="font-medium">${d}</span> <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></div></div>
-                    <div class="text-[10px] mt-4 text-[#737373]">${count}/${CFG.MAX_LKW} belegt</div>
+                    <div class="flex justify-between items-center"><span class="font-semibold">${d}</span><span class="w-2 h-2 rounded-full bg-emerald-500"></span></div>
+                    <div class="text-[10px] text-[#737373] text-center mt-auto bg-gray-50 py-0.5 rounded">${count}/${CFG.MAX_LKW} belegt</div>
                 `;
                 div.onclick = () => {
                     selectedDate = dStr;
@@ -229,7 +229,6 @@
         renderCalendar();
     }
 
-    // Wizard Navigation
     function goToStep2() {
         document.getElementById('step1').classList.remove('active');
         document.getElementById('step2').classList.add('active');
@@ -241,11 +240,10 @@
         document.getElementById('step1').classList.add('active');
     }
 
-    // Form Submission
     document.getElementById('avisForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "Speichere...";
+        btn.disabled = true; btn.innerText = "Wird verarbeitet...";
 
         const file = document.getElementById('fDoc').files[0];
         let fileUrl = null;
@@ -263,15 +261,15 @@
                 liefer_datum: selectedDate,
                 firma: document.getElementById('fCompany').value,
                 email: document.getElementById('fEmail').value,
-                palettes: document.getElementById('fPalettes').value,
+                palettes: parseInt(document.getElementById('fPalettes').value),
                 be_nummer: document.getElementById('fBe').value,
                 lieferschein_url: fileUrl,
                 status: 'gebucht'
             };
 
-            await sb.from('avisierung').insert([payload]);
+            const { error } = await sb.from('avisierung').insert([payload]);
+            if(error) throw error;
 
-            // Show Receipt
             document.getElementById('step2').classList.remove('active');
             document.getElementById('step3').classList.add('active');
             
@@ -282,7 +280,7 @@
             document.getElementById('rPalettes').innerText = payload.palettes;
 
         } catch (error) {
-            alert("Fehler beim Speichern. Bitte versuchen Sie es erneut.");
+            alert("Fehler beim Speichern: " + (error.message || "Unbekannter Fehler"));
             btn.disabled = false; btn.innerText = "Verbindlich Buchen";
         }
     });
