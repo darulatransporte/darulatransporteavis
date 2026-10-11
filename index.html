@@ -1,108 +1,129 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darula Transporte | Warenannahme & Dispo</title>
+    <title>Darula Transporte</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { brand: { blue: '#209fd9', orange: '#f39200' } },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    colors: { brand: { blue: '#209fd9', orange: '#f39200', dark: '#0f172a' } },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fafafa; color: #171717; }
-        .border-subtle { border: 1px solid #e5e5e5; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at top right, #f8fafc, #f1f5f9); color: #0f172a; }
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="h-full flex flex-col antialiased">
 
-    <!-- Inventur & Info Banner -->
-    <div class="bg-[#171717] text-white text-sm font-medium py-2.5 px-4 text-center tracking-wide">
-        Wichtige Information: Am <span class="text-brand-orange">11.11.2026</span> findet unsere Inventur statt. Die Warenannahme bleibt geschlossen.
+    <!-- Top Alert Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white text-xs md:text-sm font-semibold py-3 px-4 text-center tracking-wide shadow-inner flex items-center justify-center gap-2">
+        <svg class="w-4 h-4 text-brand-orange animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span>Wichtige Information: Am <span class="text-brand-orange underline decoration-brand-orange/50 underline-offset-4">11.11.2026</span> findet unsere jährliche Inventur statt. Die Warenannahme ist an diesem Tag geschlossen.</span>
     </div>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-subtle sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3">
-                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-10 object-contain">
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <img src="darula_logo.jpg" alt="Darula Transporte" class="h-11 object-contain transition-transform group-hover:scale-105">
             </a>
-            <div class="flex items-center gap-6 text-sm font-medium">
-                <a href="avisierung.html" class="bg-[#171717] hover:bg-[#262626] text-white px-5 py-2.5 rounded-md transition-colors">
-                    Zum Buchungsportal
+            <div class="flex items-center gap-4">
+                <a href="avisierung.html" class="relative group overflow-hidden rounded-xl bg-gradient-to-r from-brand-blue to-[#1a8bc0] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-blue/25 transition-all duration-300 hover:shadow-brand-blue/40 hover:-translate-y-0.5">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <span>Anlieferung avisieren</span>
+                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </span>
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="max-w-6xl mx-auto px-6 pt-20 pb-16">
-        <div class="max-w-2xl">
-            <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-[#171717] mb-6">
-                Warenannahme & Logistik
+    <header class="max-w-7xl mx-auto px-6 pt-20 pb-16 w-full">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-blue/10 text-brand-blue text-xs font-bold tracking-wide uppercase mb-6 border border-brand-blue/20">
+                <span class="w-2 h-2 rounded-full bg-brand-blue animate-ping"></span>
+                Digitale Rampen-Dispo 2026
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.15]">
+                Präzise Warenannahme & <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-sky-600">effiziente Logistik.</span>
             </h1>
-            <p class="text-lg text-[#525252] mb-10 leading-relaxed">
-                Effiziente und transparente Abfertigung an unserer Rampe. Bitte beachten Sie unsere standardisierten Anlieferungsrichtlinien und Fristen.
+            <p class="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed font-normal">
+                Willkommen im modernen Portal von Darula Transporte. Optimieren Sie Ihre Anlieferungen, vermeiden Sie Wartezeiten und steuern Sie Slots vollkommen digital.
             </p>
-            <div class="flex gap-4">
-                <a href="avisierung.html" class="bg-brand-blue hover:bg-[#1a8bc0] text-white px-6 py-3 rounded-md font-medium transition-colors">
-                    Termin direkt avisieren
+            <div class="flex flex-wrap gap-4">
+                <a href="avisierung.html" class="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl font-semibold shadow-xl shadow-slate-900/10 transition-all hover:-translate-y-0.5">
+                    Jetzt Tag buchen
+                </a>
+                <a href="#infos" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-xl font-semibold shadow-sm transition-all">
+                    Öffnungszeiten & Infos
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-6xl mx-auto px-6 pb-24 w-full">
+    <!-- Main Content Infos -->
+    <main id="infos" class="flex-grow max-w-7xl mx-auto px-6 pb-24 w-full">
+        
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <div class="bg-white p-6 border border-subtle rounded-lg">
-                <h3 class="text-sm font-semibold text-[#171717] uppercase tracking-wider mb-2">Mo — Do</h3>
-                <p class="text-2xl font-light text-[#171717]">07:00 – 14:00</p>
-                <p class="text-xs text-[#737373] mt-2">Reguläre Annahme</p>
+            <div class="glass-card p-7 rounded-2xl shadow-xl shadow-slate-200/50 relative overflow-hidden group hover:border-brand-blue/50 transition-all">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 rounded-full blur-2xl group-hover:bg-brand-blue/10 transition-colors"></div>
+                <div class="text-xs font-bold uppercase tracking-wider text-brand-blue mb-2">Montag — Donnerstag</div>
+                <div class="text-3xl font-extrabold text-slate-900 tracking-tight">07:00 – 14:00</div>
+                <div class="text-xs text-slate-500 mt-2 font-medium">Reguläre Rampenannahme</div>
             </div>
-            <div class="bg-white p-6 border border-subtle rounded-lg">
-                <h3 class="text-sm font-semibold text-[#171717] uppercase tracking-wider mb-2">Freitag</h3>
-                <p class="text-2xl font-light text-[#171717]">07:00 – 12:00</p>
-                <p class="text-xs text-[#737373] mt-2">Verkürzte Annahme</p>
+
+            <div class="glass-card p-7 rounded-2xl shadow-xl shadow-slate-200/50 relative overflow-hidden group hover:border-brand-orange/50 transition-all">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-full blur-2xl group-hover:bg-brand-orange/10 transition-colors"></div>
+                <div class="text-xs font-bold uppercase tracking-wider text-brand-orange mb-2">Freitag</div>
+                <div class="text-3xl font-extrabold text-slate-900 tracking-tight">07:00 – 12:00</div>
+                <div class="text-xs text-slate-500 mt-2 font-medium">Verkürzte Annahmezeit</div>
             </div>
-            <div class="bg-white p-6 border border-subtle rounded-lg lg:col-span-2">
-                <h3 class="text-sm font-semibold text-[#171717] uppercase tracking-wider mb-2">Kulanzregelung</h3>
-                <p class="text-sm text-[#525252] leading-relaxed mt-1">
-                    Wir gewähren eine Kulanz von max. 30 Minuten nach Ende der Annahmezeit. Bei Überschreitung muss die Entladung aus logistischen Gründen auf den Folgetag verschoben werden.
-                </p>
+
+            <div class="glass-card p-7 rounded-2xl shadow-xl shadow-slate-200/50 lg:col-span-2 relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Wichtiger Hinweis</div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Kulanzregelung & Fristen</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Wir gewähren eine Kulanz von maximal 30 Minuten nach Annahmeschluss. Bei späterem Eintreffen muss die Entladung auf den nächsten Werktag verschoben werden.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div>
-                <h3 class="text-xl font-semibold mb-3">Tagesavisierung (Ladungsverkehr)</h3>
-                <p class="text-[#525252] leading-relaxed">
-                    Für Teil- und Komplettladungen (ab 11 Paletten) ist eine Reservierung über unser Portal verpflichtend. Sie wählen ein passendes Datum im Kalender aus; die Anlieferung erfolgt flexibel innerhalb der Tagesöffnungszeiten.
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass-card p-8 rounded-3xl shadow-xl shadow-slate-200/50">
+                <div class="w-12 h-12 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center font-bold text-lg mb-6">01</div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Tagesavisierung (Ladungsverkehr)</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Für Teil- und Komplettladungen (ab 11 Paletten) ist eine verbindliche Online-Reservierung über unser Portal zwingend vorgeschrieben. Sie wählen Ihren Wunschtag; die Abfertigung erfolgt flexibel innerhalb der Tagesöffnungszeiten.
                 </p>
             </div>
-            <div>
-                <h3 class="text-xl font-semibold mb-3">Stückgut & Kleinmengen</h3>
-                <p class="text-[#525252] leading-relaxed">
-                    Kleinere Sendungen (bis 10 Paletten) sind von der strengen Avisierungspflicht befreit, können aber zur besseren Planung ebenfalls angemeldet werden.
+            <div class="glass-card p-8 rounded-3xl shadow-xl shadow-slate-200/50">
+                <div class="w-12 h-12 rounded-2xl bg-brand-orange/10 text-brand-orange flex items-center justify-center font-bold text-lg mb-6">02</div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Stückgut & Kleinmengen</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Kleinere Sendungen (bis 10 Paletten) sind von der strengen Slot-Pflicht befreit. Eine Anmeldung ist optional, wird zur reibungslosen Koordination aber stets empfohlen.
                 </p>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-subtle mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#737373]">
-            <div>&copy; 2026 Darula Transporte</div>
+    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 font-medium">
+            <div>&copy; 2026 Darula Transporte. Alle Rechte vorbehalten.</div>
             <div class="flex gap-6">
-                <a href="impressum.html" class="hover:text-[#171717]">Impressum & Datenschutz</a>
-                <a href="admin.html.html" class="hover:text-[#171717]">Interner Bereich</a>
+                <a href="impressum.html" class="hover:text-slate-900 transition-colors">Impressum & Datenschutz</a>
+                <a href="admin.html.html" class="hover:text-slate-900 transition-colors">Interner Bereich</a>
             </div>
         </div>
     </footer>
