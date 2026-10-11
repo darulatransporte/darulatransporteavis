@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Darula Transporte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { brand: { blue: '#209fd9' } } } } }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; color: #334155; }
+        #app { display: none; }
+        #app.visible { display: flex; }
+        .data-table th { padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; color: #64748b; letter-spacing: 0.05em; }
+        .data-table td { padding: 1rem 1.5rem; border-bottom: 1px solid #e2e8f0; font-size: 0.875rem; color: #0f172a; }
+        .data-table tbody tr:hover { background-color: #f8fafc; }
+        .tab-active { color: #0f172a; border-bottom: 2px solid #209fd9; font-weight: 600; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Login Area -->
+    <div id="loginArea" class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-white border border-slate-200 p-8 rounded-lg shadow-sm w-full max-w-sm text-center">
+            <h2 class="text-lg font-semibold text-slate-900 mb-6">Administrationsbereich</h2>
+            <input type="password" id="pw" placeholder="Passwort" class="w-full p-2.5 bg-white border border-slate-300 rounded-md text-sm mb-4 outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-md text-sm font-medium transition-colors">Anmelden</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="app" class="flex-grow flex flex-col h-screen">
+        <nav class="bg-white border-b border-slate-200 flex-shrink-0">
+            <div class="px-6 flex justify-between items-center h-16">
+                <div class="flex items-center gap-8 h-full">
+                    <span class="font-semibold text-slate-900">DispoControl</span>
+                    <div class="flex gap-6 h-full">
+                        <button onclick="setTab('today')" id="tab-today" class="h-full px-1 text-sm text-slate-500 hover:text-slate-900 tab-active transition-colors">Tagesplan (Heute)</button>
+                        <button onclick="setTab('all')" id="tab-all" class="h-full px-1 text-sm text-slate-500 hover:text-slate-900 transition-colors">Alle Datensätze</button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="loadData()" class="text-sm font-medium text-brand-blue hover:text-[#1b8bc0]">Aktualisieren</button>
+                    <div class="w-px h-4 bg-slate-300"></div>
+                    <button onclick="logout()" class="text-sm font-medium text-slate-500 hover:text-slate-900">Abmelden</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow p-6 flex flex-col overflow-hidden">
+            <div class="flex justify-between items-end mb-4 flex-shrink-0">
+                <div>
+                    <h1 class="text-xl font-semibold text-slate-900" id="pageTitle">Tagesplan</h1>
+                    <p class="text-sm text-slate-500 mt-1" id="pageSub">Übersicht der heutigen Anlieferungen</p>
+                </div>
+                <input type="text" id="search" placeholder="Suchen..." onkeyup="filter()" class="w-64 p-2 bg-white border border-slate-300 rounded-md text-sm outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue shadow-sm">
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-lg shadow-sm flex-grow overflow-auto">
+                <table class="w-full text-left data-table border-collapse">
+                    <thead class="sticky top-0 bg-slate-50 shadow-sm z-10">
+                        <tr>
+                            <th>Ticket-ID</th>
+                            <th>Datum</th>
+                            <th>Spedition</th>
+                            <th>BE-Nummer</th>
+                            <th>Paletten</th>
+                            <th>Dokument</th>
+                            <th class="text-right">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+<script>
+    const CFG = {
+        P: "Sommer2026",
+        U: "https://navhxyadbifllpopumfz.supabase.co",
+        K: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY"
+    };
+
+    let sb = null;
+    let rawData = [];
+    let activeTab = 'today';
+
+    function login() {
+        if(document.getElementById('pw').value === CFG.P) {
+            sessionStorage.setItem('auth', 'true');
+            initApp();
+        } else alert("Ungültiges Passwort");
+    }
+
+    function logout() { sessionStorage.clear(); location.reload(); }
+
+    window.onload = () => { if(sessionStorage.getItem('auth') === 'true') initApp(); }
+
+    async function initApp() {
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('app').classList.add('visible');
+        sb = supabase.createClient(CFG.U, CFG.K);
+        await loadData();
+    }
+
+    async function loadData() {
+        const { data } = await sb.from('avisierung').select('*').order('liefer_datum', { ascending: true });
+        rawData = data || [];
+        render();
+    }
+
+    function setTab(tab) {
+        activeTab = tab;
+        document.getElementById('tab-today').className = `h-full px-1 text-sm transition-colors ${tab==='today'?'tab-active':'text-slate-500 hover:text-slate-900'}`;
+        document.getElementById('tab-all').className = `h-full px-1 text-sm transition-colors ${tab==='all'?'tab-active':'text-slate-500 hover:text-slate-900'}`;
+        
+        document.getElementById('pageTitle').innerText = tab === 'today' ? "Tagesplan" : "Alle Datensätze";
+        document.getElementById('pageSub').innerText = tab === 'today' ? "Übersicht der heutigen Anlieferungen" : "Historie aller erfassten Vorgänge";
+        render();
+    }
+
+    function render() {
+        const todayStr = new Date().toISOString().split('T')[0];
+        let list = activeTab === 'today' ? rawData.filter(i => i.liefer_datum === todayStr) : rawData;
+        
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML = list.length ? '' : '<tr><td colspan="7" class="text-center text-slate-500 py-10">Keine Einträge vorhanden.</td></tr>';
+
+        list.forEach(row => {
+            const fileLink = row.lieferschein_url 
+                ? `<a href="${row.lieferschein_url}" target="_blank" class="text-brand-blue font-medium hover:underline">Öffnen</a>` 
+                : `<span class="text-slate-400">Kein Dokument</span>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td class="text-slate-500 font-mono text-xs">${row.avis_id || '-'}</td>
+                    <td>${row.liefer_datum ? row.liefer_datum.split('-').reverse().join('.') : '-'}</td>
+                    <td class="font-medium text-slate-900">${row.firma}</td>
+                    <td>${row.be_nummer || '-'}</td>
+                    <td>${row.palettes}</td>
+                    <td>${fileLink}</td>
+                    <td class="text-right">
+                        <button onclick="del('${row.id}')" class="text-red-600 hover:text-red-800 font-medium text-sm">Löschen</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function filter() {
+        const q = document.getElementById('search').value.toLowerCase();
+        document.querySelectorAll('#tbody tr').forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    async function del(id) {
+        if(confirm("Diesen Datensatz endgültig löschen?")) {
+            await sb.from('avisierung').delete().eq('id', id);
+            loadData();
+        }
+    }
+</script>
+</body>
+</html>
