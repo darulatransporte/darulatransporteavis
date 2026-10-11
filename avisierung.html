@@ -3,172 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL | AVISIERUNG</title>
+    <title>Buchungsportal | Darula Transporte</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: { extend: { colors: { brand: { blue: '#209fd9', orange: '#f39200', black: '#0a0a0a' } }, fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } }
+            theme: { extend: { colors: { brand: { blue: '#209fd9', orange: '#f39200' } }, fontFamily: { sans: ['Inter', 'sans-serif'] } } }
         }
     </script>
     <style>
-        body { font-family: 'Space Grotesk', sans-serif; background-color: #0a0a0a; color: #0a0a0a; }
-        .border-hard { border: 2px solid #0a0a0a; }
-        .btn-brutal { transition: all 0s; box-shadow: 4px 4px 0px 0px #0a0a0a; }
-        .btn-brutal:hover:not(:disabled) { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px #0a0a0a; }
-        .btn-brutal:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0px 0px 0px 0px #0a0a0a; }
-        
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: #0a0a0a; border: 2px solid #0a0a0a; }
-        .cal-day { background: white; padding: 10px; min-height: 100px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; font-family: 'JetBrains Mono', monospace; }
-        .cal-day:hover:not(.disabled):not(.inventur) { background: #0a0a0a; color: white; }
-        .cal-day.disabled { background: #e5e5e5; color: #a3a3a3; cursor: not-allowed; }
-        .cal-day.selected { background: #209fd9 !important; color: white !important; }
-        .cal-day.inventur { background: #f39200; color: #0a0a0a; cursor: not-allowed; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 0.5rem; overflow: hidden; }
+        .cal-day { background: white; padding: 0.75rem; min-height: 90px; cursor: pointer; transition: background-color 0.15s; }
+        .cal-day:hover:not(.disabled) { background: #f1f5f9; }
+        .cal-day.disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+        .cal-day.selected { background: #eff6ff; box-shadow: inset 0 0 0 2px #209fd9; }
+        .cal-day.inventur { background: #fffbeb; color: #b45309; cursor: not-allowed; }
         
         .step-container { display: none; }
         .step-container.active { display: block; }
         
-        .input-brutal { border: 2px solid #0a0a0a; background: #fff; padding: 0.75rem; font-family: 'JetBrains Mono', monospace; width: 100%; border-radius: 0; outline: none; }
-        .input-brutal:focus { background: #f0f8ff; border-color: #209fd9; }
+        .form-input { w-full; padding: 0.625rem 0.75rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; font-size: 0.875rem; color: #0f172a; outline: none; transition: all 0.15s; }
+        .form-input:focus { border-color: #209fd9; box-shadow: 0 0 0 3px rgba(32, 159, 217, 0.15); }
 
         @media print { 
             body * { visibility: hidden; } 
             #receiptArea, #receiptArea * { visibility: visible; } 
-            #receiptArea { position: absolute; left: 0; top: 0; width: 100%; padding: 0; border: none; } 
+            #receiptArea { position: absolute; left: 0; top: 0; width: 100%; border: none; box-shadow: none; padding: 0;} 
             .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col p-4 md:p-8">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <main class="flex-grow max-w-5xl mx-auto w-full bg-white border-hard flex flex-col shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-6 h-16 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="darula_logo.jpg" alt="Logo" class="h-8 object-contain">
+            </a>
+            <span class="text-sm font-medium text-slate-500 border-l border-slate-200 pl-4">Avisierungs-Portal</span>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
         
-        <!-- Header -->
-        <header class="border-b-2 border-brand-black p-6 flex justify-between items-center bg-gray-50">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="border-2 border-brand-black p-2 hover:bg-brand-black hover:text-white transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </a>
-                <h1 class="text-2xl font-bold uppercase tracking-tighter">Terminal // Avisierung</h1>
-            </div>
-            <img src="darula_logo.jpg" alt="Logo" class="h-8">
-        </header>
-
-        <div class="p-6 md:p-12">
+        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 md:p-10">
             
-            <!-- STEP 1: Kalender -->
+            <!-- STEP 1: Datum -->
             <div id="step1" class="step-container active">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b-2 border-brand-black pb-4">
+                <div class="border-b border-slate-200 pb-5 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                     <div>
-                        <div class="font-mono text-sm font-bold text-brand-blue mb-1">SEQ. 01</div>
-                        <h2 class="text-4xl font-bold uppercase">Rampen-Slot</h2>
+                        <h2 class="text-xl font-bold text-slate-900">1. Anlieferdatum wählen</h2>
+                        <p class="text-sm text-slate-500 mt-1">Bitte wählen Sie einen verfügbaren Tag im Kalender.</p>
                     </div>
-                    <div class="flex items-center gap-4 mt-4 md:mt-0 font-mono text-lg">
-                        <button onclick="changeMonth(-1)" class="border-2 border-brand-black px-4 py-1 hover:bg-brand-black hover:text-white">&larr;</button>
-                        <span id="monthLabel" class="font-bold w-40 text-center uppercase"></span>
-                        <button onclick="changeMonth(1)" class="border-2 border-brand-black px-4 py-1 hover:bg-brand-black hover:text-white">&rarr;</button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeMonth(-1)" class="p-2 border border-slate-300 rounded hover:bg-slate-50 text-slate-600 transition-colors">&larr;</button>
+                        <span id="monthLabel" class="font-semibold text-sm w-32 text-center text-slate-900"></span>
+                        <button onclick="changeMonth(1)" class="p-2 border border-slate-300 rounded hover:bg-slate-50 text-slate-600 transition-colors">&rarr;</button>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-7 gap-0 border-2 border-brand-black border-b-0 text-center font-mono text-sm font-bold bg-brand-black text-white">
-                    <div class="py-2 border-r-2 border-brand-black">MO</div><div class="py-2 border-r-2 border-brand-black">DI</div><div class="py-2 border-r-2 border-brand-black">MI</div><div class="py-2 border-r-2 border-brand-black">DO</div><div class="py-2 border-r-2 border-brand-black">FR</div><div class="py-2 border-r-2 border-brand-black">SA</div><div class="py-2">SO</div>
+                <div class="grid grid-cols-7 gap-px mb-2 text-center text-xs font-semibold text-slate-500 uppercase">
+                    <div class="pb-2">Mo</div><div class="pb-2">Di</div><div class="pb-2">Mi</div><div class="pb-2">Do</div><div class="pb-2">Fr</div><div class="pb-2">Sa</div><div class="pb-2">So</div>
                 </div>
 
-                <div class="cal-grid mb-8" id="calendarGrid"></div>
+                <div class="cal-grid" id="calendarGrid"></div>
                 
-                <div class="flex justify-between items-center">
-                    <div class="font-mono text-xs flex gap-4 uppercase">
-                        <span><span class="inline-block w-3 h-3 bg-white border border-black mr-1"></span> Frei</span>
-                        <span><span class="inline-block w-3 h-3 bg-gray-300 border border-black mr-1"></span> Voll</span>
-                        <span><span class="inline-block w-3 h-3 bg-brand-orange border border-black mr-1"></span> Inventur</span>
+                <div class="mt-8 flex justify-between items-center border-t border-slate-200 pt-6">
+                    <div class="flex gap-4 text-xs text-slate-500 font-medium">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Verfügbar</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Ausgebucht</span>
                     </div>
-                    <button onclick="goToStep2()" id="btnNext" disabled class="bg-brand-black text-white font-bold uppercase px-8 py-3 border-hard btn-brutal disabled:opacity-50 disabled:cursor-not-allowed">
-                        Initiiere Dateneingabe &rarr;
+                    <button onclick="goToStep2()" id="btnNext" disabled class="bg-brand-blue text-white px-6 py-2.5 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1b8bc0] transition-colors">
+                        Weiter zu Schritt 2
                     </button>
                 </div>
             </div>
 
             <!-- STEP 2: Formular -->
             <div id="step2" class="step-container">
-                <div class="mb-8 border-b-2 border-brand-black pb-4 flex justify-between items-end">
-                    <div>
-                        <div class="font-mono text-sm font-bold text-brand-blue mb-1">SEQ. 02</div>
-                        <h2 class="text-4xl font-bold uppercase">Frachtdaten</h2>
-                    </div>
-                    <div class="font-mono text-sm font-bold bg-brand-black text-white px-4 py-2">
-                        ZIEL-DATUM: <span id="lblSelectedDate"></span>
-                    </div>
+                <div class="border-b border-slate-200 pb-5 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900">2. Sendungsdaten erfassen</h2>
+                    <p class="text-sm text-slate-500 mt-1">Gewählter Termin: <span id="lblSelectedDate" class="font-semibold text-slate-900"></span></p>
                 </div>
                 
-                <form id="avisForm" class="space-y-6">
+                <form id="avisForm" class="space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block font-mono text-sm font-bold uppercase mb-2">Spedition // Frachtführer *</label>
-                            <input type="text" id="fCompany" required class="input-brutal">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Speditionsfirma <span class="text-red-500">*</span></label>
+                            <input type="text" id="fCompany" required class="form-input">
                         </div>
                         <div>
-                            <label class="block font-mono text-sm font-bold uppercase mb-2">Kontakt E-Mail *</label>
-                            <input type="email" id="fEmail" required class="input-brutal">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">E-Mail (für Bestätigung) <span class="text-red-500">*</span></label>
+                            <input type="email" id="fEmail" required class="form-input">
                         </div>
                         <div>
-                            <label class="block font-mono text-sm font-bold uppercase mb-2">Paletten-Anzahl *</label>
-                            <input type="number" id="fPalettes" min="1" required class="input-brutal">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Anzahl Paletten <span class="text-red-500">*</span></label>
+                            <input type="number" id="fPalettes" min="1" required class="form-input">
                         </div>
                         <div>
-                            <label class="block font-mono text-sm font-bold uppercase mb-2">BE-Referenznummer *</label>
-                            <input type="text" id="fBe" required class="input-brutal">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">BE-Nummer / Referenz <span class="text-red-500">*</span></label>
+                            <input type="text" id="fBe" required class="form-input">
                         </div>
-                        <div class="md:col-span-2 border-2 border-brand-black p-4 bg-gray-50">
-                            <label class="block font-mono text-sm font-bold uppercase mb-2">Lieferschein (PDF/IMG)</label>
-                            <input type="file" id="fDoc" class="font-mono text-sm w-full file:mr-4 file:py-2 file:px-4 file:border-2 file:border-brand-black file:bg-white file:text-brand-black file:font-bold hover:file:bg-brand-black hover:file:text-white transition-colors cursor-pointer">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Lieferschein (PDF/JPG)</label>
+                            <div class="border border-slate-300 rounded-md p-1 bg-white">
+                                <input type="file" id="fDoc" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-medium file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer rounded">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex justify-between pt-8">
-                        <button type="button" onclick="goToStep1()" class="border-2 border-brand-black bg-white font-bold uppercase px-8 py-3 hover:bg-gray-100 transition-colors">&larr; Abbruch</button>
-                        <button type="submit" id="submitBtn" class="bg-brand-blue text-white font-bold uppercase px-8 py-3 border-hard btn-brutal">Datensatz Schreiben</button>
+                    <div class="flex justify-between items-center border-t border-slate-200 pt-6 mt-8">
+                        <button type="button" onclick="goToStep1()" class="px-5 py-2.5 border border-slate-300 bg-white text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors">Zurück</button>
+                        <button type="submit" id="submitBtn" class="bg-slate-900 text-white px-6 py-2.5 rounded-md text-sm font-medium hover:bg-slate-800 transition-colors">Verbindlich buchen</button>
                     </div>
                 </form>
             </div>
 
             <!-- STEP 3: Beleg -->
             <div id="step3" class="step-container">
-                <div class="max-w-2xl mx-auto">
-                    <div id="receiptArea" class="bg-white border-4 border-brand-black p-8 relative">
-                        <div class="absolute top-0 right-0 bg-brand-black text-white font-mono text-xs px-2 py-1 uppercase">Approved</div>
-                        
-                        <div class="border-b-4 border-brand-black pb-6 mb-6 text-center">
-                            <h2 class="text-4xl font-black uppercase tracking-tighter">Manifest</h2>
-                            <p class="font-mono text-sm mt-2">DARULA TRANSPORTE // RAMPEN-DISPO</p>
+                <div class="max-w-lg mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         </div>
-                        
-                        <div class="space-y-4 font-mono text-sm">
-                            <div class="flex justify-between border-b-2 border-dashed border-gray-300 pb-2">
-                                <span class="font-bold">SYSTEM-ID:</span> <strong id="rId" class="text-brand-blue"></strong>
-                            </div>
-                            <div class="flex justify-between border-b-2 border-dashed border-gray-300 pb-2">
-                                <span class="font-bold">DATUM:</span> <strong id="rDate" class="text-xl"></strong>
-                            </div>
-                            <div class="flex justify-between border-b-2 border-dashed border-gray-300 pb-2">
-                                <span class="font-bold">SPEDITION:</span> <strong id="rCompany"></strong>
-                            </div>
-                            <div class="flex justify-between border-b-2 border-dashed border-gray-300 pb-2">
-                                <span class="font-bold">BE-REF:</span> <strong id="rBe"></strong>
-                            </div>
-                            <div class="flex justify-between border-b-2 border-dashed border-gray-300 pb-2">
-                                <span class="font-bold">MENGE:</span> <strong><span id="rPalettes"></span> PAL</strong>
-                            </div>
-                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900">Buchung bestätigt</h2>
+                        <p class="text-sm text-slate-500 mt-1">Ihre Daten wurden erfolgreich im System hinterlegt.</p>
+                    </div>
 
-                        <div class="mt-8 pt-4 border-t-4 border-brand-black text-center text-xs font-mono">
-                            DOKUMENT IST OHNE UNTERSCHRIFT GÜLTIG.
+                    <div id="receiptArea" class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm mb-8">
+                        <div class="border-b border-slate-200 pb-4 mb-4">
+                            <h3 class="font-semibold text-slate-900">Anlieferungsbeleg</h3>
+                            <p class="text-xs text-slate-500">Darula Transporte</p>
+                        </div>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between"><span class="text-slate-500">Ticket-ID:</span> <strong id="rId" class="text-slate-900 font-mono"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Datum:</span> <strong id="rDate" class="text-slate-900"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Spedition:</span> <strong id="rCompany" class="text-slate-900"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">BE-Nummer:</span> <strong id="rBe" class="text-slate-900"></strong></div>
+                            <div class="flex justify-between"><span class="text-slate-500">Paletten:</span> <strong id="rPalettes" class="text-slate-900"></strong></div>
                         </div>
                     </div>
 
-                    <div class="mt-8 flex justify-center gap-4 font-mono text-sm no-print">
-                        <button onclick="window.print()" class="bg-brand-black text-white px-6 py-3 font-bold uppercase border-hard btn-brutal">Manifest Drucken</button>
-                        <button onclick="location.reload()" class="bg-white border-2 border-brand-black px-6 py-3 font-bold uppercase hover:bg-gray-100">Neuer Vorgang</button>
+                    <div class="flex justify-center gap-4 no-print">
+                        <button onclick="window.print()" class="bg-white border border-slate-300 text-slate-700 px-5 py-2.5 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors">Drucken</button>
+                        <button onclick="location.reload()" class="bg-slate-900 text-white px-5 py-2.5 rounded-md text-sm font-medium hover:bg-slate-800 transition-colors">Neue Buchung</button>
                     </div>
                 </div>
             </div>
@@ -194,7 +175,7 @@
         renderCalendar();
     };
 
-    const generateId = () => `DRL-${new Date().toISOString().slice(2,10).replace(/-/g,'')}-${Math.random().toString(36).substr(2,4).toUpperCase()}`;
+    const generateId = () => `DAR-${new Date().toISOString().slice(2,10).replace(/-/g,'')}-${Math.random().toString(36).substr(2,4).toUpperCase()}`;
 
     async function fetchAvailability() {
         try {
@@ -203,7 +184,7 @@
             (data || []).forEach(row => {
                 bookedData[row.liefer_datum] = (bookedData[row.liefer_datum] || 0) + 1;
             });
-        } catch (e) { console.error("DB Error", e); }
+        } catch (e) { console.error("Datenbankfehler", e); }
     }
 
     function renderCalendar() {
@@ -219,7 +200,7 @@
         const daysInMonth = new Date(y, m + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
-        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-day disabled bg-black"></div>`;
+        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="cal-day disabled border-none bg-transparent"></div>`;
 
         for(let d=1; d<=daysInMonth; d++) {
             const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -232,19 +213,21 @@
             const div = document.createElement('div');
             
             if(isInventur) {
-                div.className = 'cal-day inventur';
-                div.innerHTML = `<span class="text-xl font-bold">${d}</span><span class="text-[10px] uppercase font-bold border-t border-black pt-1">Sperre</span>`;
+                div.className = 'cal-day inventur flex flex-col justify-between';
+                div.innerHTML = `<span class="font-medium">${d}</span><span class="text-[10px] font-semibold">INVENTUR</span>`;
             } else if(isPast) {
-                div.className = 'cal-day disabled';
-                div.innerHTML = `<span class="text-xl">${d}</span>`;
+                div.className = 'cal-day disabled flex flex-col justify-between';
+                div.innerHTML = `<span class="font-medium">${d}</span>`;
             } else if(isFull) {
-                div.className = 'cal-day disabled';
-                div.innerHTML = `<span class="text-xl">${d}</span><span class="text-[10px] uppercase font-bold border-t border-gray-400 pt-1">MAX CAP</span>`;
+                div.className = 'cal-day disabled flex flex-col justify-between bg-slate-100';
+                div.innerHTML = `<span class="font-medium">${d}</span><span class="text-[10px] font-medium text-slate-500">Belegt</span>`;
             } else {
-                div.className = `cal-day ${selectedDate === dStr ? 'selected' : ''}`;
+                div.className = `cal-day flex flex-col justify-between ${selectedDate === dStr ? 'selected' : ''}`;
                 div.innerHTML = `
-                    <span class="text-xl font-bold">${d}</span>
-                    <span class="text-[10px] uppercase font-bold border-t border-current pt-1">CAP: ${count}/${CFG.MAX_LKW}</span>
+                    <div class="flex justify-between items-start">
+                        <span class="font-medium ${selectedDate === dStr ? 'text-brand-blue' : 'text-slate-900'}">${d}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 font-medium">${count}/${CFG.MAX_LKW} belegt</div>
                 `;
                 div.onclick = () => {
                     selectedDate = dStr;
@@ -275,7 +258,7 @@
     document.getElementById('avisForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = "UPLOADING...";
+        btn.disabled = true; btn.innerText = "Bitte warten...";
 
         const file = document.getElementById('fDoc').files[0];
         let fileUrl = null;
@@ -312,8 +295,8 @@
             document.getElementById('rPalettes').innerText = payload.palettes;
 
         } catch (error) {
-            alert("SYS.ERR: " + (error.message || "Unbekannt"));
-            btn.disabled = false; btn.innerText = "Datensatz Schreiben";
+            alert("Fehler bei der Übertragung. Bitte erneut versuchen.");
+            btn.disabled = false; btn.innerText = "Verbindlich buchen";
         }
     });
 </script>
