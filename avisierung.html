@@ -383,7 +383,6 @@
     return Array.isArray(data) ? data[0] : data;
   }
 
-  // Ntfy Benachrichtigung mit Token senden
   async function sendeNtfy(ergebnis, w) {
     if (!cfg.ntfyUrl) return;
     
@@ -396,7 +395,6 @@
       "Tags": "truck,package"
     };
 
-    // Authentifizierungstoken hinzufügen, falls in der config vorhanden
     if (cfg.ntfyToken) {
       headers["Authorization"] = `Bearer ${cfg.ntfyToken}`;
     }
@@ -441,7 +439,6 @@
 
     try {
       const ergebnis = await buche(w);
-      // Ntfy-Funktion nach erfolgreicher Buchung aufrufen
       await sendeNtfy(ergebnis, w);
       zeigeBeleg(ergebnis, w);
     } catch (err) {
