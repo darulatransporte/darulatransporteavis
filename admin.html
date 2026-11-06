@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Verwaltung | Darula Transporte</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" aria-label="Zur Startseite">
+        <img class="logo" src="darula_logo.jpg" alt="Darula Transporte" height="40">
+      </a>
+      <div id="kopf-aktionen" class="nav" hidden>
+        <div class="segment" role="group" aria-label="Ansicht">
+          <button id="ansicht-heute" type="button" aria-pressed="true">Tagesplan</button>
+          <button id="ansicht-alle" type="button" aria-pressed="false">Alle</button>
+          <button id="ansicht-konten" type="button" aria-pressed="false">Konten</button>
+        </div>
+        <button id="aktualisieren" class="btn btn--ghost btn--klein" type="button">Aktualisieren</button>
+        <button id="abmelden" class="btn btn--ghost btn--klein" type="button">Abmelden</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inhalt" class="container page">
+
+    <section id="anmeldung" class="card login-card" aria-labelledby="anmeldung-titel">
+      <h1 id="anmeldung-titel">Verwaltung</h1>
+
+      <div class="segment segment--voll" role="group" aria-label="Anmelden oder Konto anlegen">
+        <button id="tab-anmelden" type="button" aria-pressed="true">Anmelden</button>
+        <button id="tab-registrieren" type="button" aria-pressed="false">Konto anlegen</button>
+      </div>
+
+      <div id="anmeldung-info" class="alert alert--info" role="status" hidden></div>
+      <div id="anmeldung-fehler" class="alert alert--error" role="alert" hidden></div>
+
+      <form id="anmelde-form" class="login-form" novalidate>
+        <div class="field">
+          <label for="a-email">E-Mail</label>
+          <input id="a-email" type="email" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="a-pw">Passwort</label>
+          <input id="a-pw" type="password" autocomplete="current-password" required>
+        </div>
+        <button id="anmelden" class="btn btn--dark btn--block" type="submit">Anmelden</button>
+      </form>
+
+      <form id="registrier-form" class="login-form" hidden novalidate>
+        <p class="hilfe">Nach dem Anlegen bestätigen Sie Ihre E-Mail-Adresse über den Link in der Nachricht. Danach gibt ein bestehender Verwalter Ihr Konto frei.</p>
+        <div class="field">
+          <label for="r-email">E-Mail</label>
+          <input id="r-email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="r-pw">Passwort (mindestens 10 Zeichen)</label>
+          <input id="r-pw" type="password" autocomplete="new-password" minlength="10" required>
+        </div>
+        <div class="field">
+          <label for="r-pw2">Passwort wiederholen</label>
+          <input id="r-pw2" type="password" autocomplete="new-password" minlength="10" required>
+        </div>
+        <button id="registrieren" class="btn btn--dark btn--block" type="submit">Konto anlegen</button>
+      </form>
+    </section>
+
+    <section id="uebersicht" aria-labelledby="titel" hidden>
+      <div class="kopf">
+        <div>
+          <h1 id="titel">Tagesplan</h1>
+          <p id="untertitel" class="muted"></p>
+        </div>
+        <div class="field suche">
+          <label for="suche" class="sr-only">Buchungen durchsuchen</label>
+          <input id="suche" type="search" placeholder="Suchen …">
+        </div>
+      </div>
+
+      <p id="status" class="alert alert--info" role="status" hidden></p>
+
+      <div id="buchungen-wrap" class="card tabelle-wrap">
+        <table class="tabelle">
+          <caption class="sr-only">Buchungen</caption>
+          <thead>
+            <tr>
+              <th scope="col">Buchungsnummer</th>
+              <th scope="col">Datum</th>
+              <th scope="col">Spedition</th>
+              <th scope="col">BE-Nummer</th>
+              <th scope="col">Paletten</th>
+              <th scope="col">Lieferschein</th>
+              <th scope="col"><span class="sr-only">Aktion</span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div id="konten-wrap" class="card tabelle-wrap" hidden>
+        <table class="tabelle">
+          <caption class="sr-only">Verwalter-Konten</caption>
+          <thead>
+            <tr>
+              <th scope="col">E-Mail</th>
+              <th scope="col">Angelegt</th>
+              <th scope="col">Status</th>
+              <th scope="col"><span class="sr-only">Aktion</span></th>
+            </tr>
+          </thead>
+          <tbody id="konten-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <span>&copy; 2026 Darula Transporte &amp; Logistik</span>
+      <nav aria-label="Rechtliches">
+        <a href="impressum.html">Impressum</a>
+      </nav>
+    </div>
+  </footer>
+<script>
+(() => {
+  "use strict";
+
+  const cfg = window.DARULA_CONFIG;
+  const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  const $ = (id) => document.getElementById(id);
+
+  const MIN_PASSWORT = 10;
+  let alleZeilen = [];
+  let ansicht = "heute";
+  let eigeneId = null;
+
+  const heuteIso = () =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit"
+    }).format(new Date());
+
+  const deutsch = (datum) => (datum ? datum.split("-").reverse().join(".") : "–");
+
+  const datumZeit = (zeitpunkt) =>
+    zeitpunkt ? new Date(zeitpunkt).toLocaleDateString("de-DE", { timeZone: "Europe/Berlin" }) : "–";
+
+  function meldung(id, text, art) {
+    const box = $(id);
+    box.className = `alert alert--${art}`;
+    box.textContent = text;
+    box.hidden = !text;
+  }
+
+  function zelle(text, klasse) {
+    const td = document.createElement("td");
+    if (klasse) td.className = klasse;
+    td.textContent = text ?? "–";
+    return td;
+  }
+
+  function leerZeile(spalten, text) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = spalten;
+    td.className = "leer";
+    td.textContent = text;
+    tr.append(td);
+    return tr;
+  }
+
+  function zeigeAnmeldung() {
+    $("anmeldung").hidden = false;
+    $("uebersicht").hidden = true;
+    $("kopf-aktionen").hidden = true;
+  }
+
+  function zeigeUebersicht() {
+    $("anmeldung").hidden = true;
+    $("uebersicht").hidden = false;
+    $("kopf-aktionen").hidden = false;
+    setzeAnsicht("heute");
+  }
+
+  const ANSICHTEN = {
+    heute: { id: "ansicht-heute", titel: "Tagesplan" },
+    alle: { id: "ansicht-alle", titel: "Alle Buchungen" },
+    konten: { id: "ansicht-konten", titel: "Verwalter-Konten" }
+  };
+
+  function setzeAnsicht(neu) {
+    ansicht = neu;
+    for (const [name, eintrag] of Object.entries(ANSICHTEN)) {
+      $(eintrag.id).setAttribute("aria-pressed", String(name === neu));
+    }
+    const konten = neu === "konten";
+    $("titel").textContent = ANSICHTEN[neu].titel;
+    $("untertitel").textContent = {
+      heute: `Anlieferungen am ${deutsch(heuteIso())}`,
+      alle: "Alle erfassten Buchungen",
+      konten: "Verwalter freigeben oder Berechtigung entfernen"
+    }[neu];
+    $("buchungen-wrap").hidden = konten;
+    $("konten-wrap").hidden = !konten;
+    $("suche").closest(".suche").hidden = konten;
+    meldung("status", "", "info");
+    if (konten) ladeKonten();
+    else ladeDaten();
+  }
+
+  function zeigeTab(tab) {
+    const anmelden = tab === "anmelden";
+    $("tab-anmelden").setAttribute("aria-pressed", String(anmelden));
+    $("tab-registrieren").setAttribute("aria-pressed", String(!anmelden));
+    $("anmelde-form").hidden = !anmelden;
+    $("registrier-form").hidden = anmelden;
+    meldung("anmeldung-fehler", "", "error");
+    meldung("anmeldung-info", "", "info");
+  }
+
+  $("tab-anmelden").addEventListener("click", () => zeigeTab("anmelden"));
+  $("tab-registrieren").addEventListener("click", () => zeigeTab("registrieren"));
+
+  async function istVerwalter() {
+    const { data, error } = await sb.rpc("ist_admin");
+    return !error && data === true;
+  }
+
+  async function starten() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && (await istVerwalter())) {
+      eigeneId = session.user.id;
+      zeigeUebersicht();
+      return;
+    }
+    if (session) await sb.auth.signOut();
+    zeigeAnmeldung();
+  }
+
+  $("anmelde-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    e.target.classList.add("touched"); // <--- Form-Validation Fix
+    if (!e.target.checkValidity()) return;
+
+    meldung("anmeldung-fehler", "", "error");
+    meldung("anmeldung-info", "", "info");
+    const knopf = $("anmelden");
+    knopf.disabled = true;
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: $("a-email").value.trim(),
+        password: $("a-pw").value
+      });
+      if (error) {
+        meldung("anmeldung-fehler", "Anmeldung fehlgeschlagen. Bitte prüfen Sie E-Mail und Passwort.", "error");
+        return;
+      }
+      if (!(await istVerwalter())) {
+        await sb.auth.signOut();
+        meldung("anmeldung-fehler", "Ihr Konto ist noch nicht für die Verwaltung freigegeben. Ein bestehender Verwalter kann es freischalten.", "error");
+        return;
+      }
+      eigeneId = data.user.id;
+      $("a-pw").value = "";
+      zeigeUebersicht();
+    } finally {
+      knopf.disabled = false;
+    }
+  });
+
+  $("registrier-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    e.target.classList.add("touched"); // <--- Form-Validation Fix
+    if (!e.target.checkValidity()) return;
+
+    meldung("anmeldung-fehler", "", "error");
+    meldung("anmeldung-info", "", "info");
+
+    const email = $("r-email").value.trim();
+    const pw1 = $("r-pw").value;
+    const pw2 = $("r-pw2").value;
+
+    if (pw1 !== pw2) {
+      meldung("anmeldung-fehler", "Die Passwörter stimmen nicht überein.", "error");
+      return;
+    }
+
+    const knopf = $("registrieren");
+    knopf.disabled = true;
+    try {
+      const { data, error } = await sb.auth.signUp({
+        email, password: pw1,
+        options: { emailRedirectTo: new URL("admin.html", window.location.href).href }
+      });
+      if (error) {
+        meldung("anmeldung-fehler", "Das Konto konnte nicht angelegt werden.", "error");
+        return;
+      }
+      if (data.session) await sb.auth.signOut();
+      $("r-pw").value = ""; $("r-pw2").value = "";
+      zeigeTab("anmelden");
+      $("a-email").value = email;
+      meldung("anmeldung-info", "Das Konto wurde angelegt. Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse über den Link in der Nachricht. Danach gibt ein bestehender Verwalter Ihr Konto frei.", "info");
+    } finally {
+      knopf.disabled = false;
+    }
+  });
+
+  $("abmelden").addEventListener("click", async () => {
+    await sb.auth.signOut();
+    alleZeilen = [];
+    eigeneId = null;
+    zeigeTab("anmelden");
+    zeigeAnmeldung();
+  });
+
+  async function ladeDaten() {
+    meldung("status", "Daten werden geladen …", "info");
+    const { data, error } = await sb
+      .from("avisierung")
+      .select("id, avis_id, liefer_datum, firma, be_nummer, palettes, lieferschein_url")
+      .order("liefer_datum", { ascending: true });
+
+    if (error) {
+      alleZeilen = [];
+      meldung("status", "Die Daten konnten nicht geladen werden.", "error");
+      render();
+      return;
+    }
+    alleZeilen = data || [];
+    meldung("status", "", "info");
+    render();
+  }
+
+  function render() {
+    const heute = heuteIso();
+    const suche = $("suche").value.trim().toLowerCase();
+    let liste = ansicht === "heute" ? alleZeilen.filter((z) => z.liefer_datum === heute) : alleZeilen;
+
+    if (suche) {
+      liste = liste.filter((z) =>
+        [z.avis_id, z.firma, z.be_nummer, deutsch(z.liefer_datum)].some((wert) =>
+          String(wert ?? "").toLowerCase().includes(suche)
+        )
+      );
+    }
+
+    const tbody = $("tbody");
+    tbody.replaceChildren();
+    if (!liste.length) {
+      tbody.append(leerZeile(7, "Keine Einträge vorhanden."));
+      return;
+    }
+    for (const z of liste) tbody.append(zeile(z));
+  }
+
+  function zeile(z) {
+    const tr = document.createElement("tr");
+    tr.append(
+      zelle(z.avis_id, "mono"),
+      zelle(deutsch(z.liefer_datum)),
+      zelle(z.firma, "fett"),
+      zelle(z.be_nummer),
+      zelle(z.palettes != null ? String(z.palettes) : "–")
+    );
+
+    const dok = document.createElement("td");
+    if (z.lieferschein_url) {
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "linkbutton";
+      link.textContent = "Öffnen";
+      link.addEventListener("click", () => oeffneLieferschein(z.lieferschein_url, link));
+      dok.append(link);
+    } else {
+      dok.textContent = "kein Dokument";
+      dok.className = "muted";
+    }
+
+    const aktion = document.createElement("td");
+    aktion.className = "rechts";
+    const loeschen = document.createElement("button");
+    loeschen.type = "button";
+    loeschen.className = "btn btn--danger btn--klein";
+    loeschen.textContent = "Löschen";
+    loeschen.setAttribute("aria-label", `Buchung ${z.avis_id ?? z.id} löschen`);
+    loeschen.addEventListener("click", () => loesche(z));
+    aktion.append(loeschen);
+
+    tr.append(dok, aktion);
+    return tr;
+  }
+
+  // <--- Pop-up-Blocker Bug Fix --->
+  async function oeffneLieferschein(wert, knopf) {
+    knopf.disabled = true;
+    const fenster = window.open("about:blank", "_blank", "noopener,noreferrer");
+    
+    try {
+      let url = wert;
+      if (!/^https?:\/\//i.test(wert)) {
+        const { data, error } = await sb.storage.from("lieferscheine").createSignedUrl(wert, 300);
+        if (error) throw error;
+        url = data.signedUrl;
+      }
+      fenster.location.href = url;
+    } catch (err) {
+      fenster.close();
+      window.alert("Der Lieferschein konnte nicht geöffnet werden.");
+    } finally {
+      knopf.disabled = false;
+    }
+  }
+
+  async function loesche(z) {
+    const frage = `Buchung ${z.avis_id ?? ""} (${z.firma}, ${deutsch(z.liefer_datum)}) wirklich löschen?\nDas lässt sich nicht rückgängig machen.`;
+    if (!window.confirm(frage)) return;
+
+    const { error, count } = await sb.from("avisierung").delete({ count: "exact" }).eq("id", z.id);
+    if (error || count === 0) { window.alert("Die Buchung konnte nicht gelöscht werden."); return; }
+    await ladeDaten();
+  }
+
+  async function ladeKonten() {
+    meldung("status", "Konten werden geladen …", "info");
+    const tbody = $("konten-tbody");
+    tbody.replaceChildren();
+
+    const { data, error } = await sb.rpc("verwalter_liste");
+    if (error) { meldung("status", "Die Konten konnten nicht geladen werden.", "error"); return; }
+    meldung("status", "", "info");
+
+    if (!data || !data.length) { tbody.append(leerZeile(4, "Noch keine Konten vorhanden.")); return; }
+    for (const konto of data) tbody.append(kontoZeile(konto));
+  }
+
+  function kontoZeile(konto) {
+    const tr = document.createElement("tr");
+    const istIch = konto.user_id === eigeneId;
+    const status = konto.freigegeben ? "Verwalter" : konto.bestaetigt ? "Wartet auf Freigabe" : "E-Mail nicht bestätigt";
+
+    tr.append(zelle(konto.email + (istIch ? " (Sie)" : ""), "fett"), zelle(datumZeit(konto.erstellt_am)), zelle(status));
+
+    const aktion = document.createElement("td");
+    aktion.className = "rechts";
+    const knopf = document.createElement("button");
+    knopf.type = "button";
+
+    if (konto.freigegeben) {
+      knopf.className = "btn btn--danger btn--klein";
+      knopf.textContent = "Entfernen";
+      knopf.disabled = istIch;
+    } else {
+      knopf.className = "btn btn--dark btn--klein";
+      knopf.textContent = "Freigeben";
+      knopf.disabled = !konto.bestaetigt;
+    }
+    knopf.addEventListener("click", () => setzeFreigabe(konto, !konto.freigegeben));
+    aktion.append(knopf);
+
+    tr.append(aktion);
+    return tr;
+  }
+
+  async function setzeFreigabe(konto, freigeben) {
+    const frage = freigeben ? `${konto.email} als Verwalter freigeben?` : `Verwalterrecht von ${konto.email} entfernen?`;
+    if (!window.confirm(frage)) return;
+
+    const { error } = await sb.rpc("verwalter_freigeben", { p_user_id: konto.user_id, p_freigeben: freigeben });
+    if (error) { window.alert(error.code === "P0001" ? error.message : "Fehler beim Speichern."); return; }
+    ladeKonten();
+  }
+
+  $("ansicht-heute").addEventListener("click", () => setzeAnsicht("heute"));
+  $("ansicht-alle").addEventListener("click", () => setzeAnsicht("alle"));
+  $("ansicht-konten").addEventListener("click", () => setzeAnsicht("konten"));
+  $("suche").addEventListener("input", render);
+  $("aktualisieren").addEventListener("click", () => (ansicht === "konten" ? ladeKonten() : ladeDaten()));
+
+  starten();
+})();
+</script>
+</body>
+</html>
