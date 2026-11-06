@@ -173,7 +173,7 @@
 
   const INVENTUR = "2026-11-11";
   const GROSS_AB = 20;      
-  const MAX_GROSS = cfg.maxBuchungenProTag; // <--- Dynamisch aus der config.js
+  const MAX_GROSS = cfg.maxBuchungenProTag;
   const MAX_BYTES = 10 * 1024 * 1024;
   const ENDUNGEN = { "application/pdf": "pdf", "image/jpeg": "jpg", "image/png": "png" };
 
@@ -383,6 +383,35 @@
     return Array.isArray(data) ? data[0] : data;
   }
 
+  // Ntfy Benachrichtigung mit Token senden
+  async function sendeNtfy(ergebnis, w) {
+    if (!cfg.ntfyUrl) return;
+    
+    const titel = `Neue Avisierung: ${w.firma}`;
+    const nachricht = `Datum: ${deutsch(ergebnis.ergebnis_datum)}\nPaletten: ${w.palettes}\nBE-Nummer: ${w.be}`;
+    
+    const headers = {
+      "Title": titel,
+      "Priority": "default",
+      "Tags": "truck,package"
+    };
+
+    // Authentifizierungstoken hinzufügen, falls in der config vorhanden
+    if (cfg.ntfyToken) {
+      headers["Authorization"] = `Bearer ${cfg.ntfyToken}`;
+    }
+    
+    try {
+      await fetch(cfg.ntfyUrl, {
+        method: "POST",
+        body: nachricht,
+        headers: headers
+      });
+    } catch (e) {
+      console.error("Ntfy konnte nicht gesendet werden:", e);
+    }
+  }
+
   function zeigeBeleg(ergebnis, w) {
     $("b-id").textContent = ergebnis.ergebnis_avis_id;
     $("b-datum").textContent = deutsch(ergebnis.ergebnis_datum);
@@ -394,7 +423,7 @@
 
   $("formular").addEventListener("submit", async (e) => {
     e.preventDefault();
-    e.target.classList.add("touched"); // <--- Safari Compatibility Fix
+    e.target.classList.add("touched");
     verbergeFehler();
 
     const w = {
@@ -412,6 +441,8 @@
 
     try {
       const ergebnis = await buche(w);
+      // Ntfy-Funktion nach erfolgreicher Buchung aufrufen
+      await sendeNtfy(ergebnis, w);
       zeigeBeleg(ergebnis, w);
     } catch (err) {
       let text = "Die Buchung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.";
