@@ -2,10 +2,6 @@ window.DARULA_CONFIG = {
   supabaseUrl: "https://navhxyadbifllpopumfz.supabase.co",
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5hdmh4eWFkYmlmbGxwb3B1bWZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMzYyNTIsImV4cCI6MjA4NzcxMjI1Mn0.-0uTAYMdR5rdXvlVpIdPqmMLqsv1Men1wnBfAx-Q6zY",
   maxBuchungenProTag: 3,
-  
-  // Trage hier deinen kompletten Ntfy-Link ein (z.B. https://ntfy.sh/mein_topic)
-  ntfyUrl: "https://ntfy.sh/DEIN_TOPIC_NAME", 
-  
-  // Dein Ntfy Access-Token zur Authentifizierung
+  ntfyUrl: "https://ntfy.sh/darula_logistik_2026_dispatch",
   ntfyToken: "tk_pghzk1e68dwcm08zaqahskpu5zfbn"
 };
