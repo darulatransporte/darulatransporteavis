@@ -55,7 +55,7 @@
         <p class="muted">Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.</p>
       </article>
     </section>
-  
+
     <section class="container abschnitt" aria-labelledby="ablauf-titel">
       <h2 id="ablauf-titel">So läuft die Anlieferung ab</h2>
       <div class="schritte">
@@ -90,13 +90,13 @@
       </div>
     </section>
 
-    <!-- NEU: Präsenter Feedback-Block anstelle des schwebenden Buttons -->
+    <!-- Feedback-Block -->
     <section class="container abschnitt no-print" aria-labelledby="feedback-section-titel">
       <div class="card mitte" style="background: var(--info-bg); border-color: var(--info-line);">
         <h2 id="feedback-section-titel" style="color: var(--info);">Helfen Sie uns, besser zu werden!</h2>
         <p style="color: var(--info); max-width: 40rem; margin: 0 auto;">Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!</p>
-        <button id="feedback-btn" class="btn btn--primary mt-lg">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-bottom: -2px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
+        <button id="feedback-btn" class="btn btn--primary mt-lg" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-bottom: -2px;" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
           Verbesserungsvorschlag senden
         </button>
       </div>
@@ -128,36 +128,41 @@
     </div>
   </footer>
 
-  <!-- Feedback Pop-up Modal -->
+  <!-- Feedback-Pop-up -->
   <div id="feedback-modal" class="modal-overlay no-print" hidden>
     <div class="modal-box" role="dialog" aria-labelledby="feedback-titel" aria-modal="true">
-      <button id="feedback-close" class="modal-close" aria-label="Schließen">&times;</button>
+      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen">&times;</button>
       <h2 id="feedback-titel">Ideen zur Webseite?</h2>
       <p class="muted">Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
-      
+
       <div id="feedback-erfolg" class="alert alert--info" hidden>Vielen Dank für Ihre Vorschläge!</div>
       <div id="feedback-fehler" class="alert alert--error" hidden>Es gab ein Problem. Bitte versuchen Sie es später nochmal.</div>
 
-      <form action="[https://formsubmit.co/d.darulatransporte@gmail.com](https://formsubmit.co/d.darulatransporte@gmail.com)" method="POST">
+      <form id="feedback-form"
+            action="https://formsubmit.co/d.darulatransporte@gmail.com"
+            method="POST">
         <div class="field mt-lg">
           <label for="fb-name">Firma / Name <span class="pflicht" aria-hidden="true">*</span></label>
-          <input id="fb-name" name="name" type="text" required>
+          <input id="fb-name" name="name" type="text" autocomplete="name" required>
         </div>
         <div class="field mt-lg">
           <label for="fb-email">Ihre E-Mail (für eventuelle Rückfragen) <span class="pflicht" aria-hidden="true">*</span></label>
-          <input id="fb-email" name="email" type="email" required>
+          <input id="fb-email" name="email" type="email" autocomplete="email" required>
         </div>
         <div class="field mt-lg">
           <label for="fb-nachricht">Ihr Verbesserungsvorschlag <span class="pflicht" aria-hidden="true">*</span></label>
           <textarea id="fb-nachricht" name="message" rows="4" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" required></textarea>
         </div>
-        
+
         <!-- Spam-Schutz für FormSubmit -->
-        <input type="text" name="_honey" style="display:none">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
         <input type="hidden" name="_captcha" value="false">
-        <!-- Angepasster E-Mail Betreff -->
+        <!-- Betreff und Ablauf der E-Mail -->
         <input type="hidden" name="_subject" value="Neuer Verbesserungsvorschlag für die Webseite!">
-        
+        <input type="hidden" name="_template" value="table">
+        <!-- Bestätigung an den Absender -->
+        <input type="hidden" name="_autoresponse" value="Vielen Dank für Ihren Verbesserungsvorschlag! Wir haben Ihre Nachricht erhalten.">
+
         <div class="aktionen mt-lg">
           <button id="feedback-senden" class="btn btn--dark btn--block" type="submit">Vorschlag senden</button>
         </div>
@@ -169,62 +174,76 @@
 (() => {
   "use strict";
 
-  // Pop-up Logik
   const fbBtn = document.getElementById("feedback-btn");
   const fbModal = document.getElementById("feedback-modal");
   const fbClose = document.getElementById("feedback-close");
   const fbForm = document.getElementById("feedback-form");
   const fbSubmitBtn = document.getElementById("feedback-senden");
+  const fbErsterFeld = document.getElementById("fb-name");
+  const fbErfolg = document.getElementById("feedback-erfolg");
+  const fbFehler = document.getElementById("feedback-fehler");
+  let fbZuletzt = null;
 
-  fbBtn.addEventListener("click", () => {
+  function fbOeffnen() {
+    fbZuletzt = document.activeElement;
+    fbErfolg.hidden = true;
+    fbFehler.hidden = true;
     fbModal.hidden = false;
-  });
+    fbErsterFeld.focus();
+  }
 
-  fbClose.addEventListener("click", () => {
+  function fbSchliessen() {
     fbModal.hidden = true;
-  });
+    if (fbZuletzt) fbZuletzt.focus();
+  }
+
+  fbBtn.addEventListener("click", fbOeffnen);
+  fbClose.addEventListener("click", fbSchliessen);
 
   // Schließen beim Klick außerhalb der Box
   fbModal.addEventListener("click", (e) => {
-    if(e.target === fbModal) fbModal.hidden = true;
+    if (e.target === fbModal) fbSchliessen();
   });
 
-  // AJAX Formular-Versand
+  // Schließen mit der Escape-Taste
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !fbModal.hidden) fbSchliessen();
+  });
+
+  // AJAX-Versand
   fbForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     fbForm.classList.add("touched");
-    
-    if(!fbForm.checkValidity()) return;
+
+    // Zeigt die Browser-Hinweise bei fehlenden oder ungültigen Feldern
+    if (!fbForm.reportValidity()) return;
 
     fbSubmitBtn.disabled = true;
     fbSubmitBtn.textContent = "Wird gesendet...";
-    
-    document.getElementById("feedback-erfolg").hidden = true;
-    document.getElementById("feedback-fehler").hidden = true;
+    fbErfolg.hidden = true;
+    fbFehler.hidden = true;
 
     try {
       const formData = new FormData(fbForm);
-      // Sendet die Daten im Hintergrund an FormSubmit
       const response = await fetch("https://formsubmit.co/ajax/d.darulatransporte@gmail.com", {
         method: "POST",
-        headers: { 'Accept': 'application/json' },
+        headers: { "Accept": "application/json" },
         body: formData
       });
 
-      if(response.ok) {
-        document.getElementById("feedback-erfolg").hidden = false;
-        fbForm.reset();
-        fbForm.classList.remove("touched");
-        // Pop-up nach 3 Sekunden automatisch schließen
-        setTimeout(() => { 
-          fbModal.hidden = true; 
-          document.getElementById("feedback-erfolg").hidden = true; 
-        }, 3000);
-      } else {
-        throw new Error("Fehler beim Senden");
-      }
+      if (!response.ok) throw new Error("Fehler beim Senden");
+
+      fbErfolg.hidden = false;
+      fbForm.reset();
+      fbForm.classList.remove("touched");
+
+      // Pop-up nach 3 Sekunden automatisch schließen
+      setTimeout(() => {
+        fbModal.hidden = true;
+        fbErfolg.hidden = true;
+      }, 3000);
     } catch (error) {
-      document.getElementById("feedback-fehler").hidden = false;
+      fbFehler.hidden = false;
     } finally {
       fbSubmitBtn.disabled = false;
       fbSubmitBtn.textContent = "Vorschlag senden";
