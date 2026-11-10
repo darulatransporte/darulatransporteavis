@@ -34,12 +34,6 @@
     <section id="anmeldung" class="card login-card" aria-labelledby="anmeldung-titel">
       <h1 id="anmeldung-titel">Verwaltung</h1>
 
-      <div class="segment segment--voll" role="group" aria-label="Anmelden oder Konto anlegen">
-        <button id="tab-anmelden" type="button" aria-pressed="true">Anmelden</button>
-        <button id="tab-registrieren" type="button" aria-pressed="false">Konto anlegen</button>
-      </div>
-
-      <div id="anmeldung-info" class="alert alert--info" role="status" hidden></div>
       <div id="anmeldung-fehler" class="alert alert--error" role="alert" hidden></div>
 
       <form id="anmelde-form" class="login-form" novalidate>
@@ -52,23 +46,6 @@
           <input id="a-pw" type="password" autocomplete="current-password" required>
         </div>
         <button id="anmelden" class="btn btn--dark btn--block" type="submit">Anmelden</button>
-      </form>
-
-      <form id="registrier-form" class="login-form" hidden novalidate>
-        <p class="hilfe">Nach dem Anlegen bestätigen Sie Ihre E-Mail-Adresse über den Link in der Nachricht. Danach gibt ein bestehender Verwalter Ihr Konto frei.</p>
-        <div class="field">
-          <label for="r-email">E-Mail</label>
-          <input id="r-email" type="email" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="r-pw">Passwort (mindestens 10 Zeichen)</label>
-          <input id="r-pw" type="password" autocomplete="new-password" minlength="10" required>
-        </div>
-        <div class="field">
-          <label for="r-pw2">Passwort wiederholen</label>
-          <input id="r-pw2" type="password" autocomplete="new-password" minlength="10" required>
-        </div>
-        <button id="registrieren" class="btn btn--dark btn--block" type="submit">Konto anlegen</button>
       </form>
     </section>
 
@@ -137,7 +114,6 @@
   const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   const $ = (id) => document.getElementById(id);
 
-  const MIN_PASSWORT = 10;
   let alleZeilen = [];
   let ansicht = "heute";
   let eigeneId = null;
@@ -215,19 +191,6 @@
     else ladeDaten();
   }
 
-  function zeigeTab(tab) {
-    const anmelden = tab === "anmelden";
-    $("tab-anmelden").setAttribute("aria-pressed", String(anmelden));
-    $("tab-registrieren").setAttribute("aria-pressed", String(!anmelden));
-    $("anmelde-form").hidden = !anmelden;
-    $("registrier-form").hidden = anmelden;
-    meldung("anmeldung-fehler", "", "error");
-    meldung("anmeldung-info", "", "info");
-  }
-
-  $("tab-anmelden").addEventListener("click", () => zeigeTab("anmelden"));
-  $("tab-registrieren").addEventListener("click", () => zeigeTab("registrieren"));
-
   async function istVerwalter() {
     const { data, error } = await sb.rpc("ist_admin");
     return !error && data === true;
@@ -250,7 +213,6 @@
     if (!e.target.checkValidity()) return;
 
     meldung("anmeldung-fehler", "", "error");
-    meldung("anmeldung-info", "", "info");
     const knopf = $("anmelden");
     knopf.disabled = true;
     try {
@@ -275,49 +237,11 @@
     }
   });
 
-  $("registrier-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    e.target.classList.add("touched"); // <--- Form-Validation Fix
-    if (!e.target.checkValidity()) return;
-
-    meldung("anmeldung-fehler", "", "error");
-    meldung("anmeldung-info", "", "info");
-
-    const email = $("r-email").value.trim();
-    const pw1 = $("r-pw").value;
-    const pw2 = $("r-pw2").value;
-
-    if (pw1 !== pw2) {
-      meldung("anmeldung-fehler", "Die Passwörter stimmen nicht überein.", "error");
-      return;
-    }
-
-    const knopf = $("registrieren");
-    knopf.disabled = true;
-    try {
-      const { data, error } = await sb.auth.signUp({
-        email, password: pw1,
-        options: { emailRedirectTo: new URL("admin.html", window.location.href).href }
-      });
-      if (error) {
-        meldung("anmeldung-fehler", "Das Konto konnte nicht angelegt werden.", "error");
-        return;
-      }
-      if (data.session) await sb.auth.signOut();
-      $("r-pw").value = ""; $("r-pw2").value = "";
-      zeigeTab("anmelden");
-      $("a-email").value = email;
-      meldung("anmeldung-info", "Das Konto wurde angelegt. Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse über den Link in der Nachricht. Danach gibt ein bestehender Verwalter Ihr Konto frei.", "info");
-    } finally {
-      knopf.disabled = false;
-    }
-  });
-
   $("abmelden").addEventListener("click", async () => {
     await sb.auth.signOut();
     alleZeilen = [];
     eigeneId = null;
-    zeigeTab("anmelden");
+    meldung("anmeldung-fehler", "", "error");
     zeigeAnmeldung();
   });
 
@@ -398,11 +322,19 @@
     return tr;
   }
 
-  // <--- Pop-up-Blocker Bug Fix --->
+  // Lieferschein in einem neuen Tab öffnen.
+  // Das Fenster wird synchron im Klick-Event geöffnet, damit der Pop-up-Blocker es zulässt.
+  // "noopener" wird bewusst nicht übergeben: window.open() liefert damit null zurück,
+  // und das Fenster kann danach nicht mehr angesteuert werden. Stattdessen wird opener manuell gelöst.
   async function oeffneLieferschein(wert, knopf) {
+    const fenster = window.open("about:blank", "_blank");
+    if (!fenster) {
+      window.alert("Der Lieferschein kann nicht geöffnet werden. Bitte erlauben Sie Pop-ups für diese Seite.");
+      return;
+    }
+    fenster.opener = null;
+
     knopf.disabled = true;
-    const fenster = window.open("about:blank", "_blank", "noopener,noreferrer");
-    
     try {
       let url = wert;
       if (!/^https?:\/\//i.test(wert)) {
@@ -412,6 +344,7 @@
       }
       fenster.location.href = url;
     } catch (err) {
+      console.error("Lieferschein konnte nicht geöffnet werden:", err);
       fenster.close();
       window.alert("Der Lieferschein konnte nicht geöffnet werden.");
     } finally {
