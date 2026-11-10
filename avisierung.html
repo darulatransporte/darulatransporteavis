@@ -132,6 +132,8 @@
             <p class="muted">Ihre Lieferung ist eingetragen. Bitte notieren oder drucken Sie die Buchungsnummer.</p>
           </div>
 
+          <div id="b-warnung" class="alert alert--warn" role="alert" hidden></div>
+
           <div id="beleg" class="card mt-lg">
             <h2>Anlieferungsbeleg</h2>
             <p class="muted">Darula Transporte &amp; Logistik</p>
@@ -409,18 +411,27 @@
     return null;
   }
 
+  // Zuerst wird die Buchung gespeichert, danach der Lieferschein hochgeladen.
+  // Scheitert die Buchung, entsteht so keine Datei im Speicher ohne Buchungszeile.
   async function buche(w) {
-    let pfad = null;
-    if (w.datei) {
-      pfad = `${zufallsId()}.${ENDUNGEN[w.datei.type]}`;
-      const { error } = await sb.storage.from("lieferscheine").upload(pfad, w.datei, { contentType: w.datei.type, upsert: false });
-      if (error) throw Object.assign(new Error("upload"), { code: "UPLOAD" });
-    }
+    const pfad = w.datei ? `${zufallsId()}.${ENDUNGEN[w.datei.type]}` : null;
     const { data, error } = await sb.rpc("buche_avisierung", {
       p_liefer_datum: state.gewaehlt, p_firma: w.firma, p_email: w.email, p_palettes: w.palettes, p_be_nummer: w.be, p_lieferschein_pfad: pfad
     });
     if (error) throw error;
-    return Array.isArray(data) ? data[0] : data;
+    const ergebnis = Array.isArray(data) ? data[0] : data;
+
+    if (w.datei) {
+      let hochgeladen = false;
+      try {
+        const { error: uploadFehler } = await sb.storage.from("lieferscheine").upload(pfad, w.datei, { contentType: w.datei.type, upsert: false });
+        hochgeladen = !uploadFehler;
+      } catch (err) {
+        console.error("Lieferschein konnte nicht hochgeladen werden:", err);
+      }
+      if (!hochgeladen) return { ...ergebnis, lieferscheinFehlt: true };
+    }
+    return ergebnis;
   }
 
   function zeigeBeleg(ergebnis, w) {
@@ -429,6 +440,9 @@
     $("b-firma").textContent = w.firma;
     $("b-be").textContent = w.be;
     $("b-paletten").textContent = String(w.palettes);
+    const warnung = $("b-warnung");
+    warnung.textContent = "Ihre Buchung ist gespeichert, der Lieferschein konnte jedoch nicht hochgeladen werden. Bitte rufen Sie uns an unter +49 911 30039794 oder bringen Sie den Lieferschein zur Anlieferung mit.";
+    warnung.hidden = !ergebnis.lieferscheinFehlt;
     zeigeSchritt(3);
   }
 
@@ -455,8 +469,7 @@
       zeigeBeleg(ergebnis, w);
     } catch (err) {
       let text = "Die Buchung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.";
-      if (err && err.code === "UPLOAD") text = "Der Lieferschein konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.";
-      else if (err && err.code === "P0001") text = err.message;
+      if (err && err.code === "P0001") text = err.message;
       zeigeFehler(text);
       knopf.disabled = false;
       knopf.textContent = "Verbindlich buchen";
