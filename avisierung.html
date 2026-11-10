@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buchungsportal | Darula Transporte</title>
-  <meta name="description" content="Anlieferung bei Darula Transporte &amp; Logistik avisieren: Liefertermin wählen und Lieferung anmelden.">
+  <title data-i18n="meta.title.avis">Buchungsportal | Darula Transporte</title>
+  <meta name="description" content="Anlieferung bei Darula Transporte &amp; Logistik avisieren: Liefertermin wählen und Lieferung anmelden." data-i18n-content="meta.description.avis">
   <link rel="stylesheet" href="style.css">
+  <script src="i18n.js"></script>
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+  <a class="skip-link" href="#inhalt" data-i18n="nav.skip">Zum Inhalt springen</a>
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a href="index.html" aria-label="Zur Startseite">
+      <a href="index.html" aria-label="Zur Startseite" data-i18n-aria-label="nav.home">
         <img class="logo" src="darula_logo.jpg" alt="Darula Transporte" height="40">
       </a>
       <div class="nav">
-        <span class="seitentitel">Avisierungs-Portal</span>
-        <button id="feedback-btn" class="btn btn--primary btn--klein" type="button" aria-haspopup="dialog">Verbesserungsvorschlag</button>
+        <span class="seitentitel" data-i18n="avis.seitentitel">Avisierungs-Portal</span>
+        <button id="feedback-btn" class="btn btn--primary btn--klein" type="button" aria-haspopup="dialog" data-i18n="nav.feedback">Verbesserungsvorschlag</button>
+        <select id="sprache" class="btn btn--ghost btn--klein" aria-label="Sprache" data-i18n-aria-label="nav.language"></select>
       </div>
     </div>
   </header>
@@ -27,32 +29,32 @@
   <main id="inhalt" class="container page">
     <div class="card">
       <details class="info-box" open>
-        <summary>Wichtige Hinweise vor der Buchung</summary>
+        <summary data-i18n="avis.info.summary">Wichtige Hinweise vor der Buchung</summary>
         <ul>
-          <li>Sie buchen einen Tag, keine Uhrzeit. Entladung: Montag bis Donnerstag von 07:00 bis 14:30 Uhr, freitags von 07:00 bis 12:00 Uhr.</li>
-          <li>Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.</li>
-          <li>Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.</li>
-          <li>Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li>Am 11.11.2026 ist die Warenannahme wegen der Inventur geschlossen.</li>
-          <li>Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.</li>
+          <li data-i18n="avis.info.1">Sie buchen einen Tag, keine Uhrzeit. Entladung: Montag bis Donnerstag von 07:00 bis 14:30 Uhr, freitags von 07:00 bis 12:00 Uhr.</li>
+          <li data-i18n="avis.info.2">Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.</li>
+          <li data-i18n="avis.info.3">Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.</li>
+          <li data-i18n="avis.info.4">Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
+          <li data-i18n="avis.info.5">Am 11.11.2026 ist die Warenannahme wegen der Inventur geschlossen.</li>
+          <li data-i18n="avis.info.6">Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.</li>
         </ul>
       </details>
 
       <section id="schritt1" aria-labelledby="ueb1">
         <div class="kopf">
           <div>
-            <h1 id="ueb1" tabindex="-1">1. Anlieferdatum wählen</h1>
-            <p class="muted">Wählen Sie einen verfügbaren Werktag im Kalender.</p>
+            <h1 id="ueb1" tabindex="-1" data-i18n="avis.step1.title">1. Anlieferdatum wählen</h1>
+            <p class="muted" data-i18n="avis.step1.text">Wählen Sie einen verfügbaren Werktag im Kalender.</p>
           </div>
           <div class="monatsnav">
-            <button id="monat-zurueck" class="btn btn--ghost btn--klein" type="button" aria-label="Vorheriger Monat">&larr;</button>
+            <button id="monat-zurueck" class="btn btn--ghost btn--klein" type="button" aria-label="Vorheriger Monat" data-i18n-aria-label="avis.month.prev">&larr;</button>
             <span id="monat" class="monatsname" aria-live="polite"></span>
-            <button id="monat-vor" class="btn btn--ghost btn--klein" type="button" aria-label="Nächster Monat">&rarr;</button>
+            <button id="monat-vor" class="btn btn--ghost btn--klein" type="button" aria-label="Nächster Monat" data-i18n-aria-label="avis.month.next">&rarr;</button>
           </div>
         </div>
 
-        <div id="lade" class="alert alert--info" role="status">Verfügbarkeit wird geladen …</div>
-        <div id="lade-fehler" class="alert alert--error" role="alert" hidden>
+        <div id="lade" class="alert alert--info" role="status" data-i18n="avis.loading">Verfügbarkeit wird geladen …</div>
+        <div id="lade-fehler" class="alert alert--error" role="alert" hidden data-i18n="avis.loadError">
           Die Verfügbarkeit konnte nicht geladen werden. Bitte laden Sie die Seite neu. Buchungen sind im Moment nicht möglich.
         </div>
 
@@ -62,62 +64,62 @@
         <div id="kalender" class="kalender"></div>
 
         <div class="legende">
-          <span><i class="punkt punkt--frei"></i> Verfügbar</span>
-          <span><i class="punkt punkt--eingeschraenkt"></i> Nur unter 20 Paletten</span>
-          <span><i class="punkt punkt--inventur"></i> Inventur</span>
+          <span><i class="punkt punkt--frei"></i> <span data-i18n="avis.legend.free">Verfügbar</span></span>
+          <span><i class="punkt punkt--eingeschraenkt"></i> <span data-i18n="avis.legend.limited">Nur unter 20 Paletten</span></span>
+          <span><i class="punkt punkt--inventur"></i> <span data-i18n="avis.inventur">Inventur</span></span>
         </div>
-        <p class="hilfe">Die Zahl zeigt, wie viele Lieferungen ab 20 Paletten an diesem Tag bereits gebucht sind (von drei). Lieferungen unter 20 Paletten sind jederzeit buchbar.</p>
+        <p class="hilfe" data-i18n="avis.hint.text">Die Zahl zeigt, wie viele Lieferungen ab 20 Paletten an diesem Tag bereits gebucht sind (von drei). Lieferungen unter 20 Paletten sind jederzeit buchbar.</p>
 
         <div class="aktionen">
-          <span id="auswahl" class="muted">Noch kein Tag gewählt.</span>
-          <button id="weiter" class="btn btn--primary" type="button" disabled>Weiter zu Schritt 2</button>
+          <span id="auswahl" class="muted" data-i18n="avis.none">Noch kein Tag gewählt.</span>
+          <button id="weiter" class="btn btn--primary" type="button" disabled data-i18n="avis.next">Weiter zu Schritt 2</button>
         </div>
       </section>
 
       <section id="schritt2" aria-labelledby="ueb2" hidden>
         <div class="kopf">
           <div>
-            <h1 id="ueb2" tabindex="-1">2. Sendungsdaten erfassen</h1>
-            <p class="muted">Gewählter Termin: <strong id="gewaehlt-datum"></strong></p>
+            <h1 id="ueb2" tabindex="-1" data-i18n="avis.step2.title">2. Sendungsdaten erfassen</h1>
+            <p class="muted"><span data-i18n="avis.step2.chosen">Gewählter Termin:</span> <strong id="gewaehlt-datum"></strong></p>
           </div>
         </div>
 
         <div id="fehler" class="alert alert--error" role="alert" tabindex="-1" hidden></div>
-        <p class="hilfe"><span class="pflicht" aria-hidden="true">*</span> Pflichtfeld</p>
+        <p class="hilfe"><span class="pflicht" aria-hidden="true">*</span> <span data-i18n="avis.required">Pflichtfeld</span></p>
 
         <form id="formular" novalidate>
           <div class="formgrid">
             <div class="field">
-              <label for="firma">Speditionsfirma<span class="pflicht" aria-hidden="true">*</span></label>
+              <label for="firma"><span data-i18n="avis.field.company">Speditionsfirma</span><span class="pflicht" aria-hidden="true">*</span></label>
               <input id="firma" name="firma" type="text" required maxlength="100" autocomplete="organization">
             </div>
 
             <div class="field">
-              <label for="email">E-Mail-Adresse für Rückfragen<span class="pflicht" aria-hidden="true">*</span></label>
+              <label for="email"><span data-i18n="avis.field.email">E-Mail-Adresse für Rückfragen</span><span class="pflicht" aria-hidden="true">*</span></label>
               <input id="email" name="email" type="email" required maxlength="254" autocomplete="email">
             </div>
 
             <div class="field">
-              <label for="palettes">Anzahl Paletten<span class="pflicht" aria-hidden="true">*</span></label>
+              <label for="palettes"><span data-i18n="avis.field.palettes">Anzahl Paletten</span><span class="pflicht" aria-hidden="true">*</span></label>
               <input id="palettes" name="palettes" type="number" inputmode="numeric" min="1" max="200" step="1" required aria-describedby="palett-hinweis">
               <span id="palett-hinweis" class="hilfe" aria-live="polite"></span>
             </div>
 
             <div class="field">
-              <label for="be">BE-Nummer / Referenz<span class="pflicht" aria-hidden="true">*</span></label>
+              <label for="be"><span data-i18n="avis.field.be">BE-Nummer / Referenz</span><span class="pflicht" aria-hidden="true">*</span></label>
               <input id="be" name="be" type="text" required maxlength="50">
             </div>
 
             <div class="field voll">
-              <label for="datei">Lieferschein (optional)</label>
+              <label for="datei"><span data-i18n="avis.field.file">Lieferschein (optional)</span></label>
               <input id="datei" name="datei" type="file" accept="application/pdf,image/jpeg,image/png" aria-describedby="datei-hilfe">
-              <span id="datei-hilfe" class="hilfe">PDF, JPG oder PNG, maximal 10 MB.</span>
+              <span id="datei-hilfe" class="hilfe" data-i18n="avis.field.file.help">PDF, JPG oder PNG, maximal 10 MB.</span>
             </div>
           </div>
 
           <div class="aktionen">
-            <button id="zurueck-schritt1" class="btn btn--ghost" type="button">Zurück</button>
-            <button id="absenden" class="btn btn--dark" type="submit">Verbindlich buchen</button>
+            <button id="zurueck-schritt1" class="btn btn--ghost" type="button" data-i18n="avis.back">Zurück</button>
+            <button id="absenden" class="btn btn--dark" type="submit" data-i18n="avis.submit">Verbindlich buchen</button>
           </div>
         </form>
       </section>
@@ -128,28 +130,28 @@
             <div class="erfolgs-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h1 id="beleg-titel" tabindex="-1">Buchung bestätigt</h1>
-            <p class="muted">Ihre Lieferung ist eingetragen. Bitte notieren oder drucken Sie die Buchungsnummer.</p>
+            <h1 id="beleg-titel" tabindex="-1" data-i18n="avis.beleg.title">Buchung bestätigt</h1>
+            <p class="muted" data-i18n="avis.beleg.text">Ihre Lieferung ist eingetragen. Bitte notieren oder drucken Sie die Buchungsnummer.</p>
           </div>
 
           <div id="b-warnung" class="alert alert--warn" role="alert" hidden></div>
 
           <div id="beleg" class="card mt-lg">
-            <h2>Anlieferungsbeleg</h2>
+            <h2 data-i18n="avis.beleg.heading">Anlieferungsbeleg</h2>
             <p class="muted">Darula Transporte &amp; Logistik</p>
             <dl class="beleg">
-              <div><dt>Buchungsnummer</dt><dd id="b-id" class="beleg__id"></dd></div>
-              <div><dt>Anlieferdatum</dt><dd id="b-datum"></dd></div>
-              <div><dt>Spedition</dt><dd id="b-firma"></dd></div>
-              <div><dt>BE-Nummer / Referenz</dt><dd id="b-be"></dd></div>
-              <div><dt>Paletten</dt><dd id="b-paletten"></dd></div>
+              <div><dt data-i18n="avis.beleg.bookingNo">Buchungsnummer</dt><dd id="b-id" class="beleg__id"></dd></div>
+              <div><dt data-i18n="avis.beleg.date">Anlieferdatum</dt><dd id="b-datum"></dd></div>
+              <div><dt data-i18n="avis.beleg.company">Spedition</dt><dd id="b-firma"></dd></div>
+              <div><dt data-i18n="avis.field.be">BE-Nummer / Referenz</dt><dd id="b-be"></dd></div>
+              <div><dt data-i18n="avis.beleg.pallets">Paletten</dt><dd id="b-paletten"></dd></div>
             </dl>
           </div>
 
-          <p class="muted mitte mt-lg">Fragen oder Änderungen zur Buchung: <a href="tel:+4991130039794">+49 911 30039794</a></p>
+          <p class="muted mitte mt-lg"><span data-i18n="avis.beleg.question">Fragen oder Änderungen zur Buchung:</span> <a href="tel:+4991130039794">+49 911 30039794</a></p>
           <div class="aktionen no-print">
-            <button id="drucken" class="btn btn--ghost" type="button">Drucken</button>
-            <button id="neu" class="btn btn--dark" type="button">Neue Buchung</button>
+            <button id="drucken" class="btn btn--ghost" type="button" data-i18n="avis.beleg.print">Drucken</button>
+            <button id="neu" class="btn btn--dark" type="button" data-i18n="avis.beleg.new">Neue Buchung</button>
           </div>
         </div>
       </section>
@@ -160,7 +162,7 @@
   <footer class="site-footer no-print">
     <div class="container site-footer__inner">
       <span>&copy; 2026 Darula Transporte &amp; Logistik</span>
-      <nav aria-label="Rechtliches">
+      <nav aria-label="Rechtliches" data-i18n-aria-label="footer.legal">
         <a href="impressum.html">Impressum</a>
       </nav>
     </div>
@@ -169,25 +171,25 @@
   <!-- Feedback-Pop-up -->
   <div id="feedback-modal" class="modal-overlay no-print" hidden>
     <div class="modal-box" role="dialog" aria-labelledby="feedback-titel" aria-modal="true">
-      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen">&times;</button>
-      <h2 id="feedback-titel">Ideen zur Webseite?</h2>
-      <p class="muted">Fällt Ihnen beim Buchen etwas auf, das wir noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
+      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen" data-i18n-aria-label="feedback.close">&times;</button>
+      <h2 id="feedback-titel" data-i18n="feedback.modal.title">Ideen zur Webseite?</h2>
+      <p class="muted" data-i18n="feedback.modal.text.booking">Fällt Ihnen beim Buchen etwas auf, das wir noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
 
-      <div id="feedback-erfolg" class="alert alert--info" role="status" hidden>Vielen Dank für Ihre Vorschläge!</div>
-      <div id="feedback-fehler" class="alert alert--error" role="alert" hidden>Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.</div>
+      <div id="feedback-erfolg" class="alert alert--info" role="status" hidden data-i18n="feedback.success">Vielen Dank für Ihre Vorschläge!</div>
+      <div id="feedback-fehler" class="alert alert--error" role="alert" hidden data-i18n="feedback.error">Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.</div>
 
       <form id="feedback-form" autocomplete="off">
         <div class="field mt-lg">
-          <label for="fb-name">Firma / Name <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="fb-name"><span data-i18n="feedback.form.name">Firma / Name</span> <span class="pflicht" aria-hidden="true">*</span></label>
           <input id="fb-name" name="name" type="text" maxlength="200" autocomplete="name" required>
         </div>
         <div class="field mt-lg">
-          <label for="fb-email">Ihre E-Mail (für eventuelle Rückfragen) <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="fb-email"><span data-i18n="feedback.form.email">Ihre E-Mail (für eventuelle Rückfragen)</span> <span class="pflicht" aria-hidden="true">*</span></label>
           <input id="fb-email" name="email" type="email" maxlength="320" autocomplete="email" required>
         </div>
         <div class="field mt-lg">
-          <label for="fb-nachricht">Ihr Verbesserungsvorschlag <span class="pflicht" aria-hidden="true">*</span></label>
-          <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" required></textarea>
+          <label for="fb-nachricht"><span data-i18n="feedback.form.message">Ihr Verbesserungsvorschlag</span> <span class="pflicht" aria-hidden="true">*</span></label>
+          <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" data-i18n-placeholder="feedback.form.placeholder" required></textarea>
         </div>
 
         <!-- Bot-Falle: für Menschen unsichtbar, Bots füllen sie aus -->
@@ -196,7 +198,7 @@
         </div>
 
         <div class="aktionen mt-lg">
-          <button id="feedback-senden" class="btn btn--dark btn--block" type="submit">Vorschlag senden</button>
+          <button id="feedback-senden" class="btn btn--dark btn--block" type="submit" data-i18n="feedback.submit">Vorschlag senden</button>
         </div>
       </form>
     </div>
@@ -219,6 +221,15 @@
   const MAX_BYTES = 10 * 1024 * 1024;
   const ENDUNGEN = { "application/pdf": "pdf", "image/jpeg": "jpg", "image/png": "png" };
 
+  const STATUS_TEXT = {
+    frei: "avis.status.free",
+    eingeschraenkt: "avis.status.limited",
+    inventur: "avis.inventur",
+    wochenende: "avis.status.weekend",
+    vergangen: "avis.status.past",
+    unbekannt: "avis.status.unavailable"
+  };
+
   const heuteIso = () =>
     new Intl.DateTimeFormat("en-CA", {
       timeZone: "Europe/Berlin", year: "numeric", month: "2-digit", day: "2-digit"
@@ -231,8 +242,6 @@
     const [j, m, t] = datum.split("-").map(Number);
     return (new Date(Date.UTC(j, m - 1, t)).getUTCDay() + 6) % 7;
   };
-
-  const deutsch = (datum) => datum.split("-").reverse().join(".");
 
   const zufallsId = () =>
     window.crypto && window.crypto.randomUUID
@@ -249,17 +258,29 @@
     gewaehltStatus: null,
     gross: new Map(),
     geladen: false,
-    ladeFehler: false
+    ladeFehler: false,
+    fehler: null,            // Funktion, die den aktuellen Fehlertext liefert (sprachabhängig)
+    beleg: null              // { ergebnis, w } für die Neuübersetzung des Belegs
   };
 
-  const TEXT = {
-    frei: "verfügbar",
-    eingeschraenkt: "nur Lieferungen unter 20 Paletten",
-    inventur: "Inventur",
-    wochenende: "geschlossen",
-    vergangen: "vergangen",
-    unbekannt: "nicht verfügbar"
-  };
+  // Kurzname des Wochentags in der aktuellen Sprache; Index 0 = Montag
+  function kurzTag(index) {
+    // 1. Januar 2024 war ein Montag
+    const datum = new Date(Date.UTC(2024, 0, 1 + index));
+    const text = new Intl.DateTimeFormat(I18n.locale(), { timeZone: "UTC", weekday: "short" }).format(datum);
+    return text.replace(/\./g, "").replace(/^./, (c) => c.toUpperCase());
+  }
+
+  function zeigeWochentage() {
+    const kopf = document.querySelector(".kalender-kopf");
+    const spalten = [];
+    for (let i = 0; i < 7; i++) {
+      const span = document.createElement("span");
+      span.textContent = kurzTag(i);
+      spalten.push(span);
+    }
+    kopf.replaceChildren(...spalten);
+  }
 
   async function ladeVerfuegbarkeit() {
     const { data, error } = await sb.rpc("verfuegbarkeit_avisierung", { p_von: heute });
@@ -280,9 +301,7 @@
     grid.replaceChildren();
 
     const { jahr, monat } = state;
-    $("monat").textContent = new Intl.DateTimeFormat("de-DE", {
-      month: "long", year: "numeric", timeZone: "UTC"
-    }).format(new Date(Date.UTC(jahr, monat, 1)));
+    $("monat").textContent = I18n.formatMonat(jahr, monat);
 
     $("monat-zurueck").disabled = jahr * 12 + monat <= hJahr * 12 + (hMonat - 1);
 
@@ -312,8 +331,8 @@
       const hinweis = {
         vergangen: "",
         wochenende: "",
-        inventur: "Inventur",
-        eingeschraenkt: "unter 20",
+        inventur: I18n.t("avis.inventur"),
+        eingeschraenkt: I18n.t("avis.hint.limited"),
         unbekannt: "–",
         frei: `${gross}/${MAX_GROSS}`
       }[status];
@@ -323,10 +342,13 @@
       knopf.className = `tag tag--${status}`;
       knopf.disabled = !buchbar;
       knopf.setAttribute("aria-pressed", String(state.gewaehlt === datum));
+      const datumText = I18n.formatDatum(datum);
+      const statusText = I18n.t(STATUS_TEXT[status]);
       knopf.setAttribute(
         "aria-label",
-        `${deutsch(datum)}: ${TEXT[status]}` +
-          (buchbar ? `, ${gross} von ${MAX_GROSS} Großlieferungen belegt` : "")
+        buchbar
+          ? I18n.t("avis.aria.day", { datum: datumText, status: statusText, gross, max: MAX_GROSS })
+          : `${datumText}: ${statusText}`
       );
       if (state.gewaehlt === datum) knopf.classList.add("tag--gewaehlt");
 
@@ -347,11 +369,21 @@
     }
   }
 
+  function aktualisiereAuswahl() {
+    $("auswahl").textContent = state.gewaehlt
+      ? I18n.t("avis.selected", { datum: I18n.formatDatum(state.gewaehlt) })
+      : I18n.t("avis.none");
+  }
+
+  function aktualisiereDatum() {
+    $("gewaehlt-datum").textContent = state.gewaehlt ? I18n.formatDatum(state.gewaehlt) : "";
+  }
+
   function waehleDatum(datum, status) {
     state.gewaehlt = datum;
     state.gewaehltStatus = status;
     $("weiter").disabled = false;
-    $("auswahl").textContent = `Gewählt: ${deutsch(datum)}`;
+    aktualisiereAuswahl();
     renderKalender();
   }
 
@@ -367,12 +399,26 @@
     $("schritt2").hidden = nr !== 2;
     $("schritt3").hidden = nr !== 3;
     window.scrollTo(0, 0);
-    if (nr === 2) aktualisiereHinweis();
+    if (nr === 2) {
+      aktualisiereDatum();
+      aktualisiereHinweis();
+    }
     const ziel = { 1: "ueb1", 2: "ueb2", 3: "beleg-titel" }[nr];
     $(ziel).focus();
   }
 
-  function zeigeFehler(text) {
+  // Fehler werden als Schlüssel gespeichert, damit sie bei einem Sprachwechsel neu übersetzt werden
+  function zeigeFehler(schluessel) {
+    state.fehler = () => I18n.t(schluessel);
+    const box = $("fehler");
+    box.textContent = state.fehler();
+    box.hidden = false;
+    box.focus();
+  }
+
+  // Serverseitige Meldungen (z. B. Kapazitätsgrenze) werden unverändert angezeigt
+  function zeigeFehlerText(text) {
+    state.fehler = () => text;
     const box = $("fehler");
     box.textContent = text;
     box.hidden = false;
@@ -383,30 +429,31 @@
     const box = $("fehler");
     box.hidden = true;
     box.textContent = "";
+    state.fehler = null;
   }
 
   function aktualisiereHinweis() {
     const p = Number($("palettes").value);
     const hinweis = $("palett-hinweis");
+    let schluessel = null;
     if (p >= GROSS_AB && state.gewaehltStatus === "eingeschraenkt") {
-      hinweis.textContent =
-        "An diesem Tag sind alle drei Plätze für Lieferungen ab 20 Paletten belegt. Bitte wählen Sie einen anderen Tag oder eine Anzahl unter 20 Paletten.";
+      schluessel = "avis.palett.hint.full";
     } else if (p >= GROSS_AB) {
-      hinweis.textContent = "Lieferungen ab 20 Paletten sind auf drei pro Tag begrenzt.";
-    } else {
-      hinweis.textContent = "";
+      schluessel = "avis.palett.hint.max3";
     }
+    hinweis.textContent = schluessel ? I18n.t(schluessel) : "";
   }
 
+  // Gibt einen Übersetzungsschlüssel zurück, oder null, wenn alles in Ordnung ist
   function pruefe(w) {
-    if (w.firma.length < 2 || w.firma.length > 100) return "Bitte geben Sie die Speditionsfirma an (2 bis 100 Zeichen).";
-    if (w.email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(w.email)) return "Bitte geben Sie eine gültige E-Mail-Adresse an.";
-    if (!Number.isInteger(w.palettes) || w.palettes < 1 || w.palettes > 200) return "Die Anzahl der Paletten muss zwischen 1 und 200 liegen.";
-    if (w.be.length < 1 || w.be.length > 50) return "Bitte geben Sie eine BE-Nummer oder Referenz an.";
-    if (w.palettes >= GROSS_AB && state.gewaehltStatus === "eingeschraenkt") return "An diesem Tag sind alle Plätze für Lieferungen ab 20 Paletten belegt.";
+    if (w.firma.length < 2 || w.firma.length > 100) return "avis.err.company";
+    if (w.email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(w.email)) return "avis.err.email";
+    if (!Number.isInteger(w.palettes) || w.palettes < 1 || w.palettes > 200) return "avis.err.palettes";
+    if (w.be.length < 1 || w.be.length > 50) return "avis.err.be";
+    if (w.palettes >= GROSS_AB && state.gewaehltStatus === "eingeschraenkt") return "avis.err.fullDay";
     if (w.datei) {
-      if (!ENDUNGEN[w.datei.type]) return "Der Lieferschein muss ein PDF, JPG oder PNG sein.";
-      if (w.datei.size > MAX_BYTES) return "Der Lieferschein ist größer als 10 MB.";
+      if (!ENDUNGEN[w.datei.type]) return "avis.err.fileType";
+      if (w.datei.size > MAX_BYTES) return "avis.err.fileSize";
     }
     return null;
   }
@@ -434,15 +481,22 @@
     return ergebnis;
   }
 
-  function zeigeBeleg(ergebnis, w) {
+  function aktualisiereBeleg() {
+    if (!state.beleg) return;
+    const { ergebnis, w } = state.beleg;
     $("b-id").textContent = ergebnis.ergebnis_avis_id;
-    $("b-datum").textContent = deutsch(ergebnis.ergebnis_datum);
+    $("b-datum").textContent = I18n.formatDatum(ergebnis.ergebnis_datum);
     $("b-firma").textContent = w.firma;
     $("b-be").textContent = w.be;
     $("b-paletten").textContent = String(w.palettes);
     const warnung = $("b-warnung");
-    warnung.textContent = "Ihre Buchung ist gespeichert, der Lieferschein konnte jedoch nicht hochgeladen werden. Bitte rufen Sie uns an unter +49 911 30039794 oder bringen Sie den Lieferschein zur Anlieferung mit.";
+    warnung.textContent = I18n.t("avis.beleg.warning");
     warnung.hidden = !ergebnis.lieferscheinFehlt;
+  }
+
+  function zeigeBeleg(ergebnis, w) {
+    state.beleg = { ergebnis, w };
+    aktualisiereBeleg();
     zeigeSchritt(3);
   }
 
@@ -462,29 +516,45 @@
 
     const knopf = $("absenden");
     knopf.disabled = true;
-    knopf.textContent = "Wird gebucht …";
+    knopf.textContent = I18n.t("avis.submitting");
 
     try {
       const ergebnis = await buche(w);
       zeigeBeleg(ergebnis, w);
     } catch (err) {
-      let text = "Die Buchung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.";
-      if (err && err.code === "P0001") text = err.message;
-      zeigeFehler(text);
+      if (err && err.code === "P0001") zeigeFehlerText(err.message);
+      else zeigeFehler("avis.err.generic");
       knopf.disabled = false;
-      knopf.textContent = "Verbindlich buchen";
+      knopf.textContent = I18n.t("avis.submit");
     }
   });
 
+  // Sprachwechsel: alle dynamischen Texte neu aufbauen
+  document.addEventListener("i18n:change", () => {
+    zeigeWochentage();
+    renderKalender();
+    aktualisiereAuswahl();
+    aktualisiereDatum();
+    aktualisiereHinweis();
+    if (state.fehler && !$("fehler").hidden) $("fehler").textContent = state.fehler();
+    if (state.beleg) aktualisiereBeleg();
+    const knopf = $("absenden");
+    knopf.textContent = knopf.disabled ? I18n.t("avis.submitting") : I18n.t("avis.submit");
+  });
+
+  I18n.mountSwitcher($("sprache"));
+
   $("palettes").addEventListener("input", aktualisiereHinweis);
-  $("weiter").addEventListener("click", () => { $("gewaehlt-datum").textContent = deutsch(state.gewaehlt); zeigeSchritt(2); });
+  $("weiter").addEventListener("click", () => { aktualisiereDatum(); zeigeSchritt(2); });
   $("zurueck-schritt1").addEventListener("click", () => zeigeSchritt(1));
   $("monat-zurueck").addEventListener("click", () => verschiebeMonat(-1));
   $("monat-vor").addEventListener("click", () => verschiebeMonat(1));
   $("drucken").addEventListener("click", () => window.print());
   $("neu").addEventListener("click", () => window.location.reload());
 
+  zeigeWochentage();
   renderKalender();
+  aktualisiereAuswahl();
   ladeVerfuegbarkeit().then(() => {
     $("lade").hidden = true;
     $("lade-fehler").hidden = !state.ladeFehler;
@@ -565,7 +635,7 @@
     const istBot = Boolean(formData.get("website"));
 
     fbSubmitBtn.disabled = true;
-    fbSubmitBtn.textContent = "Wird gesendet...";
+    fbSubmitBtn.textContent = I18n.t("feedback.sending");
     fbErfolg.hidden = true;
     fbFehler.hidden = true;
 
@@ -592,7 +662,7 @@
       fbFehler.hidden = false;
     } finally {
       fbSubmitBtn.disabled = false;
-      fbSubmitBtn.textContent = "Vorschlag senden";
+      fbSubmitBtn.textContent = I18n.t("feedback.submit");
     }
   });
 })();
