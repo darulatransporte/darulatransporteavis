@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Warenannahme | Darula Transporte</title>
-  <meta name="description" content="Warenannahme und Anlieferungsrichtlinien von Darula Transporte &amp; Logistik. Anlieferungen digital avisieren.">
+  <title data-i18n="meta.title.index">Warenannahme | Darula Transporte</title>
+  <meta name="description" content="Warenannahme und Anlieferungsrichtlinien von Darula Transporte &amp; Logistik. Anlieferungen digital avisieren." data-i18n-content="meta.description.index">
   <link rel="stylesheet" href="style.css">
+  <script src="i18n.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+  <a class="skip-link" href="#inhalt" data-i18n="nav.skip">Zum Inhalt springen</a>
 
-  <div class="hinweis-banner" role="note">
-    Wichtige Information: Am 11.11.2026 findet unsere Inventur statt. Die Warenannahme bleibt an diesem Tag geschlossen.
-  </div>
+  <div class="hinweis-banner" role="note" data-i18n="banner.inventur">Wichtige Information: Am 11.11.2026 findet unsere Inventur statt. Die Warenannahme bleibt an diesem Tag geschlossen.</div>
 
   <header class="site-header">
     <div class="container site-header__inner">
-      <a href="index.html" aria-label="Zur Startseite">
+      <a href="index.html" aria-label="Zur Startseite" data-i18n-aria-label="nav.home">
         <img class="logo" src="darula_logo.jpg" alt="Darula Transporte" height="40">
       </a>
-      <nav class="nav" aria-label="Hauptnavigation">
-        <a class="btn btn--primary" href="avisierung.html">Zum Buchungsportal</a>
+      <nav class="nav" aria-label="Hauptnavigation" data-i18n-aria-label="nav.main">
+        <a class="btn btn--primary" href="avisierung.html" data-i18n="nav.booking">Zum Buchungsportal</a>
+        <select id="sprache" class="btn btn--ghost btn--klein" aria-label="Sprache" data-i18n-aria-label="nav.language"></select>
       </nav>
     </div>
   </header>
@@ -28,64 +28,62 @@
   <main id="inhalt">
     <section class="hero">
       <div class="container">
-        <h1>Warenannahme</h1>
-        <p class="lead">
-          Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.
-        </p>
-        <a class="btn btn--dark" href="avisierung.html">Anlieferung avisieren</a>
+        <h1 data-i18n="hero.title">Warenannahme</h1>
+        <p class="lead" data-i18n="hero.lead">Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.</p>
+        <a class="btn btn--dark" href="avisierung.html" data-i18n="hero.cta">Anlieferung avisieren</a>
       </div>
     </section>
 
-    <section class="container zeiten" aria-label="Öffnungszeiten">
+    <section class="container zeiten" aria-label="Öffnungszeiten" data-i18n-aria-label="zeiten.aria">
       <article class="card">
-        <h2 class="eyebrow">Reguläre Entladung</h2>
-        <p class="tag-name">Montag bis Donnerstag</p>
-        <p class="zeit">07:00 – 14:30 Uhr</p>
+        <h2 class="eyebrow" data-i18n="zeiten.regular.label">Reguläre Entladung</h2>
+        <p class="tag-name" data-i18n="zeiten.regular.days">Montag bis Donnerstag</p>
+        <p class="zeit" data-i18n="zeiten.regular.time">07:00 – 14:30 Uhr</p>
       </article>
 
       <article class="card">
-        <h2 class="eyebrow">Verkürzte Entladung</h2>
-        <p class="tag-name">Freitag</p>
-        <p class="zeit zeit--orange">07:00 – 12:00 Uhr</p>
+        <h2 class="eyebrow" data-i18n="zeiten.short.label">Verkürzte Entladung</h2>
+        <p class="tag-name" data-i18n="zeiten.short.days">Freitag</p>
+        <p class="zeit zeit--orange" data-i18n="zeiten.short.time">07:00 – 12:00 Uhr</p>
       </article>
 
       <article class="card">
-        <h2 class="eyebrow">Wichtiger Hinweis</h2>
-        <p class="tag-name">Vorab avisieren</p>
-        <p class="muted">Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.</p>
+        <h2 class="eyebrow" data-i18n="zeiten.note.label">Wichtiger Hinweis</h2>
+        <p class="tag-name" data-i18n="zeiten.note.days">Vorab avisieren</p>
+        <p class="muted" data-i18n="zeiten.note.text">Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.</p>
       </article>
     </section>
 
     <section class="container abschnitt" aria-labelledby="ablauf-titel">
-      <h2 id="ablauf-titel">So läuft die Anlieferung ab</h2>
+      <h2 id="ablauf-titel" data-i18n="steps.title">So läuft die Anlieferung ab</h2>
       <div class="schritte">
         <article class="card">
           <span class="schritt-nr" aria-hidden="true">1</span>
-          <h3>Termin wählen</h3>
-          <p class="muted">Wählen Sie im Buchungsportal einen verfügbaren Werktag. Der Kalender zeigt, wie viele Plätze für Lieferungen ab 20 Paletten an dem Tag noch frei sind.</p>
+          <h3 data-i18n="steps.1.title">Termin wählen</h3>
+          <p class="muted" data-i18n="steps.1.text">Wählen Sie im Buchungsportal einen verfügbaren Werktag. Der Kalender zeigt, wie viele Plätze für Lieferungen ab 20 Paletten an dem Tag noch frei sind.</p>
         </article>
         <article class="card">
           <span class="schritt-nr" aria-hidden="true">2</span>
-          <h3>Lieferung erfassen</h3>
-          <p class="muted">Geben Sie Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz an. Den Lieferschein können Sie optional hochladen.</p>
+          <h3 data-i18n="steps.2.title">Lieferung erfassen</h3>
+          <p class="muted" data-i18n="steps.2.text">Geben Sie Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz an. Den Lieferschein können Sie optional hochladen.</p>
         </article>
         <article class="card">
           <span class="schritt-nr" aria-hidden="true">3</span>
-          <h3>Beleg sichern</h3>
-          <p class="muted">Nach der Buchung erhalten Sie eine Buchungsnummer. Notieren oder drucken Sie sie und halten Sie sie für die Anlieferung bereit.</p>
+          <h3 data-i18n="steps.3.title">Beleg sichern</h3>
+          <p class="muted" data-i18n="steps.3.text">Nach der Buchung erhalten Sie eine Buchungsnummer. Notieren oder drucken Sie sie und halten Sie sie für die Anlieferung bereit.</p>
         </article>
       </div>
     </section>
 
     <section class="container abschnitt" aria-labelledby="regeln-titel">
-      <h2 id="regeln-titel">Wichtige Regeln</h2>
+      <h2 id="regeln-titel" data-i18n="rules.title">Wichtige Regeln</h2>
       <div class="card">
         <ul class="regel-liste">
-          <li>Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.</li>
-          <li>Lieferungen unter 20 Paletten sind jederzeit buchbar.</li>
-          <li>Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li>Am 11.11.2026 bleibt die Warenannahme wegen der Inventur geschlossen.</li>
-          <li>Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.</li>
+          <li data-i18n="rules.1">Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.</li>
+          <li data-i18n="rules.2">Lieferungen unter 20 Paletten sind jederzeit buchbar.</li>
+          <li data-i18n="rules.3">Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
+          <li data-i18n="rules.4">Am 11.11.2026 bleibt die Warenannahme wegen der Inventur geschlossen.</li>
+          <li data-i18n="rules.5">Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.</li>
         </ul>
       </div>
     </section>
@@ -93,26 +91,26 @@
     <!-- Feedback-Block -->
     <section class="container abschnitt no-print" aria-labelledby="feedback-section-titel">
       <div class="card mitte" style="background: var(--info-bg); border-color: var(--info-line);">
-        <h2 id="feedback-section-titel" style="color: var(--info);">Helfen Sie uns, besser zu werden!</h2>
-        <p style="color: var(--info); max-width: 40rem; margin: 0 auto;">Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!</p>
+        <h2 id="feedback-section-titel" style="color: var(--info);" data-i18n="feedback.title">Helfen Sie uns, besser zu werden!</h2>
+        <p style="color: var(--info); max-width: 40rem; margin: 0 auto;" data-i18n="feedback.text">Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!</p>
         <button id="feedback-btn" class="btn btn--primary mt-lg" type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-bottom: -2px;" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
-          Verbesserungsvorschlag senden
+          <span data-i18n="feedback.open">Verbesserungsvorschlag senden</span>
         </button>
       </div>
     </section>
 
     <section class="container abschnitt" aria-labelledby="kontakt-titel">
-      <h2 id="kontakt-titel">Kontakt</h2>
+      <h2 id="kontakt-titel" data-i18n="contact.title">Kontakt</h2>
       <div class="card kontakt">
         <div>
           <p class="eyebrow">Darula Transporte &amp; Logistik</p>
           <p>Thoner Weg 23<br>90425 Nürnberg</p>
         </div>
         <div>
-          <p class="eyebrow">Rückfragen zur Warenannahme</p>
-          <p>Telefon: <a href="tel:+4991130039794">+49 911 30039794</a><br>
-          E-Mail: <a href="mailto:d.darulatransporte@gmail.com">d.darulatransporte@gmail.com</a></p>
+          <p class="eyebrow" data-i18n="contact.queries">Rückfragen zur Warenannahme</p>
+          <p><span data-i18n="contact.phone">Telefon:</span> <a href="tel:+4991130039794">+49 911 30039794</a><br>
+          <span data-i18n="contact.email">E-Mail:</span> <a href="mailto:d.darulatransporte@gmail.com">d.darulatransporte@gmail.com</a></p>
         </div>
       </div>
     </section>
@@ -121,9 +119,9 @@
   <footer class="site-footer">
     <div class="container site-footer__inner">
       <span>&copy; 2026 Darula Transporte &amp; Logistik</span>
-      <nav aria-label="Rechtliches">
+      <nav aria-label="Rechtliches" data-i18n-aria-label="footer.legal">
         <a href="impressum.html">Impressum</a>
-        <a href="admin.html">Verwaltung</a>
+        <a href="admin.html" data-i18n="footer.admin">Verwaltung</a>
       </nav>
     </div>
   </footer>
@@ -131,25 +129,25 @@
   <!-- Feedback-Pop-up -->
   <div id="feedback-modal" class="modal-overlay no-print" hidden>
     <div class="modal-box" role="dialog" aria-labelledby="feedback-titel" aria-modal="true">
-      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen">&times;</button>
-      <h2 id="feedback-titel">Ideen zur Webseite?</h2>
-      <p class="muted">Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
+      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen" data-i18n-aria-label="feedback.close">&times;</button>
+      <h2 id="feedback-titel" data-i18n="feedback.modal.title">Ideen zur Webseite?</h2>
+      <p class="muted" data-i18n="feedback.modal.text.index">Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
 
-      <div id="feedback-erfolg" class="alert alert--info" role="status" hidden>Vielen Dank für Ihre Vorschläge!</div>
-      <div id="feedback-fehler" class="alert alert--error" role="alert" hidden>Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.</div>
+      <div id="feedback-erfolg" class="alert alert--info" role="status" hidden data-i18n="feedback.success">Vielen Dank für Ihre Vorschläge!</div>
+      <div id="feedback-fehler" class="alert alert--error" role="alert" hidden data-i18n="feedback.error">Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.</div>
 
       <form id="feedback-form" autocomplete="off">
         <div class="field mt-lg">
-          <label for="fb-name">Firma / Name <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="fb-name"><span data-i18n="feedback.form.name">Firma / Name</span> <span class="pflicht" aria-hidden="true">*</span></label>
           <input id="fb-name" name="name" type="text" maxlength="200" autocomplete="name" required>
         </div>
         <div class="field mt-lg">
-          <label for="fb-email">Ihre E-Mail (für eventuelle Rückfragen) <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="fb-email"><span data-i18n="feedback.form.email">Ihre E-Mail (für eventuelle Rückfragen)</span> <span class="pflicht" aria-hidden="true">*</span></label>
           <input id="fb-email" name="email" type="email" maxlength="320" autocomplete="email" required>
         </div>
         <div class="field mt-lg">
-          <label for="fb-nachricht">Ihr Verbesserungsvorschlag <span class="pflicht" aria-hidden="true">*</span></label>
-          <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" required></textarea>
+          <label for="fb-nachricht"><span data-i18n="feedback.form.message">Ihr Verbesserungsvorschlag</span> <span class="pflicht" aria-hidden="true">*</span></label>
+          <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" data-i18n-placeholder="feedback.form.placeholder" required></textarea>
         </div>
 
         <!-- Bot-Falle: für Menschen unsichtbar, Bots füllen sie aus -->
@@ -158,13 +156,17 @@
         </div>
 
         <div class="aktionen mt-lg">
-          <button id="feedback-senden" class="btn btn--dark btn--block" type="submit">Vorschlag senden</button>
+          <button id="feedback-senden" class="btn btn--dark btn--block" type="submit" data-i18n="feedback.submit">Vorschlag senden</button>
         </div>
       </form>
     </div>
   </div>
 
 <script src="config.js"></script>
+<script>
+  // Sprach-Auswahl im Header einrichten
+  I18n.mountSwitcher(document.getElementById("sprache"));
+</script>
 <script>
 (() => {
   "use strict";
@@ -240,7 +242,7 @@
     const istBot = Boolean(formData.get("website"));
 
     fbSubmitBtn.disabled = true;
-    fbSubmitBtn.textContent = "Wird gesendet...";
+    fbSubmitBtn.textContent = I18n.t("feedback.sending");
     fbErfolg.hidden = true;
     fbFehler.hidden = true;
 
@@ -268,7 +270,7 @@
       fbFehler.hidden = false;
     } finally {
       fbSubmitBtn.disabled = false;
-      fbSubmitBtn.textContent = "Vorschlag senden";
+      fbSubmitBtn.textContent = I18n.t("feedback.submit");
     }
   });
 })();
