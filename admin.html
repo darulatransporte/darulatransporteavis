@@ -356,6 +356,17 @@
     const frage = `Buchung ${z.avis_id ?? ""} (${z.firma}, ${deutsch(z.liefer_datum)}) wirklich löschen?\nDas lässt sich nicht rückgängig machen.`;
     if (!window.confirm(frage)) return;
 
+    // Zuerst die Datei aus dem Speicher entfernen, dann die Buchungszeile löschen.
+    // Scheitert das Entfernen der Datei, bleibt die Buchung unverändert und kann erneut gelöscht werden.
+    if (z.lieferschein_url && !/^https?:\/\//i.test(z.lieferschein_url)) {
+      const { error: dateiFehler } = await sb.storage.from("lieferscheine").remove([z.lieferschein_url]);
+      if (dateiFehler) {
+        console.error("Lieferschein konnte nicht entfernt werden:", dateiFehler);
+        window.alert("Der Lieferschein konnte nicht entfernt werden. Die Buchung wurde nicht gelöscht.");
+        return;
+      }
+    }
+
     const { error, count } = await sb.from("avisierung").delete({ count: "exact" }).eq("id", z.id);
     if (error || count === 0) { window.alert("Die Buchung konnte nicht gelöscht werden."); return; }
     await ladeDaten();
