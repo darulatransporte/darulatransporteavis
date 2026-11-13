@@ -1,13 +1,12 @@
 /* =========================================================================
-   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026
+   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026 (Kompakt)
    ========================================================================= */
 
-/* --- 1. GLOBAL OVERRIDES FÜR DARK-GLASS THEME --- */
 :root {
   --ink: #ffffff;
   --ink-soft: #cbd5e1;
   --bg: #091221;
-  --surface: rgba(255, 255, 255, 0.05);
+  --surface: rgba(15, 23, 42, 0.35);
   --line: rgba(255, 255, 255, 0.15);
   --line-strong: rgba(255, 255, 255, 0.3);
   --brand-text: #38bdf8; 
@@ -16,9 +15,7 @@
 }
 
 body {
-  /* FALLBACK-HINTERGRUND (Verhindert weißen Bildschirm!) */
   background: linear-gradient(to bottom, #091221, #0f172a) !important;
-  /* Winter_1 wird drübergelegt, falls es lädt */
   background-image: url('winter_1.jpg') !important;
   background-position: center center !important;
   background-size: cover !important;
@@ -32,8 +29,8 @@ body::before {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 20% 30%, rgba(45, 212, 191, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(167, 139, 250, 0.15) 0%, transparent 50%);
+    radial-gradient(circle at 20% 30%, rgba(45, 212, 191, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(167, 139, 250, 0.12) 0%, transparent 50%);
   animation: aurora-shift 20s infinite alternate ease-in-out;
   pointer-events: none;
   z-index: -1;
@@ -44,18 +41,18 @@ body::before {
   100% { transform: scale(1.1) translate(-3%, 2%); opacity: 1; }
 }
 
-/* Typografie Glow */
+/* Typografie & Glow */
 .glow-text {
   color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 .glow-text-blue {
   color: #38bdf8;
-  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
 }
 .glow-text-orange {
   color: #fb923c;
-  text-shadow: 0 0 10px rgba(251, 146, 60, 0.6);
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.5);
 }
 .text-icy {
   color: #e2e8f0 !important;
@@ -67,21 +64,36 @@ body::before {
 }
 .glow-link:hover {
   color: #fff !important;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
 }
 .logo-glow {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
 }
 
-/* --- 2. HOLOGRAPHIC GLASSMORPHISM (LIQUID GLASS) --- */
+/* --- KLEINERER HEADER & BANNER --- */
+.hinweis-banner {
+  padding: .4rem .75rem !important;
+  font-size: 0.85rem !important;
+}
+
+.site-header__inner {
+  min-height: 3.2rem !important; /* Header kompakter gemacht */
+}
+
+/* --- HERO BEREICH KLEINER & KOMPAKTER --- */
+.hero.holo-hero {
+  padding-block: clamp(1.5rem, 4vw, 3rem) !important; /* Abstand oben/unten halbiert */
+}
+
+/* --- HOLOGRAPHIC GLASSMORPHISM (LIQUID GLASS) --- */
 .holo-glass, .holo-card, .holo-hero {
-  background: rgba(15, 23, 42, 0.25) !important;
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  background: rgba(15, 23, 42, 0.3) !important;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 6px 24px 0 rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.04) !important;
   position: relative;
   overflow: hidden;
   color: #fff !important;
@@ -92,7 +104,7 @@ body::before {
   position: absolute;
   inset: 0;
   background: url('Holo_2.jpg') center/cover;
-  opacity: 0.12;
+  opacity: 0.1;
   mix-blend-mode: overlay;
   pointer-events: none;
   border-radius: inherit;
@@ -105,20 +117,19 @@ body::before {
 
 /* Buttons */
 .holo-btn {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.6)) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.5), rgba(2, 132, 199, 0.5)) !important;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.3);
   color: #fff !important;
 }
 .holo-btn:hover {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(2, 132, 199, 0.8)) !important;
-  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.7), rgba(2, 132, 199, 0.7)) !important;
   transform: translateY(-1px);
 }
 .holo-btn-dark {
-  background: rgba(0, 0, 0, 0.4) !important;
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: #fff !important;
 }
@@ -126,7 +137,7 @@ body::before {
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Formulare */
+/* Formulare & Inputs */
 .holo-input {
   background: rgba(0, 0, 0, 0.25) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -135,7 +146,7 @@ body::before {
 }
 .holo-input:focus {
   border-color: #38bdf8 !important;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3) !important;
   background: rgba(0, 0, 0, 0.4) !important;
   outline: none;
 }
@@ -171,39 +182,39 @@ select.holo-input option {
 .holo-tag--eingeschraenkt .tag__info { color: #fb923c !important; }
 
 .holo-tag--urlaub, .holo-tag--vergangen, .holo-tag--wochenende, .holo-tag-leer {
-  background: rgba(0, 0, 0, 0.3) !important;
+  background: rgba(0, 0, 0, 0.25) !important;
   color: #64748b !important;
   border: none !important;
 }
 .holo-tag--urlaub .tag__info { color: #94a3b8 !important; }
 
 .holo-tag--gewaehlt {
-  background: rgba(56, 189, 248, 0.25) !important;
+  background: rgba(56, 189, 248, 0.2) !important;
   border: 2px solid #38bdf8 !important;
-  box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.5), 0 0 15px rgba(56, 189, 248, 0.4) !important;
+  box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.4), 0 0 10px rgba(56, 189, 248, 0.3) !important;
 }
 
 /* Alerts */
 .holo-alert {
   background: rgba(14, 165, 233, 0.15) !important;
-  border: 1px solid rgba(14, 165, 233, 0.4) !important;
+  border: 1px solid rgba(14, 165, 233, 0.35) !important;
   color: #7dd3fc !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
 }
 .holo-alert-err {
   background: rgba(239, 68, 68, 0.15) !important;
-  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
   color: #fca5a5 !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(6px);
 }
 .holo-badge {
   background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #fff !important;
   backdrop-filter: blur(4px);
 }
 
-/* --- 3. ANIMIERTER HINTERGRUND-CANVAS --- */
+/* --- ANIMIERTER HINTERGRUND-CANVAS --- */
 #winter-canvas {
   position: fixed;
   top: 0; left: 0;
@@ -236,7 +247,7 @@ select.holo-input option {
   width: 350px;
   height: 120px;
   opacity: 0.9;
-  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
   animation: fly-santa 35s linear infinite;
 }
 @keyframes fly-santa {
