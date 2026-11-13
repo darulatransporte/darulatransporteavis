@@ -1,5 +1,5 @@
 /* =========================================================================
-   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026 (Kompakt & Scharf)
+   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026 (Komplett & Optimiert)
    ========================================================================= */
 
 :root {
@@ -22,15 +22,23 @@ body {
   background-size: cover !important;
   background-repeat: no-repeat !important;
   color: var(--ink) !important;
-  /* Verhindert mobile Unschärfe-Bugs */
   background-attachment: scroll !important; 
   image-rendering: -webkit-optimize-contrast;
+  min-height: 100vh !important;
 }
 
 /* Für Desktops / Querformat feste Hintergrundfixierung erlauben */
 @media (min-width: 1024px) {
   body {
     background-attachment: fixed !important;
+  }
+}
+
+/* Optimierter Fokus für Smartphones im Hochformat gegen Verpixelung/Verzerrung */
+@media (max-width: 768px) {
+  body {
+    background-size: cover !important;
+    background-position: center top !important;
   }
 }
 
