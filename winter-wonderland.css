@@ -1,5 +1,5 @@
 /* =========================================================================
-   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026 (Kompakt)
+   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026 (Kompakt & Scharf)
    ========================================================================= */
 
 :root {
@@ -14,14 +14,24 @@
   --brand-soft: rgba(56, 189, 248, 0.15);
 }
 
+/* --- RESPONSIVER & SCHARFER HINTERGRUND (Hoch- & Querformat) --- */
 body {
-  background: linear-gradient(to bottom, #091221, #0f172a) !important;
+  background-color: #091221 !important;
   background-image: url('winter_1.jpg') !important;
   background-position: center center !important;
   background-size: cover !important;
-  background-attachment: fixed !important;
   background-repeat: no-repeat !important;
   color: var(--ink) !important;
+  /* Verhindert mobile Unschärfe-Bugs */
+  background-attachment: scroll !important; 
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Für Desktops / Querformat feste Hintergrundfixierung erlauben */
+@media (min-width: 1024px) {
+  body {
+    background-attachment: fixed !important;
+  }
 }
 
 body::before {
@@ -29,8 +39,8 @@ body::before {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 20% 30%, rgba(45, 212, 191, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 80% 40%, rgba(167, 139, 250, 0.12) 0%, transparent 50%);
+    radial-gradient(circle at 20% 30%, rgba(45, 212, 191, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(167, 139, 250, 0.08) 0%, transparent 50%);
   animation: aurora-shift 20s infinite alternate ease-in-out;
   pointer-events: none;
   z-index: -1;
@@ -77,12 +87,12 @@ body::before {
 }
 
 .site-header__inner {
-  min-height: 3.2rem !important; /* Header kompakter gemacht */
+  min-height: 3.2rem !important;
 }
 
 /* --- HERO BEREICH KLEINER & KOMPAKTER --- */
 .hero.holo-hero {
-  padding-block: clamp(1.5rem, 4vw, 3rem) !important; /* Abstand oben/unten halbiert */
+  padding-block: clamp(1.5rem, 4vw, 3rem) !important;
 }
 
 /* --- HOLOGRAPHIC GLASSMORPHISM (LIQUID GLASS) --- */
