@@ -6,8 +6,16 @@
   <title data-i18n="meta.title.avis">Buchungsportal | Darula Transporte</title>
   <meta name="description" content="Anlieferung bei Darula Transporte &amp; Logistik avisieren: Liefertermin wählen und Lieferung anmelden." data-i18n-content="meta.description.avis">
   <link rel="stylesheet" href="style.css">
+  
+  <!-- NEU: Weihnachtlicher Hintergrund & Effekte -->
+  <link rel="stylesheet" href="christmas.css">
+  
   <script src="i18n.js"></script>
   <script src="config.js"></script>
+  
+  <!-- NEU: Steuerungs-Script für Schnee, Sterne und Schlitten -->
+  <script src="christmas.js" defer></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
@@ -35,13 +43,12 @@
           <li data-i18n="avis.info.2">Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.</li>
           <li data-i18n="avis.info.3">Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.</li>
           <li data-i18n="avis.info.4">Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li data-i18n="avis.info.5">Vom 21.12.2026 bis 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 können Anlieferungen erfolgen.</li>
+          <li data-i18n="avis.info.5">Vom 21.12.2026 bis 8.01.2027 ist die Warenannahme wegen unserem Betriebsurlaub geschlossen. Ab dem 11.01.2027 können Anlieferungen erfolgen.</li>
           <li data-i18n="avis.info.6">Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.</li>
         </ul>
       </details>
 
       <section id="schritt1" aria-labelledby="ueb1">
-        <!-- NEU: Permanenter Banner oberhalb des Kalenders -->
         <div class="holiday-alert mt-lg" role="alert">
           <strong data-i18n="holiday.title">BETRIEBSURLAUB 2026/2027</strong>
           <span data-i18n-html="holiday.banner">Wir haben Betriebsurlaub vom <strong>21.12.2026 bis einschließlich 08.01.2027</strong>. Ab dem <strong class='highlight'>11.01.2027</strong> sind wir wieder für Sie da. Ab diesem Tag ist auch unsere <strong>Warenannahme</strong> wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</span>
@@ -161,7 +168,6 @@
           </div>
         </div>
       </section>
-
     </div>
   </main>
 
@@ -179,8 +185,10 @@
       <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen" data-i18n-aria-label="feedback.close">&times;</button>
       <h2 id="feedback-titel" data-i18n="feedback.modal.title">Ideen zur Webseite?</h2>
       <p class="muted" data-i18n="feedback.modal.text.booking">Fällt Ihnen beim Buchen etwas auf, das wir noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
+      
       <div id="feedback-erfolg" class="alert alert--info" role="status" hidden data-i18n="feedback.success">Vielen Dank für Ihre Vorschläge!</div>
       <div id="feedback-fehler" class="alert alert--error" role="alert" hidden data-i18n="feedback.error">Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal.</div>
+      
       <form id="feedback-form" autocomplete="off">
         <div class="field mt-lg">
           <label for="fb-name"><span data-i18n="feedback.form.name">Firma / Name</span> <span class="pflicht" aria-hidden="true">*</span></label>
@@ -205,18 +213,14 @@
 <script>
 (() => {
   "use strict";
-
   const cfg = window.DARULA_CONFIG;
   const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
 
   const $ = (id) => document.getElementById(id);
-
-  // NEU: Betriebsurlaub Logik
   const URLAUB_START = "2026-12-21";
   const URLAUB_ENDE = "2027-01-08";
-
   const GROSS_AB = 20;
   const MAX_GROSS = cfg.maxBuchungenProTag;
   const MAX_BYTES = 10 * 1024 * 1024;
@@ -284,15 +288,10 @@
   async function ladeVerfuegbarkeit() {
     const { data, error } = await sb.rpc("verfuegbarkeit_avisierung", { p_von: heute });
     state.geladen = true;
-    if (error) {
-      state.ladeFehler = true;
-      return;
-    }
+    if (error) { state.ladeFehler = true; return; }
     state.ladeFehler = false;
     state.gross = new Map();
-    for (const zeile of data || []) {
-      state.gross.set(zeile.datum, zeile.grosse_lieferungen);
-    }
+    for (const zeile of data || []) state.gross.set(zeile.datum, zeile.grosse_lieferungen);
   }
 
   function renderKalender() {
@@ -315,8 +314,8 @@
     for (let tag = 1; tag <= tage; tag++) {
       const datum = iso(jahr, monat, tag);
       const gross = state.gross.get(datum) || 0;
-
       let status;
+      
       if (datum < heute) status = "vergangen";
       else if (wochentag(datum) >= 5) status = "wochenende";
       else if (datum >= URLAUB_START && datum <= URLAUB_ENDE) status = "urlaub";
@@ -325,14 +324,9 @@
       else status = "frei";
 
       const buchbar = status === "frei" || status === "eingeschraenkt";
-
       const hinweis = {
-        vergangen: "",
-        wochenende: "",
-        urlaub: I18n.t("holiday.closed"),
-        eingeschraenkt: I18n.t("avis.hint.limited"),
-        unbekannt: "–",
-        frei: `${gross}/${MAX_GROSS}`
+        vergangen: "", wochenende: "", urlaub: I18n.t("holiday.closed"),
+        eingeschraenkt: I18n.t("avis.hint.limited"), unbekannt: "–", frei: `${gross}/${MAX_GROSS}`
       }[status];
 
       const knopf = document.createElement("button");
@@ -343,35 +337,24 @@
       
       const datumText = I18n.formatDatum(datum);
       const statusText = I18n.t(STATUS_TEXT[status]);
-      knopf.setAttribute(
-        "aria-label",
-        buchbar
-          ? I18n.t("avis.aria.day", { datum: datumText, status: statusText, gross, max: MAX_GROSS })
-          : `${datumText}: ${statusText}`
-      );
+      knopf.setAttribute("aria-label", buchbar ? I18n.t("avis.aria.day", { datum: datumText, status: statusText, gross, max: MAX_GROSS }) : `${datumText}: ${statusText}`);
       if (state.gewaehlt === datum) knopf.classList.add("tag--gewaehlt");
 
       const zahl = document.createElement("span");
       zahl.className = "tag__zahl";
       zahl.textContent = String(tag);
-
       const info = document.createElement("span");
       info.className = "tag__info";
       info.textContent = hinweis;
 
       knopf.append(zahl, info);
-
-      if (buchbar) {
-        knopf.addEventListener("click", () => waehleDatum(datum, status));
-      }
+      if (buchbar) knopf.addEventListener("click", () => waehleDatum(datum, status));
       grid.append(knopf);
     }
   }
 
   function aktualisiereAuswahl() {
-    $("auswahl").textContent = state.gewaehlt
-      ? I18n.t("avis.selected", { datum: I18n.formatDatum(state.gewaehlt) })
-      : I18n.t("avis.none");
+    $("auswahl").textContent = state.gewaehlt ? I18n.t("avis.selected", { datum: I18n.formatDatum(state.gewaehlt) }) : I18n.t("avis.none");
   }
 
   function aktualisiereDatum() {
@@ -398,10 +381,7 @@
     $("schritt2").hidden = nr !== 2;
     $("schritt3").hidden = nr !== 3;
     window.scrollTo(0, 0);
-    if (nr === 2) {
-      aktualisiereDatum();
-      aktualisiereHinweis();
-    }
+    if (nr === 2) { aktualisiereDatum(); aktualisiereHinweis(); }
     const ziel = { 1: "ueb1", 2: "ueb2", 3: "beleg-titel" }[nr];
     $(ziel).focus();
   }
@@ -433,11 +413,8 @@
     const p = Number($("palettes").value);
     const hinweis = $("palett-hinweis");
     let schluessel = null;
-    if (p >= GROSS_AB && state.gewaehltStatus === "eingeschraenkt") {
-      schluessel = "avis.palett.hint.full";
-    } else if (p >= GROSS_AB) {
-      schluessel = "avis.palett.hint.max3";
-    }
+    if (p >= GROSS_AB && state.gewaehltStatus === "eingeschraenkt") schluessel = "avis.palett.hint.full";
+    else if (p >= GROSS_AB) schluessel = "avis.palett.hint.max3";
     hinweis.textContent = schluessel ? I18n.t(schluessel) : "";
   }
 
@@ -456,9 +433,7 @@
 
   async function buche(w) {
     const pfad = w.datei ? `${zufallsId()}.${ENDUNGEN[w.datei.type]}` : null;
-    const { data, error } = await sb.rpc("buche_avisierung", {
-      p_liefer_datum: state.gewaehlt, p_firma: w.firma, p_email: w.email, p_palettes: w.palettes, p_be_nummer: w.be, p_lieferschein_pfad: pfad
-    });
+    const { data, error } = await sb.rpc("buche_avisierung", { p_liefer_datum: state.gewaehlt, p_firma: w.firma, p_email: w.email, p_palettes: w.palettes, p_be_nummer: w.be, p_lieferschein_pfad: pfad });
     if (error) throw error;
     const ergebnis = Array.isArray(data) ? data[0] : data;
 
@@ -514,27 +489,17 @@
       const ergebnis = await buche(w);
       zeigeBeleg(ergebnis, w);
     } catch (err) {
-      // Abfangen des spezifischen Backend-Triggers und Umwandlung zur kundenfreundlichen Anzeige
       if (err && (err.code === "P0001" || (err.message && err.message.includes("BETRIEBSURLAUB")))) {
-         if (err.message && err.message.includes("BETRIEBSURLAUB")) {
-             zeigeFehler("holiday.error");
-         } else {
-             zeigeFehlerText(err.message);
-         }
-      } else {
-         zeigeFehler("avis.err.generic");
-      }
+         if (err.message && err.message.includes("BETRIEBSURLAUB")) zeigeFehler("holiday.error");
+         else zeigeFehlerText(err.message);
+      } else { zeigeFehler("avis.err.generic"); }
       knopf.disabled = false;
       knopf.textContent = I18n.t("avis.submit");
     }
   });
 
   document.addEventListener("i18n:change", () => {
-    zeigeWochentage();
-    renderKalender();
-    aktualisiereAuswahl();
-    aktualisiereDatum();
-    aktualisiereHinweis();
+    zeigeWochentage(); renderKalender(); aktualisiereAuswahl(); aktualisiereDatum(); aktualisiereHinweis();
     if (state.fehler && !$("fehler").hidden) $("fehler").textContent = state.fehler();
     if (state.beleg) aktualisiereBeleg();
     const knopf = $("absenden");
@@ -542,7 +507,6 @@
   });
 
   I18n.mountSwitcher($("sprache"));
-
   $("palettes").addEventListener("input", aktualisiereHinweis);
   $("weiter").addEventListener("click", () => { aktualisiereDatum(); zeigeSchritt(2); });
   $("zurueck-schritt1").addEventListener("click", () => zeigeSchritt(1));
@@ -551,13 +515,9 @@
   $("drucken").addEventListener("click", () => window.print());
   $("neu").addEventListener("click", () => window.location.reload());
 
-  zeigeWochentage();
-  renderKalender();
-  aktualisiereAuswahl();
+  zeigeWochentage(); renderKalender(); aktualisiereAuswahl();
   ladeVerfuegbarkeit().then(() => {
-    $("lade").hidden = true;
-    $("lade-fehler").hidden = !state.ladeFehler;
-    renderKalender();
+    $("lade").hidden = true; $("lade-fehler").hidden = !state.ladeFehler; renderKalender();
   });
 })();
 </script>
@@ -576,71 +536,35 @@
   let fbZuletzt = null, fbTimer = null;
 
   function fbOeffnen() {
-    clearTimeout(fbTimer);
-    fbZuletzt = document.activeElement;
-    fbErfolg.hidden = true;
-    fbFehler.hidden = true;
-    fbModal.hidden = false;
-    fbErsterFeld.focus();
+    clearTimeout(fbTimer); fbZuletzt = document.activeElement;
+    fbErfolg.hidden = true; fbFehler.hidden = true; fbModal.hidden = false; fbErsterFeld.focus();
   }
   function fbSchliessen() {
-    clearTimeout(fbTimer);
-    fbModal.hidden = true;
-    if (fbZuletzt) fbZuletzt.focus();
+    clearTimeout(fbTimer); fbModal.hidden = true; if (fbZuletzt) fbZuletzt.focus();
   }
-
   async function fbSpeichern(daten) {
     const response = await fetch(`${cfg.supabaseUrl}/rest/v1/feedback`, {
-      method: "POST",
-      headers: {
-        "apikey": cfg.supabaseAnonKey,
-        "Authorization": `Bearer ${cfg.supabaseAnonKey}`,
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
-      },
+      method: "POST", headers: { "apikey": cfg.supabaseAnonKey, "Authorization": `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
       body: JSON.stringify(daten)
     });
     if (!response.ok) throw new Error(`Supabase error ${response.status}`);
   }
-
-  fbBtn.addEventListener("click", fbOeffnen);
-  fbClose.addEventListener("click", fbSchliessen);
+  fbBtn.addEventListener("click", fbOeffnen); fbClose.addEventListener("click", fbSchliessen);
   fbModal.addEventListener("click", (e) => { if (e.target === fbModal) fbSchliessen(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !fbModal.hidden) fbSchliessen(); });
 
   fbForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    fbForm.classList.add("touched");
+    e.preventDefault(); fbForm.classList.add("touched");
     if (!fbForm.reportValidity()) return;
-
-    const formData = new FormData(fbForm);
-    const istBot = Boolean(formData.get("website"));
-    fbSubmitBtn.disabled = true;
-    fbSubmitBtn.textContent = I18n.t("feedback.sending");
-    fbErfolg.hidden = true;
-    fbFehler.hidden = true;
-
+    const formData = new FormData(fbForm); const istBot = Boolean(formData.get("website"));
+    fbSubmitBtn.disabled = true; fbSubmitBtn.textContent = I18n.t("feedback.sending");
+    fbErfolg.hidden = true; fbFehler.hidden = true;
     try {
-      if (!istBot) {
-        await fbSpeichern({
-          name: formData.get("name").trim(),
-          email: formData.get("email").trim(),
-          nachricht: formData.get("message").trim()
-        });
-      }
-      fbErfolg.hidden = false;
-      fbForm.reset();
-      fbForm.classList.remove("touched");
-      fbTimer = setTimeout(() => {
-        fbModal.hidden = true;
-        fbErfolg.hidden = true;
-      }, 3000);
-    } catch (error) {
-      fbFehler.hidden = false;
-    } finally {
-      fbSubmitBtn.disabled = false;
-      fbSubmitBtn.textContent = I18n.t("feedback.submit");
-    }
+      if (!istBot) { await fbSpeichern({ name: formData.get("name").trim(), email: formData.get("email").trim(), nachricht: formData.get("message").trim() }); }
+      fbErfolg.hidden = false; fbForm.reset(); fbForm.classList.remove("touched");
+      fbTimer = setTimeout(() => { fbModal.hidden = true; fbErfolg.hidden = true; }, 3000);
+    } catch (error) { fbFehler.hidden = false; }
+    finally { fbSubmitBtn.disabled = false; fbSubmitBtn.textContent = I18n.t("feedback.submit"); }
   });
 })();
 </script>
