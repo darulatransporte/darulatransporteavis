@@ -1,0 +1,250 @@
+/* =========================================================================
+   HOLOGRAPHIC WINTER WONDERLAND - DARULA TRANSPORTE 2026
+   ========================================================================= */
+
+/* --- 1. GLOBAL OVERRIDES FÜR DARK-GLASS THEME --- */
+:root {
+  --ink: #ffffff;
+  --ink-soft: #cbd5e1;
+  --bg: transparent;
+  --surface: rgba(255, 255, 255, 0.05); /* Kaum sichtbar, Blur macht die Arbeit */
+  --line: rgba(255, 255, 255, 0.15);
+  --line-strong: rgba(255, 255, 255, 0.3);
+  --brand-text: #38bdf8; /* Eisiges Blau für Links */
+  --brand-dark: #0284c7;
+  --brand-soft: rgba(56, 189, 248, 0.15);
+}
+
+body {
+  /* Basis ist die winter_1.jpg Winterlandschaft */
+  background: #091221 url('winter_1.jpg') center center / cover fixed no-repeat !important;
+  color: var(--ink) !important;
+}
+
+/* Polarlichter & Nebel Layer per CSS (ergänzt das Bild um flüssige Bewegung) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(45, 212, 191, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 40%, rgba(167, 139, 250, 0.15) 0%, transparent 50%);
+  animation: aurora-shift 20s infinite alternate ease-in-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes aurora-shift {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.8; }
+  100% { transform: scale(1.1) translate(-3%, 2%); opacity: 1; }
+}
+
+/* Typografie Glow */
+.glow-text {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+}
+.glow-text-blue {
+  color: #38bdf8;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+.glow-text-orange {
+  color: #fb923c;
+  text-shadow: 0 0 10px rgba(251, 146, 60, 0.6);
+}
+.text-icy {
+  color: #e2e8f0 !important;
+}
+.glow-link {
+  color: #38bdf8 !important;
+  text-decoration-color: rgba(56, 189, 248, 0.5) !important;
+  transition: all 0.3s ease;
+}
+.glow-link:hover {
+  color: #fff !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+.logo-glow {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+/* --- 2. HOLOGRAPHIC GLASSMORPHISM (LIQUID GLASS) --- */
+
+.holo-glass, .holo-card, .holo-hero {
+  background: rgba(15, 23, 42, 0.25) !important; /* Sehr dunkles, durchsichtiges Basisglas */
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.4) !important; /* Lichtkante oben */
+  border-left: 1px solid rgba(255, 255, 255, 0.3) !important; /* Lichtkante links */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05) !important;
+  position: relative;
+  overflow: hidden;
+  color: #fff !important;
+}
+
+/* Holografische Reflexion innerhalb der Glas-Karten (Nutzung von Holo_2.jpg) */
+.holo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('Holo_2.jpg') center/cover;
+  opacity: 0.12; /* Sehr subtil */
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.holo-card--highlight {
+  background: rgba(30, 58, 138, 0.2) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Buttons */
+.holo-btn {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.6), rgba(2, 132, 199, 0.6)) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+  color: #fff !important;
+}
+.holo-btn:hover {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.8), rgba(2, 132, 199, 0.8)) !important;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+  transform: translateY(-1px);
+}
+.holo-btn-dark {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+.holo-btn-dark:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Formulare & Inputs */
+.holo-input {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+  backdrop-filter: blur(4px);
+}
+.holo-input:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3) !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  outline: none;
+}
+.holo-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+select.holo-input option {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* Kalender-Tage (Liquid Glass) */
+.holo-tag {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important;
+  transition: all 0.2s ease;
+}
+.holo-tag:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+.holo-tag--frei {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+.holo-tag--frei .tag__info { color: #4ade80 !important; }
+.holo-tag--eingeschraenkt {
+  background: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
+}
+.holo-tag--eingeschraenkt .tag__info { color: #fb923c !important; }
+.holo-tag--urlaub, .holo-tag--vergangen, .holo-tag--wochenende, .holo-tag-leer {
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: #64748b !important;
+  border: none !important;
+}
+.holo-tag--gewaehlt {
+  background: rgba(56, 189, 248, 0.25) !important;
+  border: 2px solid #38bdf8 !important;
+  box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.5), 0 0 15px rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Alerts */
+.holo-alert {
+  background: rgba(14, 165, 233, 0.15) !important;
+  border: 1px solid rgba(14, 165, 233, 0.4) !important;
+  color: #7dd3fc !important;
+  backdrop-filter: blur(8px);
+}
+.holo-alert-err {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: #fca5a5 !important;
+  backdrop-filter: blur(8px);
+}
+.holo-badge {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff !important;
+  backdrop-filter: blur(4px);
+}
+
+/* --- 3. ANIMIERTER HINTERGRUND-CANVAS --- */
+#winter-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: -10;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Schnee */
+.snow-flake {
+  position: absolute;
+  top: -10px;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: snowfall linear infinite;
+}
+.snow-layer-1 { opacity: 0.8; filter: blur(1px); } /* Vordergrund */
+.snow-layer-2 { opacity: 0.5; filter: blur(2px); } /* Mitte */
+.snow-layer-3 { opacity: 0.2; filter: blur(3px); } /* Hintergrund */
+
+@keyframes snowfall {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(110vh) translateX(20px); } /* Fällt leicht schräg */
+}
+
+/* Fliegender Weihnachtsmann (Rehntiere_3.jpg Inspiration als Vektor) */
+.santa-sleigh {
+  position: absolute;
+  top: 15vh;
+  left: -400px;
+  width: 350px;
+  height: 120px;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+  animation: fly-santa 35s linear infinite;
+}
+@keyframes fly-santa {
+  0%   { transform: translate(0, 0) rotate(5deg) scale(0.8); opacity: 0; }
+  2%   { opacity: 1; }
+  35%  { transform: translate(120vw, -15vh) rotate(-2deg) scale(1); opacity: 1; }
+  37%  { opacity: 0; }
+  100% { opacity: 0; transform: translate(120vw, -15vh); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, .snow-flake, .santa-sleigh {
+    animation: none !important;
+    display: none !important;
+  }
+}
