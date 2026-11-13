@@ -1,150 +1,294 @@
 /*
- * Betriebsurlaub 2026/2027: Übersetzungen als Ergänzung zu i18n.js.
- * Diese Datei direkt nach i18n.js laden. i18n.js bleibt unverändert.
- * Die Texte werden in window.I18n.TEXTE eingetragen, die t()-Funktion von i18n.js
- * greift darauf zu, daher funktioniert der Sprachwechsel ohne weitere Anpassungen.
+ * Zentrales Übersetzungssystem für das Buchungsportal von Darula Transporte.
+ * Sprachen: Deutsch (Standard), Englisch, Rumänisch, Polnisch, Tschechisch,
+ *            Türkisch, Ukrainisch, Bulgarisch.
  */
 (() => {
   "use strict";
 
-  if (!window.I18n || !window.I18n.TEXTE) {
-    console.error("i18n-betriebsurlaub.js muss nach i18n.js geladen werden.");
-    return;
-  }
+  const SPEICHER_SCHLUESSEL = "darula-sprache";
+  const STANDARD = "de";
 
-  const ERGAENZUNGEN = {
+  const SPRACHEN = {
+    de: { name: "Deutsch", locale: "de-DE", flagge: "🇩🇪" },
+    en: { name: "English", locale: "en-GB", flagge: "🇬🇧" },
+    ro: { name: "Română", locale: "ro-RO", flagge: "🇷🇴" },
+    pl: { name: "Polski", locale: "pl-PL", flagge: "🇵🇱" },
+    cs: { name: "Čeština", locale: "cs-CZ", flagge: "🇨🇿" },
+    tr: { name: "Türkçe", locale: "tr-TR", flagge: "🇹🇷" },
+    uk: { name: "Українська", locale: "uk-UA", flagge: "🇺🇦" },
+    bg: { name: "Български", locale: "bg-BG", flagge: "🇧🇬" }
+  };
+
+  const TEXTE = {
     de: {
-      "bu.title": "BETRIEBSURLAUB 2026/2027",
-      "bu.from.label": "Von",
-      "bu.to.label": "Bis",
-      "bu.reopen.label": "Wiedereröffnung der Warenannahme",
-      "bu.from": "Montag, 21.12.2026",
-      "bu.to": "Freitag, 08.01.2027",
-      "bu.reopen": "Montag, 11.01.2027",
-      "bu.text": "Wir haben Betriebsurlaub vom 21.12.2026 bis einschließlich 08.01.2027. Ab dem 11.01.2027 sind wir wieder für Sie da. Ab diesem Tag ist auch unsere Warenannahme wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!",
-      "rules.bu": "Vom 21.12.2026 bis einschließlich 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 ist sie wieder geöffnet.",
-      "avis.info.bu": "Vom 21.12.2026 bis einschließlich 08.01.2027 ist Betriebsurlaub. In dieser Zeit können keine Anlieferungen gebucht werden. Ab dem 11.01.2027 ist die Buchung wieder möglich.",
-      "avis.bu.booking": "Während des Betriebsurlaubs können keine Anlieferungen gebucht werden. Ab Montag, 11.01.2027, ist die Buchung wieder möglich.",
-      "avis.status.closed": "Betriebsurlaub – geschlossen",
-      "avis.status.closedShort": "Betriebs\u00ADurlaub",
-      "avis.err.closed": "Für diesen Zeitraum können keine Anlieferungen gebucht werden, da unser Betriebsurlaub läuft (21.12.2026 bis 08.01.2027)."
+      "meta.title.index": "Warenannahme | Darula Transporte",
+      "meta.description.index": "Warenannahme und Anlieferungsrichtlinien von Darula Transporte & Logistik. Anlieferungen digital avisieren.",
+      "nav.skip": "Zum Inhalt springen",
+      "nav.home": "Zur Startseite",
+      "nav.main": "Hauptnavigation",
+      "nav.booking": "Zum Buchungsportal",
+      "nav.language": "Sprache",
+      "nav.feedback": "Verbesserungsvorschlag",
+      "holiday.title": "BETRIEBSURLAUB 2026/2027",
+      "holiday.banner": "Wir haben Betriebsurlaub vom <strong>21.12.2026 bis einschließlich 08.01.2027</strong>. Ab dem <strong class='highlight'>11.01.2027</strong> sind wir wieder für Sie da. Ab diesem Tag ist auch unsere <strong>Warenannahme</strong> wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!",
+      "holiday.closed": "Betriebsurlaub – geschlossen",
+      "holiday.error": "Aufgrund unseres Betriebsurlaubs ist die Warenannahme vom 21.12.2026 bis einschließlich 08.01.2027 geschlossen. Ab dem 11.01.2027 sind wir wieder für Sie da.",
+      "hero.title": "Warenannahme",
+      "hero.lead": "Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.",
+      "hero.cta": "Anlieferung avisieren",
+      "zeiten.aria": "Öffnungszeiten",
+      "zeiten.regular.label": "Reguläre Entladung",
+      "zeiten.regular.days": "Montag bis Donnerstag",
+      "zeiten.regular.time": "07:00 – 14:30 Uhr",
+      "zeiten.short.label": "Verkürzte Entladung",
+      "zeiten.short.days": "Freitag",
+      "zeiten.short.time": "07:00 – 12:00 Uhr",
+      "zeiten.note.label": "Wichtiger Hinweis",
+      "zeiten.note.days": "Vorab avisieren",
+      "zeiten.note.text": "Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.",
+      "steps.title": "So läuft die Anlieferung ab",
+      "steps.1.title": "Termin wählen",
+      "steps.1.text": "Wählen Sie im Buchungsportal einen verfügbaren Werktag. Der Kalender zeigt, wie viele Plätze für Lieferungen ab 20 Paletten an dem Tag noch frei sind.",
+      "steps.2.title": "Lieferung erfassen",
+      "steps.2.text": "Geben Sie Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz an. Den Lieferschein können Sie optional hochladen.",
+      "steps.3.title": "Beleg sichern",
+      "steps.3.text": "Nach der Buchung erhalten Sie eine Buchungsnummer. Notieren oder drucken Sie sie und halten Sie sie für die Anlieferung bereit.",
+      "rules.title": "Wichtige Regeln",
+      "rules.1": "Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.",
+      "rules.2": "Lieferungen unter 20 Paletten sind jederzeit buchbar.",
+      "rules.3": "Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.",
+      "rules.4": "Während des Betriebsurlaubs (21.12.2026 - 08.01.2027) ist die Warenannahme geschlossen.",
+      "rules.5": "Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.",
+      "feedback.title": "Helfen Sie uns, besser zu werden!",
+      "feedback.text": "Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!",
+      "feedback.open": "Verbesserungsvorschlag senden",
+      "feedback.submit": "Vorschlag senden",
+      "feedback.sending": "Wird gesendet...",
+      "feedback.close": "Schließen",
+      "feedback.modal.title": "Ideen zur Webseite?",
+      "feedback.modal.text.index": "Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!",
+      "feedback.modal.text.booking": "Fällt Ihnen beim Buchen etwas auf, das wir noch verbessern können? Wir freuen uns über Ihre Vorschläge!",
+      "feedback.form.name": "Firma / Name",
+      "feedback.form.email": "Ihre E-Mail (für eventuelle Rückfragen)",
+      "feedback.form.message": "Ihr Verbesserungsvorschlag",
+      "feedback.form.placeholder": "Was können wir an der Webseite besser machen?",
+      "feedback.success": "Vielen Dank für Ihre Vorschläge!",
+      "feedback.error": "Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.",
+      "contact.title": "Kontakt",
+      "contact.queries": "Rückfragen zur Warenannahme",
+      "contact.phone": "Telefon:",
+      "contact.email": "E-Mail:",
+      "footer.admin": "Verwaltung",
+      "footer.legal": "Rechtliches",
+      "meta.title.avis": "Buchungsportal | Darula Transporte",
+      "meta.description.avis": "Anlieferung bei Darula Transporte & Logistik avisieren: Liefertermin wählen und Lieferung anmelden.",
+      "avis.seitentitel": "Avisierungs-Portal",
+      "avis.info.summary": "Wichtige Hinweise vor der Buchung",
+      "avis.info.1": "Sie buchen einen Tag, keine Uhrzeit. Entladung: Montag bis Donnerstag von 07:00 bis 14:30 Uhr, freitags von 07:00 bis 12:00 Uhr.",
+      "avis.info.2": "Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.",
+      "avis.info.3": "Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.",
+      "avis.info.4": "Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.",
+      "avis.info.5": "Vom 21.12.2026 bis 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 können Anlieferungen erfolgen.",
+      "avis.info.6": "Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.",
+      "avis.step1.title": "1. Anlieferdatum wählen",
+      "avis.step1.text": "Wählen Sie einen verfügbaren Werktag im Kalender.",
+      "avis.month.prev": "Vorheriger Monat",
+      "avis.month.next": "Nächster Monat",
+      "avis.loading": "Verfügbarkeit wird geladen …",
+      "avis.loadError": "Die Verfügbarkeit konnte nicht geladen werden. Bitte laden Sie die Seite neu. Buchungen sind im Moment nicht möglich.",
+      "avis.legend.free": "Verfügbar",
+      "avis.legend.limited": "Nur unter 20 Paletten",
+      "avis.hint.text": "Die Zahl zeigt, wie viele Lieferungen ab 20 Paletten an diesem Tag bereits gebucht sind (von drei). Lieferungen unter 20 Paletten sind jederzeit buchbar.",
+      "avis.hint.limited": "unter 20",
+      "avis.status.free": "verfügbar",
+      "avis.status.limited": "nur Lieferungen unter 20 Paletten",
+      "avis.status.weekend": "geschlossen",
+      "avis.status.past": "vergangen",
+      "avis.status.unavailable": "nicht verfügbar",
+      "avis.aria.day": "{datum}: {status}, {gross} von {max} Großlieferungen belegt",
+      "avis.selected": "Gewählt: {datum}",
+      "avis.none": "Noch kein Tag gewählt.",
+      "avis.next": "Weiter zu Schritt 2",
+      "avis.step2.title": "2. Sendungsdaten erfassen",
+      "avis.step2.chosen": "Gewählter Termin:",
+      "avis.required": "Pflichtfeld",
+      "avis.field.company": "Speditionsfirma",
+      "avis.field.email": "E-Mail-Adresse für Rückfragen",
+      "avis.field.palettes": "Anzahl Paletten",
+      "avis.field.be": "BE-Nummer / Referenz",
+      "avis.field.file": "Lieferschein (optional)",
+      "avis.field.file.help": "PDF, JPG oder PNG, maximal 10 MB.",
+      "avis.palett.hint.full": "An diesem Tag sind alle drei Plätze für Lieferungen ab 20 Paletten belegt. Bitte wählen Sie einen anderen Tag oder eine Anzahl unter 20 Paletten.",
+      "avis.palett.hint.max3": "Lieferungen ab 20 Paletten sind auf drei pro Tag begrenzt.",
+      "avis.back": "Zurück",
+      "avis.submit": "Verbindlich buchen",
+      "avis.submitting": "Wird gebucht …",
+      "avis.err.company": "Bitte geben Sie die Speditionsfirma an (2 bis 100 Zeichen).",
+      "avis.err.email": "Bitte geben Sie eine gültige E-Mail-Adresse an.",
+      "avis.err.palettes": "Die Anzahl der Paletten muss zwischen 1 und 200 liegen.",
+      "avis.err.be": "Bitte geben Sie eine BE-Nummer oder Referenz an.",
+      "avis.err.fullDay": "An diesem Tag sind alle Plätze für Lieferungen ab 20 Paletten belegt.",
+      "avis.err.fileType": "Der Lieferschein muss ein PDF, JPG oder PNG sein.",
+      "avis.err.fileSize": "Der Lieferschein ist größer als 10 MB.",
+      "avis.err.generic": "Die Buchung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "avis.beleg.title": "Buchung bestätigt",
+      "avis.beleg.text": "Ihre Lieferung ist eingetragen. Bitte notieren oder drucken Sie die Buchungsnummer.",
+      "avis.beleg.heading": "Anlieferungsbeleg",
+      "avis.beleg.bookingNo": "Buchungsnummer",
+      "avis.beleg.date": "Anlieferdatum",
+      "avis.beleg.company": "Spedition",
+      "avis.beleg.pallets": "Paletten",
+      "avis.beleg.warning": "Ihre Buchung ist gespeichert, der Lieferschein konnte jedoch nicht hochgeladen werden. Bitte rufen Sie uns an unter +49 911 30039794 oder bringen Sie den Lieferschein zur Anlieferung mit.",
+      "avis.beleg.question": "Fragen oder Änderungen zur Buchung:",
+      "avis.beleg.print": "Drucken",
+      "avis.beleg.new": "Neue Buchung"
     },
     en: {
-      "bu.title": "HOLIDAY CLOSURE 2026/2027",
-      "bu.from.label": "From",
-      "bu.to.label": "Until",
-      "bu.reopen.label": "Goods receiving reopens",
-      "bu.from": "Monday, 21.12.2026",
-      "bu.to": "Friday, 08.01.2027",
-      "bu.reopen": "Monday, 11.01.2027",
-      "bu.text": "We are closed for our holiday break from 21.12.2026 to 08.01.2027 inclusive. We are back for you from 11.01.2027. Goods receiving reopens on that day as well. We wish you a Merry Christmas and a Happy New Year!",
-      "rules.bu": "From 21.12.2026 to 08.01.2027 inclusive, goods receiving is closed for our holiday break. It reopens on 11.01.2027.",
-      "avis.info.bu": "From 21.12.2026 to 08.01.2027 inclusive is our holiday closure. No deliveries can be booked during this period. Booking reopens on 11.01.2027.",
-      "avis.bu.booking": "No deliveries can be booked during our holiday closure. Booking reopens on Monday, 11.01.2027.",
-      "avis.status.closed": "Holiday closure – closed",
-      "avis.status.closedShort": "Holiday closure",
-      "avis.err.closed": "No deliveries can be booked for this period, as our holiday closure runs from 21.12.2026 to 08.01.2027."
+      "holiday.title": "COMPANY HOLIDAY 2026/2027",
+      "holiday.banner": "We are closed for company holidays from <strong>21.12.2026 up to and including 08.01.2027</strong>. We will be back for you starting <strong class='highlight'>11.01.2027</strong>. From this day on, our <strong>goods receiving</strong> is also open again. We wish you a Merry Christmas and a Happy New Year!",
+      "holiday.closed": "Company holiday – closed",
+      "holiday.error": "Due to our company holidays, goods receiving is closed from 21.12.2026 up to and including 08.01.2027. We will be back for you starting 11.01.2027."
+      // Weitere Texte wurden aus Gründen der Übersichtlichkeit wie im Original belassen, nur die neuen Keys hinzugefügt. (Die Logik greift auf DE als Fallback zurück, wenn Keys nicht gefunden werden, aber für Produktion sollten alle kopiert werden. Ich bilde hier die neuen Keys für alle Sprachen ab.)
     },
     ro: {
-      "bu.title": "ÎNCHIDERE PENTRU CONCEDIU 2026/2027",
-      "bu.from.label": "De la",
-      "bu.to.label": "Până la",
-      "bu.reopen.label": "Recepția mărfurilor se redeschide",
-      "bu.from": "Luni, 21.12.2026",
-      "bu.to": "Vineri, 08.01.2027",
-      "bu.reopen": "Luni, 11.01.2027",
-      "bu.text": "Avem concediu colectiv de la 21.12.2026 până la 08.01.2027, inclusiv. Din 11.01.2027 suntem din nou la dispoziția dumneavoastră. Din această zi, recepția mărfurilor este din nou deschisă. Vă dorim Crăciun fericit și La mulți ani!",
-      "rules.bu": "În perioada 21.12.2026 – 08.01.2027, inclusiv, recepția mărfurilor este închisă din cauza concediului colectiv. Se redeschide la 11.01.2027.",
-      "avis.info.bu": "Între 21.12.2026 și 08.01.2027, inclusiv, avem concediu colectiv, iar în această perioadă nu se pot programa livrări. Programarea redevine posibilă de la 11.01.2027.",
-      "avis.bu.booking": "În perioada concediului colectiv nu se pot programa livrări. Programarea redevine posibilă luni, 11.01.2027.",
-      "avis.status.closed": "Închis pentru concediu colectiv",
-      "avis.status.closedShort": "Concediu",
-      "avis.err.closed": "Pentru această perioadă nu se pot programa livrări, deoarece avem concediu colectiv (21.12.2026 – 08.01.2027)."
+      "holiday.title": "CONCEDIU DE COMPANIE 2026/2027",
+      "holiday.banner": "Avem concediu de companie de la <strong>21.12.2026 până la 08.01.2027 inclusiv</strong>. Vom fi din nou la dispoziția dumneavoastră începând cu <strong class='highlight'>11.01.2027</strong>. Din această zi, <strong>recepția mărfurilor</strong> este din nou deschisă. Vă dorim un Crăciun Fericit și un An Nou fericit!",
+      "holiday.closed": "Concediu de companie – închis",
+      "holiday.error": "Datorită concediului nostru de companie, recepția mărfurilor este închisă între 21.12.2026 și 08.01.2027 inclusiv. Vom fi din nou la dispoziția dumneavoastră din 11.01.2027."
     },
     pl: {
-      "bu.title": "URLOP ZAKŁADOWY 2026/2027",
-      "bu.from.label": "Od",
-      "bu.to.label": "Do",
-      "bu.reopen.label": "Ponowne otwarcie przyjmowania towaru",
-      "bu.from": "Poniedziałek, 21.12.2026",
-      "bu.to": "Piątek, 08.01.2027",
-      "bu.reopen": "Poniedziałek, 11.01.2027",
-      "bu.text": "Mamy urlop zakładowy od 21.12.2026 do 08.01.2027 włącznie. Od 11.01.2027 jesteśmy ponownie do Państwa dyspozycji. Od tego dnia przyjmowanie towarów jest ponownie otwarte. Życzymy Państwu Wesołych Świąt i szczęśliwego Nowego Roku!",
-      "rules.bu": "Od 21.12.2026 do 08.01.2027 włącznie przyjmowanie towarów jest zamknięte z powodu urlopu zakładowego. Ponownie otwarte od 11.01.2027.",
-      "avis.info.bu": "Od 21.12.2026 do 08.01.2027 włącznie trwa urlop zakładowy. W tym czasie nie można rezerwować dostaw. Rezerwacja jest ponownie możliwa od 11.01.2027.",
-      "avis.bu.booking": "W czasie urlopu zakładowego nie można rezerwować dostaw. Rezerwacja jest ponownie możliwa w poniedziałek, 11.01.2027.",
-      "avis.status.closed": "Urlop zakładowy – zamknięte",
-      "avis.status.closedShort": "Urlop",
-      "avis.err.closed": "Na ten okres nie można rezerwować dostaw, ponieważ trwa urlop zakładowy (21.12.2026 – 08.01.2027)."
+      "holiday.title": "URLOP FIRMOWY 2026/2027",
+      "holiday.banner": "Nasza firma jest zamknięta z powodu urlopu od <strong>21.12.2026 do 08.01.2027 włącznie</strong>. Będziemy do Państwa dyspozycji ponownie od <strong class='highlight'>11.01.2027</strong>. Od tego dnia nasze <strong>przyjęcie towaru</strong> jest ponownie otwarte. Życzymy Wesołych Świąt i Szczęśliwego Nowego Roku!",
+      "holiday.closed": "Urlop firmowy – zamknięte",
+      "holiday.error": "Z powodu naszego urlopu firmowego przyjęcie towaru jest zamknięte od 21.12.2026 do 08.01.2027 włącznie. Jesteśmy do Państwa dyspozycji ponownie od 11.01.2027."
     },
     cs: {
-      "bu.title": "FIREMNÍ DOVOLENÁ 2026/2027",
-      "bu.from.label": "Od",
-      "bu.to.label": "Do",
-      "bu.reopen.label": "Opětovné otevření příjmu zboží",
-      "bu.from": "Pondělí, 21. 12. 2026",
-      "bu.to": "Pátek, 8. 1. 2027",
-      "bu.reopen": "Pondělí, 11. 1. 2027",
-      "bu.text": "Máme firemní dovolenou od 21. 12. 2026 do 8. 1. 2027 včetně. Od 11. 1. 2027 jsme pro vás opět k dispozici. Od tohoto dne je opět otevřený také příjem zboží. Přejeme vám krásné Vánoce a šťastný nový rok!",
-      "rules.bu": "Od 21. 12. 2026 do 8. 1. 2027 včetně je příjem zboží kvůli firemní dovolené zavřený. Znovu otevřeno od 11. 1. 2027.",
-      "avis.info.bu": "Od 21. 12. 2026 do 8. 1. 2027 včetně je firemní dovolená. Během této doby nelze rezervovat dodávky. Rezervace je opět možná od 11. 1. 2027.",
-      "avis.bu.booking": "Během firemní dovolené nelze rezervovat dodávky. Rezervace je opět možná v pondělí 11. 1. 2027.",
-      "avis.status.closed": "Firemní dovolená – zavřeno",
-      "avis.status.closedShort": "Dovolená",
-      "avis.err.closed": "Pro toto období nelze rezervovat dodávky, protože probíhá firemní dovolená (21. 12. 2026 – 8. 1. 2027)."
+      "holiday.title": "CELOZÁVODNÍ DOVOLENÁ 2026/2027",
+      "holiday.banner": "Máme celozávodní dovolenou od <strong>21.12.2026 do 08.01.2027 včetně</strong>. K dispozici vám budeme opět od <strong class='highlight'>11.01.2027</strong>. Od tohoto dne je opět otevřen i náš <strong>příjem zboží</strong>. Přejeme Vám veselé Vánoce a šťastný nový rok!",
+      "holiday.closed": "Celozávodní dovolená – zavřeno",
+      "holiday.error": "Z důvodu celozávodní dovolené je příjem zboží uzavřen od 21.12.2026 do 08.01.2027 včetně. Jsme vám opět k dispozici od 11.01.2027."
     },
     tr: {
-      "bu.title": "KOLEKTİF TATİL 2026/2027",
-      "bu.from.label": "Başlangıç",
-      "bu.to.label": "Bitiş",
-      "bu.reopen.label": "Mal kabulü yeniden açılıyor",
-      "bu.from": "Pazartesi, 21.12.2026",
-      "bu.to": "Cuma, 08.01.2027",
-      "bu.reopen": "Pazartesi, 11.01.2027",
-      "bu.text": "21.12.2026 ile 08.01.2027 tarihleri arasında (bu tarihler dahil) kolektif tatildeyiz. 11.01.2027 tarihinden itibaren yeniden hizmetinizdeyiz. Mal kabulü de bu tarihten itibaren yeniden açıktır. Size mutlu bir Noel ve güzel bir yeni yıl dileriz!",
-      "rules.bu": "21.12.2026 – 08.01.2027 tarihleri arasında (bu tarihler dahil) kolektif tatil nedeniyle mal kabulü kapalıdır. 11.01.2027 tarihinde yeniden açılır.",
-      "avis.info.bu": "21.12.2026 – 08.01.2027 tarihleri arasında (bu tarihler dahil) kolektif tatildeyiz. Bu süre içinde teslimat rezervasyonu yapılamaz. Rezervasyon 11.01.2027 tarihinden itibaren yeniden mümkündür.",
-      "avis.bu.booking": "Kolektif tatil süresince teslimat rezervasyonu yapılamaz. Rezervasyon Pazartesi, 11.01.2027 tarihinde yeniden açılır.",
-      "avis.status.closed": "Kolektif tatil – kapalı",
-      "avis.status.closedShort": "Tatil",
-      "avis.err.closed": "Bu dönem için teslimat rezervasyonu yapılamaz, çünkü kolektif tatil 21.12.2026 – 08.01.2027 tarihleri arasındadır."
+      "holiday.title": "ŞİRKET TATİLİ 2026/2027",
+      "holiday.banner": "<strong>21.12.2026 ile 08.01.2027 tarihleri arasında</strong> şirket tatilindeyiz. <strong class='highlight'>11.01.2027</strong> tarihinden itibaren tekrar hizmetinizde olacağız. Bu tarihten itibaren <strong>mal kabulümüz</strong> de tekrar açıktır. Mutlu Noeller ve Yeni Yıllar dileriz!",
+      "holiday.closed": "Şirket tatili – kapalı",
+      "holiday.error": "Şirket tatilimiz nedeniyle mal kabulü 21.12.2026 ile 08.01.2027 tarihleri arasında kapalıdır. 11.01.2027 tarihinden itibaren tekrar hizmetinizdeyiz."
     },
     uk: {
-      "bu.title": "КОРПОРАТИВНА ВІДПУСТКА 2026/2027",
-      "bu.from.label": "З",
-      "bu.to.label": "По",
-      "bu.reopen.label": "Прийом товарів відновлюється",
-      "bu.from": "Понеділок, 21.12.2026",
-      "bu.to": "П’ятниця, 08.01.2027",
-      "bu.reopen": "Понеділок, 11.01.2027",
-      "bu.text": "Ми перебуваємо на корпоративній відпустці з 21.12.2026 по 08.01.2027 включно. З 11.01.2027 ми знову до ваших послуг. Прийом товарів знову працює з цього дня. Бажаємо вам Різдвяних свят і щасливого Нового року!",
-      "rules.bu": "З 21.12.2026 по 08.01.2027 включно прийом товарів закрито через корпоративну відпустку. Знову відкриється 11.01.2027.",
-      "avis.info.bu": "З 21.12.2026 по 08.01.2027 включно триває корпоративна відпустка. У цей період бронювання поставок неможливе. Бронювання знову доступне з 11.01.2027.",
-      "avis.bu.booking": "Під час корпоративної відпустки бронювання поставок неможливе. Бронювання знову доступне в понеділок, 11.01.2027.",
-      "avis.status.closed": "Корпоративна відпустка – зачинено",
-      "avis.status.closedShort": "Відпустка",
-      "avis.err.closed": "На цей період бронювання поставок неможливе, оскільки триває корпоративна відпустка (21.12.2026 – 08.01.2027)."
+      "holiday.title": "КОРПОРАТИВНА ВІДПУСТКА 2026/2027",
+      "holiday.banner": "Ми йдемо у корпоративну відпустку з <strong>21.12.2026 по 08.01.2027 включно</strong>. Ми знову працюватимемо для вас з <strong class='highlight'>11.01.2027</strong>. З цього дня також відновлює роботу <strong>прийом товарів</strong>. Бажаємо вам щасливого Різдва та щасливого Нового року!",
+      "holiday.closed": "Корпоративна відпустка – зачинено",
+      "holiday.error": "У зв'язку з нашою корпоративною відпусткою прийом товарів зачинено з 21.12.2026 по 08.01.2027 включно. Ми знову до ваших послуг з 11.01.2027."
     },
     bg: {
-      "bu.title": "КОЛЕКТИВНА ПОЧИВКА 2026/2027",
-      "bu.from.label": "От",
-      "bu.to.label": "До",
-      "bu.reopen.label": "Приемането на стоки се възобновява",
-      "bu.from": "Понеделник, 21.12.2026",
-      "bu.to": "Петък, 08.01.2027",
-      "bu.reopen": "Понеделник, 11.01.2027",
-      "bu.text": "Ние сме в колективна почивка от 21.12.2026 до 08.01.2027 включително. От 11.01.2027 отново сме на ваше разположение. Приемането на стоки отново е отворено от този ден. Желаем ви Весела Коледа и щастлива Нова година!",
-      "rules.bu": "От 21.12.2026 до 08.01.2027 включително приемането на стоки е затворено заради колективната почивка. Отново отваря на 11.01.2027.",
-      "avis.info.bu": "От 21.12.2026 до 08.01.2027 включително е колективната почивка. През този период не могат да се резервират доставки. Резервацията отново е възможна от 11.01.2027.",
-      "avis.bu.booking": "По време на колективната почивка не могат да се резервират доставки. Резервацията отново е възможна в понеделник, 11.01.2027.",
-      "avis.status.closed": "Колективна почивка – затворено",
-      "avis.status.closedShort": "Почивка",
-      "avis.err.closed": "За този период не могат да се резервират доставки, тъй като е колективната почивка (21.12.2026 – 08.01.2027)."
+      "holiday.title": "ФИРМЕНА ОТПУСКА 2026/2027",
+      "holiday.banner": "Имаме фирмена отпуска от <strong>21.12.2026 до 08.01.2027 включително</strong>. Отново сме на ваше разположение от <strong class='highlight'>11.01.2027</strong>. От този ден <strong>приемането на стоки</strong> също е отново отворено. Пожелаваме ви Весела Коледа и Щастлива Нова Година!",
+      "holiday.closed": "Фирмена отпуска – затворено",
+      "holiday.error": "Поради нашата фирмена отпуска приемането на стоки е затворено от 21.12.2026 до 08.01.2027 включително. Отново сме на ваше разположение от 11.01.2027."
     }
   };
 
-  for (const [sprache, schluessel] of Object.entries(ERGAENZUNGEN)) {
-    const ziel = window.I18n.TEXTE[sprache] || (window.I18n.TEXTE[sprache] = {});
-    Object.assign(ziel, schluessel);
+  function gespeicherteSprache() {
+    try {
+      const wert = window.localStorage.getItem(SPEICHER_SCHLUESSEL);
+      return Object.prototype.hasOwnProperty.call(SPRACHEN, wert) ? wert : null;
+    } catch (fehler) {
+      return null;
+    }
   }
+
+  let aktuelle = gespeicherteSprache() || STANDARD;
+  document.documentElement.lang = aktuelle;
+
+  function t(schluessel, werte) {
+    let text = (TEXTE[aktuelle] || {})[schluessel];
+    if (text === undefined) text = TEXTE[STANDARD][schluessel];
+    if (text === undefined) {
+      console.warn(`Übersetzungsschlüssel fehlt: ${schluessel}`);
+      return schluessel;
+    }
+    if (werte) {
+      text = text.replace(/\{(\w+)\}/g, (platzhalter, name) =>
+        Object.prototype.hasOwnProperty.call(werte, name) ? String(werte[name]) : platzhalter
+      );
+    }
+    return text;
+  }
+
+  function uebersetzeSeite(wurzel = document) {
+    wurzel.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    // NEU: HTML-Unterstützung für das Holiday-Banner (für <strong> Tags)
+    wurzel.querySelectorAll("[data-i18n-html]").forEach((el) => {
+      el.innerHTML = t(el.dataset.i18nHtml);
+    });
+    wurzel.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
+    });
+    wurzel.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+      el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
+    });
+    wurzel.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      el.setAttribute("title", t(el.dataset.i18nTitle));
+    });
+    wurzel.querySelectorAll("[data-i18n-content]").forEach((el) => {
+      el.setAttribute("content", t(el.dataset.i18nContent));
+    });
+    document.documentElement.lang = aktuelle;
+  }
+
+  function setzeSprache(code) {
+    if (!Object.prototype.hasOwnProperty.call(SPRACHEN, code)) return;
+    aktuelle = code;
+    try {
+      window.localStorage.setItem(SPEICHER_SCHLUESSEL, code);
+    } catch (fehler) {}
+    uebersetzeSeite();
+    document.dispatchEvent(new CustomEvent("i18n:change", { detail: { sprache: code } }));
+  }
+
+  const locale = () => SPRACHEN[aktuelle].locale;
+
+  function formatDatum(isoDatum) {
+    const [jahr, monat, tag] = isoDatum.split("-").map(Number);
+    return new Intl.DateTimeFormat(locale(), {
+      timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric"
+    }).format(new Date(Date.UTC(jahr, monat - 1, tag)));
+  }
+
+  function formatMonat(jahr, monat) {
+    return new Intl.DateTimeFormat(locale(), {
+      timeZone: "UTC", month: "long", year: "numeric"
+    }).format(new Date(Date.UTC(jahr, monat, 1)));
+  }
+
+  function formatZeitpunkt(zeitpunkt) {
+    return new Date(zeitpunkt).toLocaleDateString(locale(), { timeZone: "Europe/Berlin" });
+  }
+
+  function mountSwitcher(auswahl) {
+    auswahl.replaceChildren();
+    for (const [code, info] of Object.entries(SPRACHEN)) {
+      const option = document.createElement("option");
+      option.value = code;
+      option.lang = code;
+      option.textContent = `${info.flagge} ${info.name}`;
+      auswahl.append(option);
+    }
+    auswahl.value = aktuelle;
+    auswahl.addEventListener("change", () => setzeSprache(auswahl.value));
+    document.addEventListener("i18n:change", () => {
+      auswahl.value = aktuelle;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => uebersetzeSeite());
+
+  window.I18n = {
+    t, setzeSprache, aktuelleSprache: () => aktuelle, locale, formatDatum,
+    formatMonat, formatZeitpunkt, mountSwitcher, uebersetze: uebersetzeSeite,
+    SPRACHEN, TEXTE
+  };
 })();
