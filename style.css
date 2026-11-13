@@ -377,3 +377,93 @@ form.touched .field textarea:invalid { border-color: var(--err); }
   background: repeating-linear-gradient(135deg, #cbd5e1 0 3px, #f1f5f9 3px 6px);
   border: 1px solid #94a3b8;
 }
+/* --- NEU: Betriebsurlaub & Erweiterte Styles --- */
+
+/* Hero-Banner auf der Startseite */
+.holiday-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #f8fafc;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  border-radius: 12px;
+  margin: 1.5rem auto 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(15,23,42, 0.15);
+  border: 1px solid #334155;
+}
+.holiday-hero::before {
+  content: '❄️';
+  position: absolute;
+  font-size: 10rem;
+  opacity: 0.04;
+  top: -2rem;
+  right: -2rem;
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+.holiday-hero::after {
+  content: '🎄';
+  position: absolute;
+  font-size: 7rem;
+  opacity: 0.06;
+  bottom: -1.5rem;
+  left: -1rem;
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+.holiday-hero h2 {
+  color: #f8fafc;
+  font-size: clamp(1.4rem, 4vw, 1.85rem);
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.06em;
+}
+.holiday-hero p {
+  color: #cbd5e1;
+  font-size: 1.05rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.holiday-hero .highlight {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+/* Urlaub im Kalender */
+.tag--urlaub { 
+  background: #fef2f2; 
+  border-color: #fecaca; 
+  color: #991b1b; 
+}
+.tag--urlaub .tag__info { 
+  font-weight: 600; 
+  color: #991b1b; 
+}
+.punkt--urlaub { 
+  background: #ef4444; 
+}
+
+/* Banner für das Avisierungsportal (Permanent Alert) */
+.holiday-alert {
+  background: linear-gradient(135deg, var(--info-bg) 0%, #e0f2fe 100%);
+  border: 1px solid var(--info-line);
+  color: var(--info);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.holiday-alert strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+}
+.holiday-alert span {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.holiday-alert .highlight {
+  color: var(--brand-dark);
+}
