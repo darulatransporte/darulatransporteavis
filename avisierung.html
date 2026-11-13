@@ -7,6 +7,7 @@
   <meta name="description" content="Anlieferung bei Darula Transporte &amp; Logistik avisieren: Liefertermin wählen und Lieferung anmelden." data-i18n-content="meta.description.avis">
   <link rel="stylesheet" href="style.css">
   <script src="i18n.js"></script>
+  <script src="i18n-betriebsurlaub.js"></script>
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
@@ -27,6 +28,33 @@
   </header>
 
   <main id="inhalt" class="container page">
+    <!-- Betriebsurlaub: steht außerhalb der eingeklappbaren Hinweise, damit er immer sichtbar bleibt -->
+    <section class="bu-banner" aria-labelledby="bu-titel">
+      <div class="bu-banner__streifen" aria-hidden="true"></div>
+      <div class="bu-banner__inhalt">
+        <p class="bu-banner__titel" id="bu-titel" role="heading" aria-level="2">
+          <svg class="bu-banner__flocke" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M19.07 4.93L4.93 19.07"/></svg>
+          <span data-i18n="bu.title">BETRIEBSURLAUB 2026/2027</span>
+        </p>
+        <dl class="bu-banner__daten">
+          <div class="bu-banner__feld">
+            <dt data-i18n="bu.from.label">Von</dt>
+            <dd data-i18n="bu.from">Montag, 21.12.2026</dd>
+          </div>
+          <div class="bu-banner__feld">
+            <dt data-i18n="bu.to.label">Bis</dt>
+            <dd data-i18n="bu.to">Freitag, 08.01.2027</dd>
+          </div>
+          <div class="bu-banner__feld bu-banner__feld--wieder">
+            <dt data-i18n="bu.reopen.label">Wiedereröffnung der Warenannahme</dt>
+            <dd data-i18n="bu.reopen">Montag, 11.01.2027</dd>
+          </div>
+        </dl>
+        <p class="bu-banner__text" data-i18n="bu.text">Wir haben Betriebsurlaub vom 21.12.2026 bis einschließlich 08.01.2027. Ab dem 11.01.2027 sind wir wieder für Sie da. Ab diesem Tag ist auch unsere Warenannahme wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</p>
+        <p class="bu-banner__hinweis" data-i18n="avis.bu.booking">Während des Betriebsurlaubs können keine Anlieferungen gebucht werden. Ab Montag, 11.01.2027, ist die Buchung wieder möglich.</p>
+      </div>
+    </section>
+
     <div class="card">
       <details class="info-box" open>
         <summary data-i18n="avis.info.summary">Wichtige Hinweise vor der Buchung</summary>
@@ -35,7 +63,7 @@
           <li data-i18n="avis.info.2">Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.</li>
           <li data-i18n="avis.info.3">Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.</li>
           <li data-i18n="avis.info.4">Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li data-i18n="avis.info.5">Vom 21.12.2026 bis 8.01.2027 ist die Warenannahme wegen unserem Betriebsurlaub geschlossen. Ab dem 11.01.2027 können Anlieferungen erfolgen.</li>
+          <li data-i18n="avis.info.bu">Vom 21.12.2026 bis einschließlich 08.01.2027 ist Betriebsurlaub. In dieser Zeit können keine Anlieferungen gebucht werden. Ab dem 11.01.2027 ist die Buchung wieder möglich.</li>
           <li data-i18n="avis.info.6">Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.</li>
         </ul>
       </details>
@@ -66,7 +94,7 @@
         <div class="legende">
           <span><i class="punkt punkt--frei"></i> <span data-i18n="avis.legend.free">Verfügbar</span></span>
           <span><i class="punkt punkt--eingeschraenkt"></i> <span data-i18n="avis.legend.limited">Nur unter 20 Paletten</span></span>
-          <span><i class="punkt punkt--inventur"></i> <span data-i18n="avis.inventur">Inventur</span></span>
+          <span><i class="punkt punkt--betriebsurlaub"></i> <span data-i18n="avis.status.closed">Betriebsurlaub – geschlossen</span></span>
         </div>
         <p class="hilfe" data-i18n="avis.hint.text">Die Zahl zeigt, wie viele Lieferungen ab 20 Paletten an diesem Tag bereits gebucht sind (von drei). Lieferungen unter 20 Paletten sind jederzeit buchbar.</p>
 
@@ -216,6 +244,10 @@
   const $ = (id) => document.getElementById(id);
 
   const INVENTUR = "2026-11-11";
+  // Betriebsurlaub 2026/2027, beide Tage eingeschlossen. Muss mit der SQL-Sperre (Trigger) übereinstimmen.
+  const BU_VON = "2026-12-21";
+  const BU_BIS = "2027-01-08";
+  const istBetriebsurlaub = (datum) => datum >= BU_VON && datum <= BU_BIS;
   const GROSS_AB = 20;
   const MAX_GROSS = cfg.maxBuchungenProTag; // Dynamisch aus der config.js
   const MAX_BYTES = 10 * 1024 * 1024;
@@ -224,6 +256,7 @@
   const STATUS_TEXT = {
     frei: "avis.status.free",
     eingeschraenkt: "avis.status.limited",
+    betriebsurlaub: "avis.status.closed",
     inventur: "avis.inventur",
     wochenende: "avis.status.weekend",
     vergangen: "avis.status.past",
@@ -320,6 +353,7 @@
 
       let status;
       if (datum < heute) status = "vergangen";
+      else if (istBetriebsurlaub(datum)) status = "betriebsurlaub";
       else if (wochentag(datum) >= 5) status = "wochenende";
       else if (datum === INVENTUR) status = "inventur";
       else if (!state.geladen || state.ladeFehler) status = "unbekannt";
@@ -331,6 +365,7 @@
       const hinweis = {
         vergangen: "",
         wochenende: "",
+        betriebsurlaub: I18n.t("avis.status.closedShort"),
         inventur: I18n.t("avis.inventur"),
         eingeschraenkt: I18n.t("avis.hint.limited"),
         unbekannt: "–",
@@ -446,6 +481,7 @@
 
   // Gibt einen Übersetzungsschlüssel zurück, oder null, wenn alles in Ordnung ist
   function pruefe(w) {
+    if (state.gewaehlt && istBetriebsurlaub(state.gewaehlt)) return "avis.err.closed";
     if (w.firma.length < 2 || w.firma.length > 100) return "avis.err.company";
     if (w.email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(w.email)) return "avis.err.email";
     if (!Number.isInteger(w.palettes) || w.palettes < 1 || w.palettes > 200) return "avis.err.palettes";
@@ -522,7 +558,10 @@
       const ergebnis = await buche(w);
       zeigeBeleg(ergebnis, w);
     } catch (err) {
-      if (err && err.code === "P0001") zeigeFehlerText(err.message);
+      const meldung = err && typeof err.message === "string" ? err.message : "";
+      // Die Datenbank-Sperre meldet "BETRIEBSURLAUB"; die Meldung wird übersetzt angezeigt
+      if (meldung.includes("BETRIEBSURLAUB")) zeigeFehler("avis.err.closed");
+      else if (err && err.code === "P0001") zeigeFehlerText(meldung);
       else zeigeFehler("avis.err.generic");
       knopf.disabled = false;
       knopf.textContent = I18n.t("avis.submit");
