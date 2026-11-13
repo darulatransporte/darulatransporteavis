@@ -6,22 +6,27 @@
 :root {
   --ink: #ffffff;
   --ink-soft: #cbd5e1;
-  --bg: transparent;
-  --surface: rgba(255, 255, 255, 0.05); /* Kaum sichtbar, Blur macht die Arbeit */
+  --bg: #091221;
+  --surface: rgba(255, 255, 255, 0.05);
   --line: rgba(255, 255, 255, 0.15);
   --line-strong: rgba(255, 255, 255, 0.3);
-  --brand-text: #38bdf8; /* Eisiges Blau für Links */
+  --brand-text: #38bdf8; 
   --brand-dark: #0284c7;
   --brand-soft: rgba(56, 189, 248, 0.15);
 }
 
 body {
-  /* Basis ist die winter_1.jpg Winterlandschaft */
-  background: #091221 url('winter_1.jpg') center center / cover fixed no-repeat !important;
+  /* FALLBACK-HINTERGRUND (Verhindert weißen Bildschirm!) */
+  background: linear-gradient(to bottom, #091221, #0f172a) !important;
+  /* Winter_1 wird drübergelegt, falls es lädt */
+  background-image: url('winter_1.jpg') !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  background-repeat: no-repeat !important;
   color: var(--ink) !important;
 }
 
-/* Polarlichter & Nebel Layer per CSS (ergänzt das Bild um flüssige Bewegung) */
 body::before {
   content: '';
   position: fixed;
@@ -69,27 +74,25 @@ body::before {
 }
 
 /* --- 2. HOLOGRAPHIC GLASSMORPHISM (LIQUID GLASS) --- */
-
 .holo-glass, .holo-card, .holo-hero {
-  background: rgba(15, 23, 42, 0.25) !important; /* Sehr dunkles, durchsichtiges Basisglas */
+  background: rgba(15, 23, 42, 0.25) !important;
   backdrop-filter: blur(16px) saturate(120%);
   -webkit-backdrop-filter: blur(16px) saturate(120%);
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.4) !important; /* Lichtkante oben */
-  border-left: 1px solid rgba(255, 255, 255, 0.3) !important; /* Lichtkante links */
+  border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05) !important;
   position: relative;
   overflow: hidden;
   color: #fff !important;
 }
 
-/* Holografische Reflexion innerhalb der Glas-Karten (Nutzung von Holo_2.jpg) */
 .holo-card::before {
   content: '';
   position: absolute;
   inset: 0;
   background: url('Holo_2.jpg') center/cover;
-  opacity: 0.12; /* Sehr subtil */
+  opacity: 0.12;
   mix-blend-mode: overlay;
   pointer-events: none;
   border-radius: inherit;
@@ -123,7 +126,7 @@ body::before {
   background: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Formulare & Inputs */
+/* Formulare */
 .holo-input {
   background: rgba(0, 0, 0, 0.25) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -144,7 +147,7 @@ select.holo-input option {
   color: #fff;
 }
 
-/* Kalender-Tage (Liquid Glass) */
+/* Kalender-Tage */
 .holo-tag {
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -160,16 +163,20 @@ select.holo-input option {
   border-color: rgba(34, 197, 94, 0.3) !important;
 }
 .holo-tag--frei .tag__info { color: #4ade80 !important; }
+
 .holo-tag--eingeschraenkt {
   background: rgba(249, 115, 22, 0.1) !important;
   border-color: rgba(249, 115, 22, 0.3) !important;
 }
 .holo-tag--eingeschraenkt .tag__info { color: #fb923c !important; }
+
 .holo-tag--urlaub, .holo-tag--vergangen, .holo-tag--wochenende, .holo-tag-leer {
   background: rgba(0, 0, 0, 0.3) !important;
   color: #64748b !important;
   border: none !important;
 }
+.holo-tag--urlaub .tag__info { color: #94a3b8 !important; }
+
 .holo-tag--gewaehlt {
   background: rgba(56, 189, 248, 0.25) !important;
   border: 2px solid #38bdf8 !important;
@@ -206,7 +213,6 @@ select.holo-input option {
   overflow: hidden;
 }
 
-/* Schnee */
 .snow-flake {
   position: absolute;
   top: -10px;
@@ -214,16 +220,15 @@ select.holo-input option {
   border-radius: 50%;
   animation: snowfall linear infinite;
 }
-.snow-layer-1 { opacity: 0.8; filter: blur(1px); } /* Vordergrund */
-.snow-layer-2 { opacity: 0.5; filter: blur(2px); } /* Mitte */
-.snow-layer-3 { opacity: 0.2; filter: blur(3px); } /* Hintergrund */
+.snow-layer-1 { opacity: 0.8; filter: blur(1px); }
+.snow-layer-2 { opacity: 0.5; filter: blur(2px); }
+.snow-layer-3 { opacity: 0.2; filter: blur(3px); }
 
 @keyframes snowfall {
   0% { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(110vh) translateX(20px); } /* Fällt leicht schräg */
+  100% { transform: translateY(110vh) translateX(20px); }
 }
 
-/* Fliegender Weihnachtsmann (Rehntiere_3.jpg Inspiration als Vektor) */
 .santa-sleigh {
   position: absolute;
   top: 15vh;
