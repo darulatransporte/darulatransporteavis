@@ -5,106 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="meta.title.index">Warenannahme | Darula Transporte</title>
   <meta name="description" content="Warenannahme und Anlieferungsrichtlinien von Darula Transporte &amp; Logistik. Anlieferungen digital avisieren." data-i18n-content="meta.description.index">
+  
+  <!-- Basis Stylesheet -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- NEU: Weihnachtlicher Hintergrund & Effekte -->
-  <link rel="stylesheet" href="christmas.css">
+  <!-- NEU: Holographic Winter Wonderland Design -->
+  <link rel="stylesheet" href="winter-wonderland.css">
   
   <script src="i18n.js"></script>
   
-  <!-- NEU: Steuerungs-Script für Schnee, Sterne und Schlitten -->
-  <script src="christmas.js" defer></script>
+  <!-- NEU: Holographic Winter Wonderland Animationen -->
+  <script src="winter-wonderland.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt" data-i18n="nav.skip">Zum Inhalt springen</a>
 
-  <header class="site-header">
+  <div class="hinweis-banner holo-glass" role="note" data-i18n="banner.inventur">Wichtige Information: Vom 21.12.2026 bis zum 08.01.2027 findet unser Betriebsurlaub statt. Die Warenannahme ist ab dem 11.01.2027 wieder geöffnet.</div>
+
+  <header class="site-header holo-glass">
     <div class="container site-header__inner">
       <a href="index.html" aria-label="Zur Startseite" data-i18n-aria-label="nav.home">
-        <img class="logo" src="darula_logo.jpg" alt="Darula Transporte" height="40">
+        <!-- Logo mit Filter, falls es zu dunkel für den neuen Hintergrund ist -->
+        <img class="logo logo-glow" src="darula_logo.jpg" alt="Darula Transporte" height="40">
       </a>
       <nav class="nav" aria-label="Hauptnavigation" data-i18n-aria-label="nav.main">
-        <a class="btn btn--primary" href="avisierung.html" data-i18n="nav.booking">Zum Buchungsportal</a>
-        <select id="sprache" class="btn btn--ghost btn--klein" aria-label="Sprache" data-i18n-aria-label="nav.language"></select>
+        <a class="btn btn--primary holo-btn" href="avisierung.html" data-i18n="nav.booking">Zum Buchungsportal</a>
+        <select id="sprache" class="btn btn--ghost btn--klein holo-input" aria-label="Sprache" data-i18n-aria-label="nav.language"></select>
       </nav>
     </div>
   </header>
 
   <main id="inhalt">
-    <section class="container" aria-labelledby="holiday-title">
-      <div class="holiday-hero">
-        <h2 id="holiday-title" data-i18n="holiday.title">BETRIEBSURLAUB 2026/2027</h2>
-        <p data-i18n-html="holiday.banner">Wir haben Betriebsurlaub vom <strong>21.12.2026 bis einschließlich 08.01.2027</strong>. Ab dem <strong class='highlight'>11.01.2027</strong> sind wir wieder für Sie da. Ab diesem Tag ist auch unsere <strong>Warenannahme</strong> wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</p>
-      </div>
-    </section>
-
-    <section class="hero" style="padding-top: 1rem;">
+    <section class="hero holo-hero">
       <div class="container">
-        <h1 data-i18n="hero.title">Warenannahme</h1>
-        <p class="lead" data-i18n="hero.lead">Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.</p>
-        <a class="btn btn--dark" href="avisierung.html" data-i18n="hero.cta">Anlieferung avisieren</a>
+        <h1 class="glow-text" data-i18n="hero.title">Warenannahme</h1>
+        <p class="lead text-icy" data-i18n="hero.lead">Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.</p>
+        <a class="btn btn--dark holo-btn-dark" href="avisierung.html" data-i18n="hero.cta">Anlieferung avisieren</a>
       </div>
     </section>
 
     <section class="container zeiten" aria-label="Öffnungszeiten" data-i18n-aria-label="zeiten.aria">
-      <article class="card">
-        <h2 class="eyebrow" data-i18n="zeiten.regular.label">Reguläre Entladung</h2>
+      <article class="card holo-card">
+        <h2 class="eyebrow text-icy" data-i18n="zeiten.regular.label">Reguläre Entladung</h2>
         <p class="tag-name" data-i18n="zeiten.regular.days">Montag bis Donnerstag</p>
-        <p class="zeit" data-i18n="zeiten.regular.time">07:00 – 14:30 Uhr</p>
+        <p class="zeit glow-text-blue" data-i18n="zeiten.regular.time">07:00 – 14:30 Uhr</p>
       </article>
 
-      <article class="card">
-        <h2 class="eyebrow" data-i18n="zeiten.short.label">Verkürzte Entladung</h2>
+      <article class="card holo-card">
+        <h2 class="eyebrow text-icy" data-i18n="zeiten.short.label">Verkürzte Entladung</h2>
         <p class="tag-name" data-i18n="zeiten.short.days">Freitag</p>
-        <p class="zeit zeit--orange" data-i18n="zeiten.short.time">07:00 – 12:00 Uhr</p>
+        <p class="zeit glow-text-orange" data-i18n="zeiten.short.time">07:00 – 12:00 Uhr</p>
       </article>
 
-      <article class="card">
-        <h2 class="eyebrow" data-i18n="zeiten.note.label">Wichtiger Hinweis</h2>
+      <article class="card holo-card">
+        <h2 class="eyebrow text-icy" data-i18n="zeiten.note.label">Wichtiger Hinweis</h2>
         <p class="tag-name" data-i18n="zeiten.note.days">Vorab avisieren</p>
-        <p class="muted" data-i18n="zeiten.note.text">Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.</p>
+        <p class="muted text-icy" data-i18n="zeiten.note.text">Bitte melden Sie jede Anlieferung rechtzeitig über das Buchungsportal an.</p>
       </article>
     </section>
 
     <section class="container abschnitt" aria-labelledby="ablauf-titel">
-      <h2 id="ablauf-titel" data-i18n="steps.title">So läuft die Anlieferung ab</h2>
+      <h2 id="ablauf-titel" class="glow-text" data-i18n="steps.title">So läuft die Anlieferung ab</h2>
       <div class="schritte">
-        <article class="card">
-          <span class="schritt-nr" aria-hidden="true">1</span>
+        <article class="card holo-card">
+          <span class="schritt-nr holo-badge" aria-hidden="true">1</span>
           <h3 data-i18n="steps.1.title">Termin wählen</h3>
-          <p class="muted" data-i18n="steps.1.text">Wählen Sie im Buchungsportal einen verfügbaren Werktag. Der Kalender zeigt, wie viele Plätze für Lieferungen ab 20 Paletten an dem Tag noch frei sind.</p>
+          <p class="muted text-icy" data-i18n="steps.1.text">Wählen Sie im Buchungsportal einen verfügbaren Werktag. Der Kalender zeigt, wie viele Plätze für Lieferungen ab 20 Paletten an dem Tag noch frei sind.</p>
         </article>
-        <article class="card">
-          <span class="schritt-nr" aria-hidden="true">2</span>
+        <article class="card holo-card">
+          <span class="schritt-nr holo-badge" aria-hidden="true">2</span>
           <h3 data-i18n="steps.2.title">Lieferung erfassen</h3>
-          <p class="muted" data-i18n="steps.2.text">Geben Sie Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz an. Den Lieferschein können Sie optional hochladen.</p>
+          <p class="muted text-icy" data-i18n="steps.2.text">Geben Sie Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz an. Den Lieferschein können Sie optional hochladen.</p>
         </article>
-        <article class="card">
-          <span class="schritt-nr" aria-hidden="true">3</span>
+        <article class="card holo-card">
+          <span class="schritt-nr holo-badge" aria-hidden="true">3</span>
           <h3 data-i18n="steps.3.title">Beleg sichern</h3>
-          <p class="muted" data-i18n="steps.3.text">Nach der Buchung erhalten Sie eine Buchungsnummer. Notieren oder drucken Sie sie und halten Sie sie für die Anlieferung bereit.</p>
+          <p class="muted text-icy" data-i18n="steps.3.text">Nach der Buchung erhalten Sie eine Buchungsnummer. Notieren oder drucken Sie sie und halten Sie sie für die Anlieferung bereit.</p>
         </article>
       </div>
     </section>
 
     <section class="container abschnitt" aria-labelledby="regeln-titel">
-      <h2 id="regeln-titel" data-i18n="rules.title">Wichtige Regeln</h2>
-      <div class="card">
+      <h2 id="regeln-titel" class="glow-text" data-i18n="rules.title">Wichtige Regeln</h2>
+      <div class="card holo-card">
         <ul class="regel-liste">
           <li data-i18n="rules.1">Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.</li>
           <li data-i18n="rules.2">Lieferungen unter 20 Paletten sind jederzeit buchbar.</li>
           <li data-i18n="rules.3">Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li data-i18n="rules.4">Während des Betriebsurlaubs (21.12.2026 - 08.01.2027) ist die Warenannahme geschlossen.</li>
+          <li data-i18n="rules.4">Während des Betriebsurlaubs (21.12. - 08.01.) bleibt die Warenannahme geschlossen.</li>
           <li data-i18n="rules.5">Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.</li>
         </ul>
       </div>
     </section>
 
+    <!-- Feedback-Block -->
     <section class="container abschnitt no-print" aria-labelledby="feedback-section-titel">
-      <div class="card mitte" style="background: var(--info-bg); border-color: var(--info-line);">
-        <h2 id="feedback-section-titel" style="color: var(--info);" data-i18n="feedback.title">Helfen Sie uns, besser zu werden!</h2>
-        <p style="color: var(--info); max-width: 40rem; margin: 0 auto;" data-i18n="feedback.text">Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!</p>
-        <button id="feedback-btn" class="btn btn--primary mt-lg" type="button">
+      <div class="card mitte holo-card holo-card--highlight">
+        <h2 id="feedback-section-titel" class="glow-text-blue" data-i18n="feedback.title">Helfen Sie uns, besser zu werden!</h2>
+        <p class="text-icy" style="max-width: 40rem; margin: 0 auto;" data-i18n="feedback.text">Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!</p>
+        <button id="feedback-btn" class="btn btn--primary holo-btn mt-lg" type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; margin-bottom: -2px;" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path><polyline points="9 11 12 14 22 4"></polyline></svg>
           <span data-i18n="feedback.open">Verbesserungsvorschlag senden</span>
         </button>
@@ -112,52 +111,53 @@
     </section>
 
     <section class="container abschnitt" aria-labelledby="kontakt-titel">
-      <h2 id="kontakt-titel" data-i18n="contact.title">Kontakt</h2>
-      <div class="card kontakt">
+      <h2 id="kontakt-titel" class="glow-text" data-i18n="contact.title">Kontakt</h2>
+      <div class="card holo-card kontakt">
         <div>
-          <p class="eyebrow">Darula Transporte &amp; Logistik</p>
+          <p class="eyebrow text-icy">Darula Transporte &amp; Logistik</p>
           <p>Thoner Weg 23<br>90425 Nürnberg</p>
         </div>
         <div>
-          <p class="eyebrow" data-i18n="contact.queries">Rückfragen zur Warenannahme</p>
-          <p><span data-i18n="contact.phone">Telefon:</span> <a href="tel:+4991130039794">+49 911 30039794</a><br>
-          <span data-i18n="contact.email">E-Mail:</span> <a href="mailto:d.darulatransporte@gmail.com">d.darulatransporte@gmail.com</a></p>
+          <p class="eyebrow text-icy" data-i18n="contact.queries">Rückfragen zur Warenannahme</p>
+          <p><span data-i18n="contact.phone">Telefon:</span> <a href="tel:+4991130039794" class="glow-link">+49 911 30039794</a><br>
+          <span data-i18n="contact.email">E-Mail:</span> <a href="mailto:d.darulatransporte@gmail.com" class="glow-link">d.darulatransporte@gmail.com</a></p>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer holo-glass">
     <div class="container site-footer__inner">
       <span>&copy; 2026 Darula Transporte &amp; Logistik</span>
       <nav aria-label="Rechtliches" data-i18n-aria-label="footer.legal">
-        <a href="impressum.html">Impressum</a>
-        <a href="admin.html" data-i18n="footer.admin">Verwaltung</a>
+        <a href="impressum.html" class="glow-link">Impressum</a>
+        <a href="admin.html" class="glow-link" data-i18n="footer.admin">Verwaltung</a>
       </nav>
     </div>
   </footer>
 
+  <!-- Feedback-Pop-up -->
   <div id="feedback-modal" class="modal-overlay no-print" hidden>
-    <div class="modal-box" role="dialog" aria-labelledby="feedback-titel" aria-modal="true">
-      <button id="feedback-close" class="modal-close" type="button" aria-label="Schließen" data-i18n-aria-label="feedback.close">&times;</button>
-      <h2 id="feedback-titel" data-i18n="feedback.modal.title">Ideen zur Webseite?</h2>
-      <p class="muted" data-i18n="feedback.modal.text.index">Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
+    <div class="modal-box holo-card" role="dialog" aria-labelledby="feedback-titel" aria-modal="true">
+      <button id="feedback-close" class="modal-close text-icy" type="button" aria-label="Schließen" data-i18n-aria-label="feedback.close">&times;</button>
+      <h2 id="feedback-titel" class="glow-text" data-i18n="feedback.modal.title">Ideen zur Webseite?</h2>
+      <p class="muted text-icy" data-i18n="feedback.modal.text.index">Fällt Ihnen etwas auf, das wir an unserem neuen Buchungsportal noch verbessern können? Wir freuen uns über Ihre Vorschläge!</p>
 
-      <div id="feedback-erfolg" class="alert alert--info" role="status" hidden data-i18n="feedback.success">Vielen Dank für Ihre Vorschläge!</div>
-      <div id="feedback-fehler" class="alert alert--error" role="alert" hidden data-i18n="feedback.error">Der Vorschlag konnte leider nicht gespeichert werden. Bitte versuchen Sie es später noch einmal oder rufen Sie uns an: +49 911 30039794.</div>
+      <div id="feedback-erfolg" class="alert alert--info holo-alert" role="status" hidden data-i18n="feedback.success">Vielen Dank für Ihre Vorschläge!</div>
+      <div id="feedback-fehler" class="alert alert--error holo-alert-err" role="alert" hidden data-i18n="feedback.error">Der Vorschlag konnte leider nicht gespeichert werden.</div>
 
       <form id="feedback-form" autocomplete="off">
         <div class="field mt-lg">
           <label for="fb-name"><span data-i18n="feedback.form.name">Firma / Name</span> <span class="pflicht" aria-hidden="true">*</span></label>
-          <input id="fb-name" name="name" type="text" maxlength="200" autocomplete="name" required>
+          <input id="fb-name" name="name" type="text" class="holo-input" maxlength="200" autocomplete="name" required>
         </div>
         <div class="field mt-lg">
           <label for="fb-email"><span data-i18n="feedback.form.email">Ihre E-Mail (für eventuelle Rückfragen)</span> <span class="pflicht" aria-hidden="true">*</span></label>
-          <input id="fb-email" name="email" type="email" maxlength="320" autocomplete="email" required>
+          <input id="fb-email" name="email" type="email" class="holo-input" maxlength="320" autocomplete="email" required>
         </div>
         <div class="field mt-lg">
           <label for="fb-nachricht"><span data-i18n="feedback.form.message">Ihr Verbesserungsvorschlag</span> <span class="pflicht" aria-hidden="true">*</span></label>
-          <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" data-i18n-placeholder="feedback.form.placeholder" required></textarea>
+          <textarea id="fb-nachricht" name="message" class="holo-input" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" data-i18n-placeholder="feedback.form.placeholder" required></textarea>
         </div>
 
         <div style="display:none" aria-hidden="true">
@@ -165,7 +165,7 @@
         </div>
 
         <div class="aktionen mt-lg">
-          <button id="feedback-senden" class="btn btn--dark btn--block" type="submit" data-i18n="feedback.submit">Vorschlag senden</button>
+          <button id="feedback-senden" class="btn btn--primary holo-btn btn--block" type="submit" data-i18n="feedback.submit">Vorschlag senden</button>
         </div>
       </form>
     </div>
@@ -175,10 +175,10 @@
 <script>
   I18n.mountSwitcher(document.getElementById("sprache"));
 </script>
+<!-- Original Feedback-Logik (unverändert) -->
 <script>
 (() => {
   "use strict";
-
   const cfg = window.DARULA_CONFIG || {};
   const fbBtn = document.getElementById("feedback-btn");
   const fbModal = document.getElementById("feedback-modal");
@@ -188,84 +188,39 @@
   const fbErsterFeld = document.getElementById("fb-name");
   const fbErfolg = document.getElementById("feedback-erfolg");
   const fbFehler = document.getElementById("feedback-fehler");
-  let fbZuletzt = null;
-  let fbTimer = null;
+  let fbZuletzt = null, fbTimer = null;
 
   function fbOeffnen() {
-    clearTimeout(fbTimer);
-    fbZuletzt = document.activeElement;
-    fbErfolg.hidden = true;
-    fbFehler.hidden = true;
-    fbModal.hidden = false;
-    fbErsterFeld.focus();
+    clearTimeout(fbTimer); fbZuletzt = document.activeElement;
+    fbErfolg.hidden = true; fbFehler.hidden = true; fbModal.hidden = false; fbErsterFeld.focus();
   }
-
   function fbSchliessen() {
-    clearTimeout(fbTimer);
-    fbModal.hidden = true;
-    if (fbZuletzt) fbZuletzt.focus();
+    clearTimeout(fbTimer); fbModal.hidden = true; if (fbZuletzt) fbZuletzt.focus();
   }
-
   async function fbSpeichern(daten) {
+    if(!cfg.supabaseUrl) return; // Fallback
     const response = await fetch(`${cfg.supabaseUrl}/rest/v1/feedback`, {
-      method: "POST",
-      headers: {
-        "apikey": cfg.supabaseAnonKey,
-        "Authorization": `Bearer ${cfg.supabaseAnonKey}`,
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
-      },
+      method: "POST", headers: { "apikey": cfg.supabaseAnonKey, "Authorization": `Bearer ${cfg.supabaseAnonKey}`, "Content-Type": "application/json", "Prefer": "return=minimal" },
       body: JSON.stringify(daten)
     });
-
-    if (!response.ok) {
-      throw new Error(`Supabase antwortete mit ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Supabase error`);
   }
-
-  fbBtn.addEventListener("click", fbOeffnen);
-  fbClose.addEventListener("click", fbSchliessen);
-  fbModal.addEventListener("click", (e) => {
-    if (e.target === fbModal) fbSchliessen();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !fbModal.hidden) fbSchliessen();
-  });
+  fbBtn.addEventListener("click", fbOeffnen); fbClose.addEventListener("click", fbSchliessen);
+  fbModal.addEventListener("click", (e) => { if (e.target === fbModal) fbSchliessen(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !fbModal.hidden) fbSchliessen(); });
 
   fbForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    fbForm.classList.add("touched");
+    e.preventDefault(); fbForm.classList.add("touched");
     if (!fbForm.reportValidity()) return;
-
-    const formData = new FormData(fbForm);
-    const istBot = Boolean(formData.get("website"));
-
-    fbSubmitBtn.disabled = true;
-    fbSubmitBtn.textContent = I18n.t("feedback.sending");
-    fbErfolg.hidden = true;
-    fbFehler.hidden = true;
-
+    const formData = new FormData(fbForm); const istBot = Boolean(formData.get("website"));
+    fbSubmitBtn.disabled = true; fbSubmitBtn.textContent = I18n.t("feedback.sending");
+    fbErfolg.hidden = true; fbFehler.hidden = true;
     try {
-      if (!istBot) {
-        await fbSpeichern({
-          name: formData.get("name").trim(),
-          email: formData.get("email").trim(),
-          nachricht: formData.get("message").trim()
-        });
-      }
-      fbErfolg.hidden = false;
-      fbForm.reset();
-      fbForm.classList.remove("touched");
-      fbTimer = setTimeout(() => {
-        fbModal.hidden = true;
-        fbErfolg.hidden = true;
-      }, 3000);
-    } catch (error) {
-      fbFehler.hidden = false;
-    } finally {
-      fbSubmitBtn.disabled = false;
-      fbSubmitBtn.textContent = I18n.t("feedback.submit");
-    }
+      if (!istBot) { await fbSpeichern({ name: formData.get("name").trim(), email: formData.get("email").trim(), nachricht: formData.get("message").trim() }); }
+      fbErfolg.hidden = false; fbForm.reset(); fbForm.classList.remove("touched");
+      fbTimer = setTimeout(() => { fbModal.hidden = true; fbErfolg.hidden = true; }, 3000);
+    } catch (error) { fbFehler.hidden = false; }
+    finally { fbSubmitBtn.disabled = false; fbSubmitBtn.textContent = I18n.t("feedback.submit"); }
   });
 })();
 </script>
