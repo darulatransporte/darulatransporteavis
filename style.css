@@ -320,3 +320,60 @@ form.touched .field textarea:invalid { border-color: var(--err); }
   .card { border: 0; box-shadow: none; }
   .page { padding: 0; }
 }
+
+/* ===== Betriebsurlaub 2026/2027 ===== */
+.bu-wrap { padding-top: 1.5rem; }
+.bu-banner {
+  --bu-gruen: #14532d;
+  --bu-rot: #9f1239;
+  --bu-creme: #fffbf2;
+  --bu-linie: #e9dcc0;
+  position: relative; overflow: hidden;
+  margin-bottom: 1.5rem;
+  background: var(--bu-creme); color: var(--ink);
+  border: 1px solid var(--bu-linie); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.bu-banner__streifen {
+  height: 6px;
+  background: linear-gradient(90deg, var(--bu-gruen) 0 33.3%, #ffffff 33.3% 66.6%, var(--bu-rot) 66.6%);
+}
+.bu-banner__inhalt { padding: clamp(1.1rem, 3vw, 1.75rem); }
+.bu-banner__titel {
+  display: flex; align-items: center; flex-wrap: wrap; gap: .6rem;
+  margin: 0 0 1rem; font-size: clamp(1.25rem, 3vw, 1.6rem); font-weight: 800;
+  letter-spacing: .02em; color: var(--bu-gruen);
+}
+.bu-banner__flocke { flex: none; color: var(--bu-rot); }
+.bu-banner__daten { display: grid; gap: .75rem; margin: 0 0 1rem; }
+@media (min-width: 700px) { .bu-banner__daten { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.bu-banner__feld {
+  padding: .75rem .9rem; background: #ffffff;
+  border: 1px solid var(--bu-linie); border-radius: 8px;
+}
+.bu-banner__feld dt {
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+.bu-banner__feld dd { margin: .2rem 0 0; font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.bu-banner__feld--wieder { border-color: #86efac; background: #f0fdf4; }
+.bu-banner__feld--wieder dd { color: var(--bu-gruen); }
+.bu-banner__text { margin: 0; color: var(--ink-soft); }
+.bu-banner__hinweis {
+  margin: .85rem 0 0; padding-top: .85rem;
+  border-top: 1px dashed var(--bu-linie); font-weight: 600; color: var(--bu-rot);
+}
+
+/* Kalender: gesperrte Tage im Betriebsurlaub */
+.tag--betriebsurlaub {
+  background: repeating-linear-gradient(135deg, #f1f5f9 0 8px, #e2e8f0 8px 16px);
+  border-color: var(--line-strong); color: var(--ink-soft);
+}
+.tag--betriebsurlaub .tag__zahl { color: var(--ink); }
+.tag--betriebsurlaub .tag__info {
+  padding: 0 .25rem; border-radius: 4px; background: #ffffff;
+  font-weight: 700; color: var(--ink); hyphens: auto; overflow-wrap: anywhere;
+}
+.punkt--betriebsurlaub {
+  background: repeating-linear-gradient(135deg, #cbd5e1 0 3px, #f1f5f9 3px 6px);
+  border: 1px solid #94a3b8;
+}
