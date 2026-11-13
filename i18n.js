@@ -1,7 +1,5 @@
 /*
  * Zentrales Übersetzungssystem für das Buchungsportal von Darula Transporte.
- * Sprachen: Deutsch (Standard), Englisch, Rumänisch, Polnisch, Tschechisch,
- *            Türkisch, Ukrainisch, Bulgarisch.
  */
 (() => {
   "use strict";
@@ -30,10 +28,7 @@
       "nav.booking": "Zum Buchungsportal",
       "nav.language": "Sprache",
       "nav.feedback": "Verbesserungsvorschlag",
-      "holiday.title": "BETRIEBSURLAUB 2026/2027",
-      "holiday.banner": "Wir haben Betriebsurlaub vom <strong>21.12.2026 bis einschließlich 08.01.2027</strong>. Ab dem <strong class='highlight'>11.01.2027</strong> sind wir wieder für Sie da. Ab diesem Tag ist auch unsere <strong>Warenannahme</strong> wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!",
-      "holiday.closed": "Betriebsurlaub – geschlossen",
-      "holiday.error": "Aufgrund unseres Betriebsurlaubs ist die Warenannahme vom 21.12.2026 bis einschließlich 08.01.2027 geschlossen. Ab dem 11.01.2027 sind wir wieder für Sie da.",
+      "banner.urlaub": "Wichtige Information: Vom 21.12.2026 bis zum 08.01.2027 findet unser Betriebsurlaub statt. Die Warenannahme ist ab dem 11.01.2027 wieder geöffnet.",
       "hero.title": "Warenannahme",
       "hero.lead": "Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.",
       "hero.cta": "Anlieferung avisieren",
@@ -58,7 +53,7 @@
       "rules.1": "Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.",
       "rules.2": "Lieferungen unter 20 Paletten sind jederzeit buchbar.",
       "rules.3": "Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.",
-      "rules.4": "Während des Betriebsurlaubs (21.12.2026 - 08.01.2027) ist die Warenannahme geschlossen.",
+      "rules.4": "Während des Betriebsurlaubs (21.12.2026 - 08.01.2027) bleibt die Warenannahme geschlossen.",
       "rules.5": "Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.",
       "feedback.title": "Helfen Sie uns, besser zu werden!",
       "feedback.text": "Wir haben unser digitales Buchungsportal ganz neu für Sie entwickelt. Fällt Ihnen im Ablauf etwas auf, das wir noch einfacher oder besser machen können? Wir freuen uns über jeden Vorschlag!",
@@ -89,7 +84,7 @@
       "avis.info.2": "Bitte halten Sie bereit: Speditionsfirma, E-Mail-Adresse, Anzahl der Paletten sowie BE-Nummer oder Referenz.",
       "avis.info.3": "Der Lieferschein ist optional. Zulässig sind PDF, JPG und PNG bis 10 MB.",
       "avis.info.4": "Lieferungen unter 20 Paletten sind jederzeit buchbar. Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.",
-      "avis.info.5": "Vom 21.12.2026 bis 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 können Anlieferungen erfolgen.",
+      "avis.info.5": "Vom 21.12.2026 bis zum 08.01.2027 ist die Warenannahme wegen Betriebsurlaub geschlossen.",
       "avis.info.6": "Nach der Buchung erhalten Sie eine Buchungsnummer. Eine Bestätigungs-E-Mail wird nicht versandt. Bitte notieren oder drucken Sie den Beleg.",
       "avis.step1.title": "1. Anlieferdatum wählen",
       "avis.step1.text": "Wählen Sie einen verfügbaren Werktag im Kalender.",
@@ -99,6 +94,7 @@
       "avis.loadError": "Die Verfügbarkeit konnte nicht geladen werden. Bitte laden Sie die Seite neu. Buchungen sind im Moment nicht möglich.",
       "avis.legend.free": "Verfügbar",
       "avis.legend.limited": "Nur unter 20 Paletten",
+      "avis.urlaub": "Betriebsurlaub",
       "avis.hint.text": "Die Zahl zeigt, wie viele Lieferungen ab 20 Paletten an diesem Tag bereits gebucht sind (von drei). Lieferungen unter 20 Paletten sind jederzeit buchbar.",
       "avis.hint.limited": "unter 20",
       "avis.status.free": "verfügbar",
@@ -145,150 +141,470 @@
       "avis.beleg.new": "Neue Buchung"
     },
     en: {
-      "holiday.title": "COMPANY HOLIDAY 2026/2027",
-      "holiday.banner": "We are closed for company holidays from <strong>21.12.2026 up to and including 08.01.2027</strong>. We will be back for you starting <strong class='highlight'>11.01.2027</strong>. From this day on, our <strong>goods receiving</strong> is also open again. We wish you a Merry Christmas and a Happy New Year!",
-      "holiday.closed": "Company holiday – closed",
-      "holiday.error": "Due to our company holidays, goods receiving is closed from 21.12.2026 up to and including 08.01.2027. We will be back for you starting 11.01.2027."
-      // Weitere Texte wurden aus Gründen der Übersichtlichkeit wie im Original belassen, nur die neuen Keys hinzugefügt. (Die Logik greift auf DE als Fallback zurück, wenn Keys nicht gefunden werden, aber für Produktion sollten alle kopiert werden. Ich bilde hier die neuen Keys für alle Sprachen ab.)
+      "banner.urlaub": "Important notice: From 21.12.2026 to 08.01.2027 we are closed for company holidays. Goods receiving will reopen on 11.01.2027.",
+      "rules.4": "During the company holidays (21.12.2026 - 08.01.2027) goods receiving remains closed.",
+      "avis.info.5": "From 21.12.2026 to 08.01.2027 goods receiving is closed due to company holidays.",
+      "avis.urlaub": "Company holidays",
+      "hero.title": "Goods receiving",
+      "hero.lead": "To keep operations at our loading ramp running smoothly, we ask all partners to follow our delivery guidelines and to register every delivery through our digital notification system.",
+      "hero.cta": "Register a delivery",
+      "zeiten.aria": "Opening hours",
+      "zeiten.regular.label": "Regular unloading",
+      "zeiten.regular.days": "Monday to Thursday",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Shortened unloading",
+      "zeiten.short.days": "Friday",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Important note",
+      "zeiten.note.days": "Register in advance",
+      "zeiten.note.text": "Please register every delivery in good time through the booking portal.",
+      "steps.title": "How a delivery works",
+      "steps.1.title": "Choose a date",
+      "steps.1.text": "Choose an available working day in the booking portal. The calendar shows how many slots for deliveries of 20 pallets or more are still free on that day.",
+      "steps.2.title": "Enter delivery details",
+      "steps.2.text": "Enter the forwarding company, email address, number of pallets and BE number or reference. You can optionally upload the delivery note.",
+      "steps.3.title": "Keep your confirmation",
+      "steps.3.text": "After booking you receive a booking number. Note it down or print it and have it ready for the delivery.",
+      "rules.title": "Important rules",
+      "rules.1": "Goods receiving takes place only from Monday to Friday. You book a day, not a time.",
+      "rules.2": "Deliveries under 20 pallets can be booked at any time.",
+      "rules.3": "Deliveries of 20 pallets or more are limited to three per day.",
+      "rules.5": "Delivery notes can be uploaded as PDF, JPG or PNG, up to 10 MB.",
+      "feedback.title": "Help us get better!",
+      "feedback.text": "We have newly developed our digital booking portal for you. Is there anything in the process that we could make easier or better? We welcome every suggestion!",
+      "feedback.open": "Send a suggestion",
+      "feedback.submit": "Send suggestion",
+      "feedback.sending": "Sending...",
+      "feedback.close": "Close",
+      "feedback.modal.title": "Ideas for the website?",
+      "feedback.modal.text.index": "Have you noticed anything in our new booking portal that we could still improve? We welcome your suggestions!",
+      "feedback.modal.text.booking": "Have you noticed anything while booking that we could still improve? We welcome your suggestions!",
+      "feedback.form.name": "Company / name",
+      "feedback.form.email": "Your email (for any queries)",
+      "feedback.form.message": "Your suggestion",
+      "feedback.form.placeholder": "What could we do better on the website?",
+      "feedback.success": "Thank you for your suggestions!",
+      "feedback.error": "Unfortunately your suggestion could not be saved. Please try again later or call us: +49 911 30039794.",
+      "contact.title": "Contact",
+      "contact.queries": "Questions about goods receiving",
+      "contact.phone": "Phone:",
+      "contact.email": "Email:",
+      "footer.admin": "Administration",
+      "footer.legal": "Legal",
+      "meta.title.avis": "Booking portal | Darula Transporte",
+      "meta.description.avis": "Register a delivery with Darula Transporte & Logistik: choose a delivery date and register the delivery.",
+      "avis.seitentitel": "Delivery notification portal",
+      "avis.info.summary": "Important information before booking",
+      "avis.info.1": "You book a day, not a time. Unloading: Monday to Thursday from 07:00 to 14:30, Friday from 07:00 to 12:00.",
+      "avis.info.2": "Please have ready: forwarding company, email address, number of pallets and BE number or reference.",
+      "avis.info.3": "The delivery note is optional. Allowed formats: PDF, JPG and PNG up to 10 MB.",
+      "avis.info.4": "Deliveries under 20 pallets can be booked at any time. Deliveries of 20 pallets or more are limited to three per day.",
+      "avis.info.6": "After booking you receive a booking number. No confirmation email is sent. Please note down or print the receipt.",
+      "avis.step1.title": "1. Choose delivery date",
+      "avis.step1.text": "Choose an available working day in the calendar.",
+      "avis.month.prev": "Previous month",
+      "avis.month.next": "Next month",
+      "avis.loading": "Loading availability …",
+      "avis.loadError": "Availability could not be loaded. Please reload the page. Bookings are not possible at the moment.",
+      "avis.legend.free": "Available",
+      "avis.legend.limited": "Only under 20 pallets",
+      "avis.hint.text": "The number shows how many deliveries of 20 pallets or more are already booked on that day (out of three). Deliveries under 20 pallets can be booked at any time.",
+      "avis.hint.limited": "under 20",
+      "avis.status.free": "available",
+      "avis.status.limited": "only deliveries under 20 pallets",
+      "avis.status.weekend": "closed",
+      "avis.status.past": "past",
+      "avis.status.unavailable": "not available",
+      "avis.aria.day": "{datum}: {status}, {gross} of {max} large deliveries booked",
+      "avis.selected": "Selected: {datum}",
+      "avis.none": "No day selected yet.",
+      "avis.next": "Continue to step 2",
+      "avis.step2.title": "2. Enter shipment details",
+      "avis.step2.chosen": "Selected date:",
+      "avis.required": "Required field",
+      "avis.field.company": "Forwarding company",
+      "avis.field.email": "Email address for queries",
+      "avis.field.palettes": "Number of pallets",
+      "avis.field.be": "BE number / reference",
+      "avis.field.file": "Delivery note (optional)",
+      "avis.field.file.help": "PDF, JPG or PNG, maximum 10 MB.",
+      "avis.palett.hint.full": "All three slots for deliveries of 20 pallets or more are booked on this day. Please choose another day or a number under 20 pallets.",
+      "avis.palett.hint.max3": "Deliveries of 20 pallets or more are limited to three per day.",
+      "avis.back": "Back",
+      "avis.submit": "Book now (binding)",
+      "avis.submitting": "Booking …",
+      "avis.err.company": "Please enter the forwarding company (2 to 100 characters).",
+      "avis.err.email": "Please enter a valid email address.",
+      "avis.err.palettes": "The number of pallets must be between 1 and 200.",
+      "avis.err.be": "Please enter a BE number or reference.",
+      "avis.err.fullDay": "All slots for deliveries of 20 pallets or more are booked on this day.",
+      "avis.err.fileType": "The delivery note must be a PDF, JPG or PNG.",
+      "avis.err.fileSize": "The delivery note is larger than 10 MB.",
+      "avis.err.generic": "The booking could not be saved. Please try again.",
+      "avis.beleg.title": "Booking confirmed",
+      "avis.beleg.text": "Your delivery has been registered. Please note down or print the booking number.",
+      "avis.beleg.heading": "Delivery receipt",
+      "avis.beleg.bookingNo": "Booking number",
+      "avis.beleg.date": "Delivery date",
+      "avis.beleg.company": "Forwarding company",
+      "avis.beleg.pallets": "Pallets",
+      "avis.beleg.warning": "Your booking has been saved, but the delivery note could not be uploaded. Please call us on +49 911 30039794 or bring the delivery note with you on delivery day.",
+      "avis.beleg.question": "Questions or changes to the booking:",
+      "avis.beleg.print": "Print",
+      "avis.beleg.new": "New booking"
     },
     ro: {
-      "holiday.title": "CONCEDIU DE COMPANIE 2026/2027",
-      "holiday.banner": "Avem concediu de companie de la <strong>21.12.2026 până la 08.01.2027 inclusiv</strong>. Vom fi din nou la dispoziția dumneavoastră începând cu <strong class='highlight'>11.01.2027</strong>. Din această zi, <strong>recepția mărfurilor</strong> este din nou deschisă. Vă dorim un Crăciun Fericit și un An Nou fericit!",
-      "holiday.closed": "Concediu de companie – închis",
-      "holiday.error": "Datorită concediului nostru de companie, recepția mărfurilor este închisă între 21.12.2026 și 08.01.2027 inclusiv. Vom fi din nou la dispoziția dumneavoastră din 11.01.2027."
+      "banner.urlaub": "Informații importante: Între 21.12.2026 și 08.01.2027 suntem închiși pentru concediul de odihnă. Recepția mărfurilor se va redeschide pe 11.01.2027.",
+      "rules.4": "În timpul concediului de odihnă (21.12.2026 - 08.01.2027) recepția mărfurilor rămâne închisă.",
+      "avis.info.5": "Între 21.12.2026 și 08.01.2027 recepția mărfurilor este închisă din cauza concediului de odihnă.",
+      "avis.urlaub": "Concediu de odihnă",
+      "hero.title": "Recepție marfă",
+      "hero.lead": "Pentru ca activitatea la rampa noastră să decurgă fără probleme, vă rugăm să respectați regulile noastre de livrare și să anunțați fiecare livrare prin sistemul nostru digital de notificare.",
+      "hero.cta": "Anunțați o livrare",
+      "zeiten.aria": "Program",
+      "zeiten.regular.label": "Descărcare obișnuită",
+      "zeiten.regular.days": "Luni până joi",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Descărcare redusă",
+      "zeiten.short.days": "Vineri",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Notă importantă",
+      "zeiten.note.days": "Anunțați din timp",
+      "zeiten.note.text": "Vă rugăm să anunțați fiecare livrare la timp prin portalul de rezervări.",
+      "steps.title": "Cum decurge o livrare",
+      "steps.1.title": "Alegeți data",
+      "steps.1.text": "Alegeți în portalul de rezervări o zi lucrătoare disponibilă. Calendarul arată câte locuri pentru livrări de 20 de paleți sau mai mult mai sunt libere în acea zi.",
+      "steps.2.title": "Introduceți datele livrării",
+      "steps.2.text": "Introduceți firma de transport, adresa de e-mail, numărul de paleți și numărul BE sau referința. Avizul de însoțire poate fi încărcat opțional.",
+      "steps.3.title": "Păstrați confirmarea",
+      "steps.3.text": "După rezervare primiți un număr de rezervare. Notați-l sau tipăriți-l și păstrați-l la îndemână pentru livrare.",
+      "rules.title": "Reguli importante",
+      "rules.1": "Recepția mărfii are loc doar de luni până vineri. Se rezervă o zi, nu o oră.",
+      "rules.2": "Livrările sub 20 de paleți pot fi rezervate oricând.",
+      "rules.3": "Livrările de 20 de paleți sau mai mult sunt limitate la trei pe zi.",
+      "rules.5": "Avizele de însoțire pot fi încărcate în format PDF, JPG sau PNG, de cel mult 10 MB.",
+      "feedback.title": "Ajutați-ne să ne îmbunătățim!",
+      "feedback.text": "Am dezvoltat portalul nostru digital de rezervări complet nou pentru dumneavoastră. Observați ceva în proces ce am putea face mai simplu sau mai bine? Ne bucurăm de fiecare sugestie!",
+      "feedback.open": "Trimiteți o sugestie",
+      "feedback.submit": "Trimiteți sugestia",
+      "feedback.sending": "Se trimite...",
+      "feedback.close": "Închide",
+      "feedback.modal.title": "Idei pentru site?",
+      "feedback.modal.text.index": "Observați ceva în noul nostru portal de rezervări ce am putea îmbunătăți? Ne bucurăm de sugestiile dumneavoastră!",
+      "feedback.modal.text.booking": "Observați ceva la rezervare ce am putea îmbunătăți? Ne bucurăm de sugestiile dumneavoastră!",
+      "feedback.form.name": "Firmă / nume",
+      "feedback.form.email": "E-mailul dumneavoastră (pentru eventuale întrebări)",
+      "feedback.form.message": "Sugestia dumneavoastră",
+      "feedback.form.placeholder": "Ce am putea face mai bine pe site?",
+      "feedback.success": "Vă mulțumim pentru sugestii!",
+      "feedback.error": "Din păcate, sugestia nu a putut fi salvată. Vă rugăm să încercați din nou mai târziu sau să ne sunați: +49 911 30039794.",
+      "contact.title": "Contact",
+      "contact.queries": "Întrebări despre recepția mărfii",
+      "contact.phone": "Telefon:",
+      "contact.email": "E-mail:",
+      "footer.admin": "Administrare",
+      "footer.legal": "Informații juridice",
+      "meta.title.avis": "Portal de rezervări | Darula Transporte",
+      "meta.description.avis": "Anunțați o livrare la Darula Transporte & Logistik: alegeți data livrării și înregistrați livrarea.",
+      "avis.seitentitel": "Portal de anunțare a livrărilor",
+      "avis.info.summary": "Informații importante înainte de rezervare",
+      "avis.info.1": "Rezervați o zi, nu o oră. Descărcare: luni până joi între 07:00 și 14:30, vineri între 07:00 și 12:00.",
+      "avis.info.2": "Vă rugăm să pregătiți: firma de transport, adresa de e-mail, numărul de paleți și numărul BE sau referința.",
+      "avis.info.3": "Avizul de însoțire este opțional. Sunt admise formatele PDF, JPG și PNG, de cel mult 10 MB.",
+      "avis.info.4": "Livrările sub 20 de paleți pot fi rezervate oricând. Livrările de 20 de paleți sau mai mult sunt limitate la trei pe zi.",
+      "avis.info.6": "După rezervare primiți un număr de rezervare. Nu se trimite un e-mail de confirmare. Vă rugăm să notați sau să tipăriți confirmarea.",
+      "avis.step1.title": "1. Alegeți data livrării",
+      "avis.step1.text": "Alegeți o zi lucrătoare disponibilă din calendar.",
+      "avis.month.prev": "Luna anterioară",
+      "avis.month.next": "Luna următoare",
+      "avis.loading": "Se încarcă disponibilitatea …",
+      "avis.loadError": "Disponibilitatea nu a putut fi încărcată. Vă rugăm să reîncărcați pagina. Rezervările nu sunt posibile momentan.",
+      "avis.legend.free": "Disponibil",
+      "avis.legend.limited": "Doar sub 20 de paleți",
+      "avis.hint.text": "Cifra arată câte livrări de 20 de paleți sau mai mult sunt deja rezervate în acea zi (din trei). Livrările sub 20 de paleți pot fi rezervate oricând.",
+      "avis.hint.limited": "sub 20",
+      "avis.status.free": "disponibil",
+      "avis.status.limited": "doar livrări sub 20 de paleți",
+      "avis.status.weekend": "închis",
+      "avis.status.past": "trecut",
+      "avis.status.unavailable": "indisponibil",
+      "avis.aria.day": "{datum}: {status}, {gross} din {max} livrări mari rezervate",
+      "avis.selected": "Ales: {datum}",
+      "avis.none": "Nicio zi selectată încă.",
+      "avis.next": "Continuați la pasul 2",
+      "avis.step2.title": "2. Introduceți datele expedierii",
+      "avis.step2.chosen": "Data aleasă:",
+      "avis.required": "Câmp obligatoriu",
+      "avis.field.company": "Firma de transport",
+      "avis.field.email": "Adresa de e-mail pentru întrebări",
+      "avis.field.palettes": "Număr de paleți",
+      "avis.field.be": "Numărul BE / referința",
+      "avis.field.file": "Aviz de însoțire (opțional)",
+      "avis.field.file.help": "PDF, JPG sau PNG, maximum 10 MB.",
+      "avis.palett.hint.full": "Toate cele trei locuri pentru livrări de 20 de paleți sau mai mult sunt ocupate în această zi. Vă rugăm să alegeți altă zi sau un număr sub 20 de paleți.",
+      "avis.palett.hint.max3": "Livrările de 20 de paleți sau mai mult sunt limitate la trei pe zi.",
+      "avis.back": "Înapoi",
+      "avis.submit": "Rezervați (obligatoriu)",
+      "avis.submitting": "Se rezervă …",
+      "avis.err.company": "Vă rugăm să introduceți firma de transport (2 până la 100 de caractere).",
+      "avis.err.email": "Vă rugăm să introduceți o adresă de e-mail validă.",
+      "avis.err.palettes": "Numărul de paleți trebuie să fie între 1 și 200.",
+      "avis.err.be": "Vă rugăm să introduceți numărul BE sau referința.",
+      "avis.err.fullDay": "Toate locurile pentru livrări de 20 de paleți sau mai mult sunt ocupate în această zi.",
+      "avis.err.fileType": "Avizul de însoțire trebuie să fie PDF, JPG sau PNG.",
+      "avis.err.fileSize": "Avizul de însoțire depășește 10 MB.",
+      "avis.err.generic": "Rezervarea nu a putut fi salvată. Vă rugăm să încercați din nou.",
+      "avis.beleg.title": "Rezervare confirmată",
+      "avis.beleg.text": "Livrarea dumneavoastră a fost înregistrată. Vă rugăm să notați sau să tipăriți numărul de rezervare.",
+      "avis.beleg.heading": "Confirmare de livrare",
+      "avis.beleg.bookingNo": "Număr de rezervare",
+      "avis.beleg.date": "Data livrării",
+      "avis.beleg.company": "Firma de transport",
+      "avis.beleg.pallets": "Paleți",
+      "avis.beleg.warning": "Rezervarea dumneavoastră a fost salvată, dar avizul de însoțire nu a putut fi încărcat. Vă rugăm să ne sunați la +49 911 30039794 sau să aduceți avizul la livrare.",
+      "avis.beleg.question": "Întrebări sau modificări ale rezervării:",
+      "avis.beleg.print": "Tipărire",
+      "avis.beleg.new": "Rezervare nouă"
     },
     pl: {
-      "holiday.title": "URLOP FIRMOWY 2026/2027",
-      "holiday.banner": "Nasza firma jest zamknięta z powodu urlopu od <strong>21.12.2026 do 08.01.2027 włącznie</strong>. Będziemy do Państwa dyspozycji ponownie od <strong class='highlight'>11.01.2027</strong>. Od tego dnia nasze <strong>przyjęcie towaru</strong> jest ponownie otwarte. Życzymy Wesołych Świąt i Szczęśliwego Nowego Roku!",
-      "holiday.closed": "Urlop firmowy – zamknięte",
-      "holiday.error": "Z powodu naszego urlopu firmowego przyjęcie towaru jest zamknięte od 21.12.2026 do 08.01.2027 włącznie. Jesteśmy do Państwa dyspozycji ponownie od 11.01.2027."
+      "banner.urlaub": "Ważna informacja: Od 21.12.2026 do 08.01.2027 mamy przerwę urlopową. Przyjęcie towaru zostanie otwarte 11.01.2027.",
+      "rules.4": "Podczas przerwy urlopowej (21.12.2026 - 08.01.2027) przyjęcie towaru jest zamknięte.",
+      "avis.info.5": "Od 21.12.2026 do 08.01.2027 przyjęcie towaru jest zamknięte z powodu przerwy urlopowej.",
+      "avis.urlaub": "Przerwa urlopowa",
+      "hero.title": "Przyjęcie towaru",
+      "hero.lead": "Aby praca przy naszej rampie przebiegała sprawnie, prosimy wszystkich partnerów o przestrzeganie naszych zasad dostaw i zgłaszanie każdej dostawy w naszym cyfrowym systemie zapowiedzi.",
+      "hero.cta": "Zgłoś dostawę",
+      "zeiten.aria": "Godziny otwarcia",
+      "zeiten.regular.label": "Standardowy rozładunek",
+      "zeiten.regular.days": "Od poniedziałku do czwartku",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Skrócony rozładunek",
+      "zeiten.short.days": "Piątek",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Ważna uwaga",
+      "zeiten.note.days": "Zgłaszać z wyprzedzeniem",
+      "zeiten.note.text": "Prosimy zgłaszać każdą dostawę z odpowiednim wyprzedzeniem w portalu rezerwacji.",
+      "steps.title": "Jak przebiega dostawa",
+      "steps.1.title": "Wybierz termin",
+      "steps.1.text": "Wybierz w portalu rezerwacji dostępny dzień roboczy. Kalendarz pokazuje, ile miejsc na dostawy od 20 palet jest tego dnia jeszcze wolnych.",
+      "steps.2.title": "Wprowadź dane dostawy",
+      "steps.2.text": "Podaj firmę spedycyjną, adres e-mail, liczbę palet oraz numer BE lub referencję. List przewozowy można dodać opcjonalnie.",
+      "steps.3.title": "Zachowaj potwierdzenie",
+      "steps.3.text": "Po rezerwacji otrzymasz numer rezerwacji. Zapisać lub wydrukować go i mieć pod ręką na czas dostawy.",
+      "rules.title": "Ważne zasady",
+      "rules.1": "Przyjęcie towaru odbywa się wyłącznie od poniedziałku do piątku. Rezerwuje się dzień, nie godzinę.",
+      "rules.2": "Dostawy poniżej 20 palet można rezerwować w dowolnym momencie.",
+      "rules.3": "Dostawy od 20 palet są możliwe maksymalnie trzy dziennie.",
+      "rules.5": "Listy przewozowe można przesłać jako PDF, JPG lub PNG, maksymalnie 10 MB.",
+      "feedback.title": "Wspólnie ulepszajmy naszą stronę!",
+      "feedback.text": "Całkowicie na nowo opracowaliśmy dla Państwa nasz cyfrowy portal rezerwacji. Czy zauważyli Państwo w procesie coś, co moglibyśmy jeszcze uprościć lub ulepszyć? Cieszymy się z każdej sugestii!",
+      "feedback.open": "Wyślij sugestię",
+      "feedback.submit": "Wyślij sugestię",
+      "feedback.sending": "Wysyłanie...",
+      "feedback.close": "Zamknij",
+      "feedback.modal.title": "Pomysły na stronę?",
+      "feedback.modal.text.index": "Czy zauważyli Państwo w naszym nowym portalu rezerwacji coś, co moglibyśmy jeszcze ulepszyć? Cieszymy się z Państwa sugestii!",
+      "feedback.modal.text.booking": "Czy podczas rezerwacji zauważyli Państwo coś, co moglibyśmy ulepszyć? Cieszymy się z Państwa sugestii!",
+      "feedback.form.name": "Firma / imię i nazwisko",
+      "feedback.form.email": "Państwa e-mail (do ewentualnych pytań)",
+      "feedback.form.message": "Państwa sugestia",
+      "feedback.form.placeholder": "Co moglibyśmy zrobić lepiej na stronie?",
+      "feedback.success": "Dziękujemy za Państwa sugestie!",
+      "feedback.error": "Niestety nie udało się zapisać sugestii. Prosimy spróbować ponownie później lub zadzwonić: +49 911 30039794.",
+      "contact.title": "Kontakt",
+      "contact.queries": "Pytania dotyczące przyjęcia towaru",
+      "contact.phone": "Telefon:",
+      "contact.email": "E-mail:",
+      "footer.admin": "Administracja",
+      "footer.legal": "Informacje prawne",
+      "meta.title.avis": "Portal rezerwacji | Darula Transporte",
+      "meta.description.avis": "Zgłoś dostawę do Darula Transporte & Logistik: wybierz termin dostawy i zarejestruj ją.",
+      "avis.seitentitel": "Portal zgłoszeń dostaw",
+      "avis.info.summary": "Ważne informacje przed rezerwacją",
+      "avis.info.1": "Rezerwujesz dzień, nie godzinę. Rozładunek: od poniedziałku do czwartku od 07:00 do 14:30, w piątek od 07:00 do 12:00.",
+      "avis.info.2": "Przygotuj: firmę spedycyjną, adres e-mail, liczbę palet oraz numer BE lub referencję.",
+      "avis.info.3": "List przewozowy jest opcjonalny. Dozwolone formaty: PDF, JPG i PNG do 10 MB.",
+      "avis.info.4": "Dostawy poniżej 20 palet można rezerwować w dowolnym momencie. Dostawy od 20 palet są możliwe maksymalnie trzy dziennie.",
+      "avis.info.6": "Po rezerwacji otrzymasz numer rezerwacji. Nie wysyłamy e-maila z potwierdzeniem. Zapisz lub wydrukuj potwierdzenie.",
+      "avis.step1.title": "1. Wybierz termin dostawy",
+      "avis.step1.text": "Wybierz dostępny dzień roboczy w kalendarzu.",
+      "avis.month.prev": "Poprzedni miesiąc",
+      "avis.month.next": "Następny miesiąc",
+      "avis.loading": "Ładowanie dostępności …",
+      "avis.loadError": "Nie udało się załadować dostępności. Odśwież stronę. Rezerwacje są obecnie niemożliwe.",
+      "avis.legend.free": "Dostępne",
+      "avis.legend.limited": "Tylko poniżej 20 palet",
+      "avis.hint.text": "Liczba pokazuje, ile dostaw od 20 palet jest tego dnia już zarezerwowanych (z trzech). Dostawy poniżej 20 palet można rezerwować w dowolnym momencie.",
+      "avis.hint.limited": "poniżej 20",
+      "avis.status.free": "dostępny",
+      "avis.status.limited": "tylko dostawy poniżej 20 palet",
+      "avis.status.weekend": "zamknięte",
+      "avis.status.past": "minął",
+      "avis.status.unavailable": "niedostępne",
+      "avis.aria.day": "{datum}: {status}, zarezerwowano {gross} z {max} dużych dostaw",
+      "avis.selected": "Wybrano: {datum}",
+      "avis.none": "Nie wybrano jeszcze dnia.",
+      "avis.next": "Przejdź do kroku 2",
+      "avis.step2.title": "2. Wprowadź dane przesyłki",
+      "avis.step2.chosen": "Wybrany termin:",
+      "avis.required": "Pole wymagane",
+      "avis.field.company": "Firma spedycyjna",
+      "avis.field.email": "Adres e-mail do kontaktu",
+      "avis.field.palettes": "Liczba palet",
+      "avis.field.be": "Numer BE / referencja",
+      "avis.field.file": "List przewozowy (opcjonalnie)",
+      "avis.field.file.help": "PDF, JPG lub PNG, maksymalnie 10 MB.",
+      "avis.palett.hint.full": "Wszystkie trzy miejsca na dostawy od 20 palet są tego dnia zajęte. Wybierz inny dzień lub liczbę poniżej 20 palet.",
+      "avis.palett.hint.max3": "Dostawy od 20 palet są ograniczone do trzech dziennie.",
+      "avis.back": "Wstecz",
+      "avis.submit": "Zarezerwuj (wiążąco)",
+      "avis.submitting": "Trwa rezerwacja …",
+      "avis.err.company": "Podaj firmę spedycyjną (od 2 do 100 znaków).",
+      "avis.err.email": "Podaj prawidłowy adres e-mail.",
+      "avis.err.palettes": "Liczba palet musi wynosić od 1 do 200.",
+      "avis.err.be": "Podaj numer BE lub referencję.",
+      "avis.err.fullDay": "Wszystkie miejsca na dostawy od 20 palet są tego dnia zajęte.",
+      "avis.err.fileType": "List przewozowy musi być plikiem PDF, JPG lub PNG.",
+      "avis.err.fileSize": "List przewozowy jest większy niż 10 MB.",
+      "avis.err.generic": "Nie udało się zapisać rezerwacji. Spróbuj ponownie.",
+      "avis.beleg.title": "Rezerwacja potwierdzona",
+      "avis.beleg.text": "Twoja dostawa została zarejestrowana. Zapisz lub wydrukuj numer rezerwacji.",
+      "avis.beleg.heading": "Potwierdzenie dostawy",
+      "avis.beleg.bookingNo": "Numer rezerwacji",
+      "avis.beleg.date": "Data dostawy",
+      "avis.beleg.company": "Firma spedycyjna",
+      "avis.beleg.pallets": "Palety",
+      "avis.beleg.warning": "Rezerwacja została zapisana, ale nie udało się przesłać listu przewozowego. Zadzwoń pod numer +49 911 30039794 lub przynieś list przewozowy przy dostawie.",
+      "avis.beleg.question": "Pytania lub zmiany dotyczące rezerwacji:",
+      "avis.beleg.print": "Drukuj",
+      "avis.beleg.new": "Nowa rezerwacja"
     },
     cs: {
-      "holiday.title": "CELOZÁVODNÍ DOVOLENÁ 2026/2027",
-      "holiday.banner": "Máme celozávodní dovolenou od <strong>21.12.2026 do 08.01.2027 včetně</strong>. K dispozici vám budeme opět od <strong class='highlight'>11.01.2027</strong>. Od tohoto dne je opět otevřen i náš <strong>příjem zboží</strong>. Přejeme Vám veselé Vánoce a šťastný nový rok!",
-      "holiday.closed": "Celozávodní dovolená – zavřeno",
-      "holiday.error": "Z důvodu celozávodní dovolené je příjem zboží uzavřen od 21.12.2026 do 08.01.2027 včetně. Jsme vám opět k dispozici od 11.01.2027."
+      "banner.urlaub": "Důležitá informace: Od 21.12.2026 do 08.01.2027 máme závodní dovolenou. Příjem zboží bude otevřen 11.01.2027.",
+      "rules.4": "Během závodní dovolené (21.12.2026 - 08.01.2027) je příjem zboží uzavřen.",
+      "avis.info.5": "Od 21.12.2026 do 08.01.2027 je příjem zboží kvůli závodní dovolené uzavřen.",
+      "avis.urlaub": "Závodní dovolená",
+      "hero.title": "Příjem zboží",
+      "hero.lead": "Aby příjem zboží u naší rampy probíhal hladce, žádáme všechny partnery, aby dodržovali naše pravidla pro dodávky a každou dodávku ohlásili prostřednictvím našeho digitálního systému pro avizaci dodávek.",
+      "hero.cta": "Ohlásit dodávku",
+      "zeiten.aria": "Otevírací doba",
+      "zeiten.regular.label": "Běžné vykládání",
+      "zeiten.regular.days": "Pondělí až čtvrtek",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Zkrácené vykládání",
+      "zeiten.short.days": "Pátek",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Důležitá poznámka",
+      "zeiten.note.days": "Ohlásit předem",
+      "zeiten.note.text": "Každou dodávku prosíme včas ohlaste prostřednictvím rezervačního portálu.",
+      "steps.title": "Jak probíhá dodávka",
+      "steps.1.title": "Vyberte termín",
+      "steps.1.text": "V rezervačním portálu vyberte dostupný pracovní den. Kalendář ukazuje, kolik míst pro dodávky od 20 palet je v daný den ještě volných.",
+      "steps.2.title": "Zadejte údaje o dodávce",
+      "steps.2.text": "Uveďte speditérskou firmu, e-mailovou adresu, počet palet a číslo BE nebo referenci. Dodací list můžete volitelně nahrát.",
+      "steps.3.title": "Uschovejte potvrzení",
+      "steps.3.text": "Po rezervaci obdržíte číslo rezervace. Zapište si ho nebo vytiskněte a mějte ho připravené pro dodávku.",
+      "rules.title": "Důležitá pravidla",
+      "rules.1": "Příjem zboží probíhá pouze od pondělí do pátku. Rezervuje se den, nikoli čas.",
+      "rules.2": "Dodávky do 20 palet lze kdykoli rezervovat.",
+      "rules.3": "Dodávky od 20 palet jsou možné nejvýše tři denně.",
+      "rules.5": "Dodací listy lze nahrát ve formátu PDF, JPG nebo PNG, nejvýše 10 MB.",
+      "feedback.title": "Pomozte nám být lepší!",
+      "feedback.text": "Náš digitální rezervační portál jsme pro vás zcela nově vyvinuli. Všimli jste si v průběhu něčeho, co bychom mohli ještě zjednodušit nebo zlepšit? Každého návrhu si velmi vážíme!",
+      "feedback.open": "Odeslat návrh",
+      "feedback.submit": "Odeslat návrh",
+      "feedback.sending": "Odesílání...",
+      "feedback.close": "Zavřít",
+      "feedback.modal.title": "Nápady na web?",
+      "feedback.modal.text.index": "Všimli jste si v našem novém rezervačním portálu něčeho, co bychom mohli ještě zlepšit? Vaše návrhy uvítáme!",
+      "feedback.modal.text.booking": "Všimli jste si při rezervaci něčeho, co bychom mohli zlepšit? Vaše návrhy uvítáme!",
+      "feedback.form.name": "Firma / jméno",
+      "feedback.form.email": "Váš e-mail (pro případné dotazy)",
+      "feedback.form.message": "Váš návrh",
+      "feedback.form.placeholder": "Co bychom mohli na webu zlepšit?",
+      "feedback.success": "Děkujeme za vaše návrhy!",
+      "feedback.error": "Bohužel se návrh nepodařilo uložit. Zkuste to prosím později znovu nebo nám zavolejte: +49 911 30039794.",
+      "contact.title": "Kontakt",
+      "contact.queries": "Dotazy k příjmu zboží",
+      "contact.phone": "Telefon:",
+      "contact.email": "E-mail:",
+      "footer.admin": "Správa",
+      "footer.legal": "Právní informace",
+      "meta.title.avis": "Rezervační portál | Darula Transporte",
+      "meta.description.avis": "Ohlaste dodávku společnosti Darula Transporte & Logistik: vyberte termín dodávky a dodávku zaregistrujte.",
+      "avis.seitentitel": "Portál pro avizaci dodávek",
+      "avis.info.summary": "Důležité informace před rezervací",
+      "avis.info.1": "Rezervujete den, nikoli čas. Vykládání: pondělí až čtvrtek od 07:00 do 14:30, v pátek od 07:00 do 12:00.",
+      "avis.info.2": "Připravte si prosím: speditérskou firmu, e-mailovou adresu, počet palet a číslo BE nebo referenci.",
+      "avis.info.3": "Dodací list je volitelný. Povoleny jsou formáty PDF, JPG a PNG do 10 MB.",
+      "avis.info.4": "Dodávky do 20 palet lze kdykoli rezervovat. Dodávky od 20 palet jsou možné nejvýše tři denně.",
+      "avis.info.6": "Po rezervaci obdržíte číslo rezervace. Potvrzovací e-mail se neodesílá. Zapište si nebo vytiskněte potvrzení.",
+      "avis.step1.title": "1. Vyberte termín dodávky",
+      "avis.step1.text": "V kalendáři vyberte dostupný pracovní den.",
+      "avis.month.prev": "Předchozí měsíc",
+      "avis.month.next": "Další měsíc",
+      "avis.loading": "Načítání dostupnosti …",
+      "avis.loadError": "Dostupnost se nepodařilo načíst. Obnovte prosím stránku. Rezervace momentálně nejsou možné.",
+      "avis.legend.free": "Volné",
+      "avis.legend.limited": "Pouze pod 20 palet",
+      "avis.hint.text": "Číslo ukazuje, kolik dodávek od 20 palet je v daný den již rezervováno (z tří). Dodávky do 20 palet lze kdykoli rezervovat.",
+      "avis.hint.limited": "pod 20",
+      "avis.status.free": "volný",
+      "avis.status.limited": "pouze dodávky do 20 palet",
+      "avis.status.weekend": "zavřeno",
+      "avis.status.past": "minulé",
+      "avis.status.unavailable": "nedostupné",
+      "avis.aria.day": "{datum}: {status}, obsazeno {gross} z {max} velkých dodávek",
+      "avis.selected": "Vybráno: {datum}",
+      "avis.none": "Zatím není vybrán žádný den.",
+      "avis.next": "Pokračovat ke kroku 2",
+      "avis.step2.title": "2. Zadejte údaje o zásilce",
+      "avis.step2.chosen": "Zvolený termín:",
+      "avis.required": "Povinné pole",
+      "avis.field.company": "Speditérská firma",
+      "avis.field.email": "E-mailová adresa pro dotazy",
+      "avis.field.palettes": "Počet palet",
+      "avis.field.be": "Číslo BE / reference",
+      "avis.field.file": "Dodací list (volitelně)",
+      "avis.field.file.help": "PDF, JPG nebo PNG, maximálně 10 MB.",
+      "avis.palett.hint.full": "Všechna tři místa pro dodávky od 20 palet jsou v tento den obsazena. Zvolte prosím jiný den nebo počet palet pod 20.",
+      "avis.palett.hint.max3": "Dodávky od 20 palet jsou omezeny na tři denně.",
+      "avis.back": "Zpět",
+      "avis.submit": "Závazně rezervovat",
+      "avis.submitting": "Probíhá rezervace …",
+      "avis.err.company": "Zadejte prosím speditérskou firmu (2 až 100 znaků).",
+      "avis.err.email": "Zadejte prosím platnou e-mailovou adresu.",
+      "avis.err.palettes": "Počet palet musí být mezi 1 a 200.",
+      "avis.err.be": "Zadejte prosím číslo BE nebo referenci.",
+      "avis.err.fullDay": "Všechna místa pro dodávky od 20 palet jsou v tento den obsazena.",
+      "avis.err.fileType": "Dodací list musí být PDF, JPG nebo PNG.",
+      "avis.err.fileSize": "Dodací list je větší než 10 MB.",
+      "avis.err.generic": "Rezervaci se nepodařilo uložit. Zkuste to prosím znovu.",
+      "avis.beleg.title": "Rezervace potvrzena",
+      "avis.beleg.text": "Vaše dodávka je zaevidována. Zapište si nebo vytiskněte číslo rezervace.",
+      "avis.beleg.heading": "Potvrzení o dodávce",
+      "avis.beleg.bookingNo": "Číslo rezervace",
+      "avis.beleg.date": "Datum dodávky",
+      "avis.beleg.company": "Speditérská firma",
+      "avis.beleg.pallets": "Palety",
+      "avis.beleg.warning": "Rezervace je uložena, ale dodací list se nepodařilo nahrát. Zavolejte nám prosím na +49 911 30039794 nebo dodací list přineste k vykládce.",
+      "avis.beleg.question": "Dotazy nebo změny rezervace:",
+      "avis.beleg.print": "Tisk",
+      "avis.beleg.new": "Nová rezervace"
     },
     tr: {
-      "holiday.title": "ŞİRKET TATİLİ 2026/2027",
-      "holiday.banner": "<strong>21.12.2026 ile 08.01.2027 tarihleri arasında</strong> şirket tatilindeyiz. <strong class='highlight'>11.01.2027</strong> tarihinden itibaren tekrar hizmetinizde olacağız. Bu tarihten itibaren <strong>mal kabulümüz</strong> de tekrar açıktır. Mutlu Noeller ve Yeni Yıllar dileriz!",
-      "holiday.closed": "Şirket tatili – kapalı",
-      "holiday.error": "Şirket tatilimiz nedeniyle mal kabulü 21.12.2026 ile 08.01.2027 tarihleri arasında kapalıdır. 11.01.2027 tarihinden itibaren tekrar hizmetinizdeyiz."
-    },
-    uk: {
-      "holiday.title": "КОРПОРАТИВНА ВІДПУСТКА 2026/2027",
-      "holiday.banner": "Ми йдемо у корпоративну відпустку з <strong>21.12.2026 по 08.01.2027 включно</strong>. Ми знову працюватимемо для вас з <strong class='highlight'>11.01.2027</strong>. З цього дня також відновлює роботу <strong>прийом товарів</strong>. Бажаємо вам щасливого Різдва та щасливого Нового року!",
-      "holiday.closed": "Корпоративна відпустка – зачинено",
-      "holiday.error": "У зв'язку з нашою корпоративною відпусткою прийом товарів зачинено з 21.12.2026 по 08.01.2027 включно. Ми знову до ваших послуг з 11.01.2027."
-    },
-    bg: {
-      "holiday.title": "ФИРМЕНА ОТПУСКА 2026/2027",
-      "holiday.banner": "Имаме фирмена отпуска от <strong>21.12.2026 до 08.01.2027 включително</strong>. Отново сме на ваше разположение от <strong class='highlight'>11.01.2027</strong>. От този ден <strong>приемането на стоки</strong> също е отново отворено. Пожелаваме ви Весела Коледа и Щастлива Нова Година!",
-      "holiday.closed": "Фирмена отпуска – затворено",
-      "holiday.error": "Поради нашата фирмена отпуска приемането на стоки е затворено от 21.12.2026 до 08.01.2027 включително. Отново сме на ваше разположение от 11.01.2027."
-    }
-  };
-
-  function gespeicherteSprache() {
-    try {
-      const wert = window.localStorage.getItem(SPEICHER_SCHLUESSEL);
-      return Object.prototype.hasOwnProperty.call(SPRACHEN, wert) ? wert : null;
-    } catch (fehler) {
-      return null;
-    }
-  }
-
-  let aktuelle = gespeicherteSprache() || STANDARD;
-  document.documentElement.lang = aktuelle;
-
-  function t(schluessel, werte) {
-    let text = (TEXTE[aktuelle] || {})[schluessel];
-    if (text === undefined) text = TEXTE[STANDARD][schluessel];
-    if (text === undefined) {
-      console.warn(`Übersetzungsschlüssel fehlt: ${schluessel}`);
-      return schluessel;
-    }
-    if (werte) {
-      text = text.replace(/\{(\w+)\}/g, (platzhalter, name) =>
-        Object.prototype.hasOwnProperty.call(werte, name) ? String(werte[name]) : platzhalter
-      );
-    }
-    return text;
-  }
-
-  function uebersetzeSeite(wurzel = document) {
-    wurzel.querySelectorAll("[data-i18n]").forEach((el) => {
-      el.textContent = t(el.dataset.i18n);
-    });
-    // NEU: HTML-Unterstützung für das Holiday-Banner (für <strong> Tags)
-    wurzel.querySelectorAll("[data-i18n-html]").forEach((el) => {
-      el.innerHTML = t(el.dataset.i18nHtml);
-    });
-    wurzel.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
-      el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
-    });
-    wurzel.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
-      el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
-    });
-    wurzel.querySelectorAll("[data-i18n-title]").forEach((el) => {
-      el.setAttribute("title", t(el.dataset.i18nTitle));
-    });
-    wurzel.querySelectorAll("[data-i18n-content]").forEach((el) => {
-      el.setAttribute("content", t(el.dataset.i18nContent));
-    });
-    document.documentElement.lang = aktuelle;
-  }
-
-  function setzeSprache(code) {
-    if (!Object.prototype.hasOwnProperty.call(SPRACHEN, code)) return;
-    aktuelle = code;
-    try {
-      window.localStorage.setItem(SPEICHER_SCHLUESSEL, code);
-    } catch (fehler) {}
-    uebersetzeSeite();
-    document.dispatchEvent(new CustomEvent("i18n:change", { detail: { sprache: code } }));
-  }
-
-  const locale = () => SPRACHEN[aktuelle].locale;
-
-  function formatDatum(isoDatum) {
-    const [jahr, monat, tag] = isoDatum.split("-").map(Number);
-    return new Intl.DateTimeFormat(locale(), {
-      timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric"
-    }).format(new Date(Date.UTC(jahr, monat - 1, tag)));
-  }
-
-  function formatMonat(jahr, monat) {
-    return new Intl.DateTimeFormat(locale(), {
-      timeZone: "UTC", month: "long", year: "numeric"
-    }).format(new Date(Date.UTC(jahr, monat, 1)));
-  }
-
-  function formatZeitpunkt(zeitpunkt) {
-    return new Date(zeitpunkt).toLocaleDateString(locale(), { timeZone: "Europe/Berlin" });
-  }
-
-  function mountSwitcher(auswahl) {
-    auswahl.replaceChildren();
-    for (const [code, info] of Object.entries(SPRACHEN)) {
-      const option = document.createElement("option");
-      option.value = code;
-      option.lang = code;
-      option.textContent = `${info.flagge} ${info.name}`;
-      auswahl.append(option);
-    }
-    auswahl.value = aktuelle;
-    auswahl.addEventListener("change", () => setzeSprache(auswahl.value));
-    document.addEventListener("i18n:change", () => {
-      auswahl.value = aktuelle;
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", () => uebersetzeSeite());
-
-  window.I18n = {
-    t, setzeSprache, aktuelleSprache: () => aktuelle, locale, formatDatum,
-    formatMonat, formatZeitpunkt, mountSwitcher, uebersetze: uebersetzeSeite,
-    SPRACHEN, TEXTE
-  };
-})();
+      "banner.urlaub": "Önemli bilgi: 21.12.2026 ile 08.01.2027 tarihleri arasında şirket tatilimiz vardır. Mal kabulü 11.01.2027 tarihinde yeniden açılacaktır.",
+      "rules.4": "Şirket tatili (21.12.2026 - 08.01.2027) süresince mal kabulü kapalı kalacaktır.",
+      "avis.info.5": "21.12.2026 ile 08.01.2027 tarihleri arasında şirket tatili nedeniyle mal kabulü kapalıdır.",
+      "avis.urlaub": "Şirket tatili",
+      "hero.title": "Mal kabulü",
+      "hero.lead": "Rampamızdaki işleyişin sorunsuz ilerlemesi için tüm iş ortaklarımızdan teslimat kurallarımıza uymalarını ve her teslimatı dijital bildirim sistemimiz üzerinden kaydettirmelerini rica ediyoruz.",
+      "hero.cta": "Teslimat bildirin",
+      "zeiten.aria": "Çalışma saatleri",
+      "zeiten.regular.label": "Normal boşaltma",
+      "zeiten.regular.days": "Pazartesi – Perşembe",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Kısaltılmış boşaltma",
+      "zeiten.short.days": "Cuma",
+      "zeiten.short.time": "07:00 – 12:00",
+      "
