@@ -7,11 +7,10 @@
   <meta name="description" content="Warenannahme und Anlieferungsrichtlinien von Darula Transporte &amp; Logistik. Anlieferungen digital avisieren." data-i18n-content="meta.description.index">
   <link rel="stylesheet" href="style.css">
   <script src="i18n.js"></script>
+  <script src="i18n-betriebsurlaub.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt" data-i18n="nav.skip">Zum Inhalt springen</a>
-
-  <div class="hinweis-banner" role="note" data-i18n="banner.inventur">Wichtige Information: Vom 21.12.2026 bis zum 08.01.2027 findet unser Betriebsurlaub statt. Die Warenannahme ist ab dem 11.01.2027 wieder geöffnet.</div>
 
   <header class="site-header">
     <div class="container site-header__inner">
@@ -26,6 +25,33 @@
   </header>
 
   <main id="inhalt">
+    <div class="container bu-wrap">
+      <section class="bu-banner" aria-labelledby="bu-titel">
+        <div class="bu-banner__streifen" aria-hidden="true"></div>
+        <div class="bu-banner__inhalt">
+          <p class="bu-banner__titel" id="bu-titel" role="heading" aria-level="2">
+            <svg class="bu-banner__flocke" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M19.07 4.93L4.93 19.07"/></svg>
+            <span data-i18n="bu.title">BETRIEBSURLAUB 2026/2027</span>
+          </p>
+          <dl class="bu-banner__daten">
+            <div class="bu-banner__feld">
+              <dt data-i18n="bu.from.label">Von</dt>
+              <dd data-i18n="bu.from">Montag, 21.12.2026</dd>
+            </div>
+            <div class="bu-banner__feld">
+              <dt data-i18n="bu.to.label">Bis</dt>
+              <dd data-i18n="bu.to">Freitag, 08.01.2027</dd>
+            </div>
+            <div class="bu-banner__feld bu-banner__feld--wieder">
+              <dt data-i18n="bu.reopen.label">Wiedereröffnung der Warenannahme</dt>
+              <dd data-i18n="bu.reopen">Montag, 11.01.2027</dd>
+            </div>
+          </dl>
+          <p class="bu-banner__text" data-i18n="bu.text">Wir haben Betriebsurlaub vom 21.12.2026 bis einschließlich 08.01.2027. Ab dem 11.01.2027 sind wir wieder für Sie da. Ab diesem Tag ist auch unsere Warenannahme wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</p>
+        </div>
+      </section>
+    </div>
+
     <section class="hero">
       <div class="container">
         <h1 data-i18n="hero.title">Warenannahme</h1>
@@ -82,7 +108,7 @@
           <li data-i18n="rules.1">Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.</li>
           <li data-i18n="rules.2">Lieferungen unter 20 Paletten sind jederzeit buchbar.</li>
           <li data-i18n="rules.3">Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li data-i18n="rules.4">Am 11.11.2026 bleibt die Warenannahme wegen der Inventur geschlossen.</li>
+          <li data-i18n="rules.bu">Vom 21.12.2026 bis einschließlich 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 ist sie wieder geöffnet.</li>
           <li data-i18n="rules.5">Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.</li>
         </ul>
       </div>
