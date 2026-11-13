@@ -7,7 +7,6 @@
   <meta name="description" content="Warenannahme und Anlieferungsrichtlinien von Darula Transporte &amp; Logistik. Anlieferungen digital avisieren." data-i18n-content="meta.description.index">
   <link rel="stylesheet" href="style.css">
   <script src="i18n.js"></script>
-  <script src="i18n-betriebsurlaub.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#inhalt" data-i18n="nav.skip">Zum Inhalt springen</a>
@@ -25,34 +24,15 @@
   </header>
 
   <main id="inhalt">
-    <div class="container bu-wrap">
-      <section class="bu-banner" aria-labelledby="bu-titel">
-        <div class="bu-banner__streifen" aria-hidden="true"></div>
-        <div class="bu-banner__inhalt">
-          <p class="bu-banner__titel" id="bu-titel" role="heading" aria-level="2">
-            <svg class="bu-banner__flocke" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M19.07 4.93L4.93 19.07"/></svg>
-            <span data-i18n="bu.title">BETRIEBSURLAUB 2026/2027</span>
-          </p>
-          <dl class="bu-banner__daten">
-            <div class="bu-banner__feld">
-              <dt data-i18n="bu.from.label">Von</dt>
-              <dd data-i18n="bu.from">Montag, 21.12.2026</dd>
-            </div>
-            <div class="bu-banner__feld">
-              <dt data-i18n="bu.to.label">Bis</dt>
-              <dd data-i18n="bu.to">Freitag, 08.01.2027</dd>
-            </div>
-            <div class="bu-banner__feld bu-banner__feld--wieder">
-              <dt data-i18n="bu.reopen.label">Wiedereröffnung der Warenannahme</dt>
-              <dd data-i18n="bu.reopen">Montag, 11.01.2027</dd>
-            </div>
-          </dl>
-          <p class="bu-banner__text" data-i18n="bu.text">Wir haben Betriebsurlaub vom 21.12.2026 bis einschließlich 08.01.2027. Ab dem 11.01.2027 sind wir wieder für Sie da. Ab diesem Tag ist auch unsere Warenannahme wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</p>
-        </div>
-      </section>
-    </div>
+    <!-- NEU: Professionelle Unternehmensankündigung (Betriebsurlaub) -->
+    <section class="container" aria-labelledby="holiday-title">
+      <div class="holiday-hero">
+        <h2 id="holiday-title" data-i18n="holiday.title">BETRIEBSURLAUB 2026/2027</h2>
+        <p data-i18n-html="holiday.banner">Wir haben Betriebsurlaub vom <strong>21.12.2026 bis einschließlich 08.01.2027</strong>. Ab dem <strong class='highlight'>11.01.2027</strong> sind wir wieder für Sie da. Ab diesem Tag ist auch unsere <strong>Warenannahme</strong> wieder geöffnet. Wir wünschen Ihnen frohe Weihnachten und einen guten Rutsch ins neue Jahr!</p>
+      </div>
+    </section>
 
-    <section class="hero">
+    <section class="hero" style="padding-top: 1rem;">
       <div class="container">
         <h1 data-i18n="hero.title">Warenannahme</h1>
         <p class="lead" data-i18n="hero.lead">Damit der Ablauf an unserer Rampe reibungslos funktioniert, bitten wir alle Partner, unsere Anlieferungsrichtlinien zu beachten und jede Lieferung über unser digitales Avisierungssystem anzumelden.</p>
@@ -108,13 +88,12 @@
           <li data-i18n="rules.1">Die Warenannahme findet nur von Montag bis Freitag statt. Gebucht wird ein Tag, keine Uhrzeit.</li>
           <li data-i18n="rules.2">Lieferungen unter 20 Paletten sind jederzeit buchbar.</li>
           <li data-i18n="rules.3">Lieferungen ab 20 Paletten sind höchstens drei pro Tag möglich.</li>
-          <li data-i18n="rules.bu">Vom 21.12.2026 bis einschließlich 08.01.2027 ist die Warenannahme wegen unseres Betriebsurlaubs geschlossen. Ab dem 11.01.2027 ist sie wieder geöffnet.</li>
+          <li data-i18n="rules.4">Während des Betriebsurlaubs (21.12.2026 - 08.01.2027) ist die Warenannahme geschlossen.</li>
           <li data-i18n="rules.5">Lieferscheine können als PDF, JPG oder PNG mit höchstens 10 MB hochgeladen werden.</li>
         </ul>
       </div>
     </section>
 
-    <!-- Feedback-Block -->
     <section class="container abschnitt no-print" aria-labelledby="feedback-section-titel">
       <div class="card mitte" style="background: var(--info-bg); border-color: var(--info-line);">
         <h2 id="feedback-section-titel" style="color: var(--info);" data-i18n="feedback.title">Helfen Sie uns, besser zu werden!</h2>
@@ -176,7 +155,6 @@
           <textarea id="fb-nachricht" name="message" rows="4" maxlength="5000" style="resize: vertical;" placeholder="Was können wir an der Webseite besser machen?" data-i18n-placeholder="feedback.form.placeholder" required></textarea>
         </div>
 
-        <!-- Bot-Falle: für Menschen unsichtbar, Bots füllen sie aus -->
         <div style="display:none" aria-hidden="true">
           <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
         </div>
@@ -190,15 +168,12 @@
 
 <script src="config.js"></script>
 <script>
-  // Sprach-Auswahl im Header einrichten
   I18n.mountSwitcher(document.getElementById("sprache"));
 </script>
 <script>
 (() => {
   "use strict";
-
   const cfg = window.DARULA_CONFIG || {};
-
   const fbBtn = document.getElementById("feedback-btn");
   const fbModal = document.getElementById("feedback-modal");
   const fbClose = document.getElementById("feedback-close");
@@ -207,8 +182,7 @@
   const fbErsterFeld = document.getElementById("fb-name");
   const fbErfolg = document.getElementById("feedback-erfolg");
   const fbFehler = document.getElementById("feedback-fehler");
-  let fbZuletzt = null;
-  let fbTimer = null;
+  let fbZuletzt = null, fbTimer = null;
 
   function fbOeffnen() {
     clearTimeout(fbTimer);
@@ -225,7 +199,6 @@
     if (fbZuletzt) fbZuletzt.focus();
   }
 
-  // Speichert einen Vorschlag direkt in der Supabase-Tabelle "feedback"
   async function fbSpeichern(daten) {
     const response = await fetch(`${cfg.supabaseUrl}/rest/v1/feedback`, {
       method: "POST",
@@ -237,43 +210,27 @@
       },
       body: JSON.stringify(daten)
     });
-
-    if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      throw new Error(`Supabase antwortete mit ${response.status}: ${text}`);
-    }
+    if (!response.ok) throw new Error(`Supabase antwortete mit ${response.status}`);
   }
 
   fbBtn.addEventListener("click", fbOeffnen);
   fbClose.addEventListener("click", fbSchliessen);
-
-  // Schließen beim Klick außerhalb der Box
-  fbModal.addEventListener("click", (e) => {
-    if (e.target === fbModal) fbSchliessen();
-  });
-
-  // Schließen mit der Escape-Taste
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !fbModal.hidden) fbSchliessen();
-  });
+  fbModal.addEventListener("click", (e) => { if (e.target === fbModal) fbSchliessen(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !fbModal.hidden) fbSchliessen(); });
 
   fbForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     fbForm.classList.add("touched");
-
-    // Zeigt die Browser-Hinweise bei fehlenden oder ungültigen Feldern
     if (!fbForm.reportValidity()) return;
 
     const formData = new FormData(fbForm);
     const istBot = Boolean(formData.get("website"));
-
     fbSubmitBtn.disabled = true;
     fbSubmitBtn.textContent = I18n.t("feedback.sending");
     fbErfolg.hidden = true;
     fbFehler.hidden = true;
 
     try {
-      // Bots bekommen eine Erfolgsmeldung, aber nichts wird gespeichert
       if (!istBot) {
         await fbSpeichern({
           name: formData.get("name").trim(),
@@ -281,18 +238,15 @@
           nachricht: formData.get("message").trim()
         });
       }
-
       fbErfolg.hidden = false;
       fbForm.reset();
       fbForm.classList.remove("touched");
-
-      // Pop-up nach 3 Sekunden automatisch schließen
       fbTimer = setTimeout(() => {
         fbModal.hidden = true;
         fbErfolg.hidden = true;
       }, 3000);
     } catch (error) {
-      console.error("Feedback konnte nicht gespeichert werden:", error);
+      console.error(error);
       fbFehler.hidden = false;
     } finally {
       fbSubmitBtn.disabled = false;
