@@ -607,4 +607,425 @@
       "zeiten.short.label": "Kısaltılmış boşaltma",
       "zeiten.short.days": "Cuma",
       "zeiten.short.time": "07:00 – 12:00",
-      "
+      "zeiten.note.label": "Önemli not",
+      "zeiten.note.days": "Önceden bildirin",
+      "zeiten.note.text": "Lütfen her teslimatı zamanında rezervasyon portalı üzerinden bildirin.",
+      "steps.title": "Teslimat nasıl ilerler",
+      "steps.1.title": "Tarih seçin",
+      "steps.1.text": "Rezervasyon portalında uygun bir iş günü seçin. Takvim, o gün 20 palet ve üzeri teslimatlar için kaç yerin hâlâ boş olduğunu gösterir.",
+      "steps.2.title": "Teslimat bilgilerini girin",
+      "steps.2.text": "Nakliye firmasını, e-posta adresini, palet sayısını ile BE numarası veya referansı girin. Teslimat irsaliyesini isteğe bağlı olarak yükleyebilirsiniz.",
+      "steps.3.title": "Belgeyi saklayın",
+      "steps.3.text": "Rezervasyondan sonra bir rezervasyon numarası alırsınız. Bunu not edin veya yazdırın ve teslimat için hazır bulundurun.",
+      "rules.title": "Önemli kurallar",
+      "rules.1": "Mal kabulü yalnızca Pazartesi ile Cuma arasında yapılır. Rezervasyon bir saat için değil, bir gün için yapılır.",
+      "rules.2": "20 palet altındaki teslimatlar istediğiniz zaman rezerve edilebilir.",
+      "rules.3": "20 palet ve üzeri teslimatlar günde en fazla üç tane olabilir.",
+      "rules.5": "Teslimat irsaliyeleri PDF, JPG veya PNG formatında, en fazla 10 MB olarak yüklenebilir.",
+      "feedback.title": "Daha iyi olmamıza yardımcı olun!",
+      "feedback.text": "Dijital rezervasyon portalımızı sizin için tamamen yeniden geliştirdik. Süreçte daha kolay ya da daha iyi yapabileceğimiz bir şey fark ederseniz bizimle paylaşın. Her öneriyi memnuniyetle karşılarız!",
+      "feedback.open": "Öneri gönderin",
+      "feedback.submit": "Öneriyi gönder",
+      "feedback.sending": "Gönderiliyor...",
+      "feedback.close": "Kapat",
+      "feedback.modal.title": "Web sitesi için fikirleriniz?",
+      "feedback.modal.text.index": "Yeni rezervasyon portalımızda iyileştirebileceğimiz bir şey fark ettiniz mi? Önerilerinizi bekliyoruz!",
+      "feedback.modal.text.booking": "Rezervasyon yaparken iyileştirebileceğimiz bir şey fark ettiniz mi? Önerilerinizi bekliyoruz!",
+      "feedback.form.name": "Firma / Ad",
+      "feedback.form.email": "E-posta adresiniz (olası sorular için)",
+      "feedback.form.message": "İyileştirme öneriniz",
+      "feedback.form.placeholder": "Web sitesinde neyi daha iyi yapabiliriz?",
+      "feedback.success": "Önerileriniz için teşekkür ederiz!",
+      "feedback.error": "Maalesef öneriniz kaydedilemedi. Lütfen daha sonra tekrar deneyin veya bizi arayın: +49 911 30039794.",
+      "contact.title": "İletişim",
+      "contact.queries": "Mal kabulü ile ilgili sorular",
+      "contact.phone": "Telefon:",
+      "contact.email": "E-posta:",
+      "footer.admin": "Yönetim",
+      "footer.legal": "Yasal bilgiler",
+      "meta.title.avis": "Rezervasyon portalı | Darula Transporte",
+      "meta.description.avis": "Darula Transporte & Logistik'e teslimat bildirin: teslimat tarihini seçin ve teslimatı kaydedin.",
+      "avis.seitentitel": "Teslimat bildirim portalı",
+      "avis.info.summary": "Rezervasyon öncesi önemli bilgiler",
+      "avis.info.1": "Bir gün rezerve edersiniz, saat değil. Boşaltma: Pazartesi – Perşembe 07:00 – 14:30, Cuma 07:00 – 12:00.",
+      "avis.info.2": "Lütfen hazır bulundurun: nakliye firması, e-posta adresi, palet sayısı ile BE numarası veya referans.",
+      "avis.info.3": "Teslimat irsaliyesi isteğe bağlıdır. İzin verilen formatlar: PDF, JPG ve PNG, en fazla 10 MB.",
+      "avis.info.4": "20 palet altındaki teslimatlar istediğiniz zaman rezerve edilebilir. 20 palet ve üzeri teslimatlar günde en fazla üç tane olabilir.",
+      "avis.info.6": "Rezervasyondan sonra bir rezervasyon numarası alırsınız. Onay e-postası gönderilmez. Lütfen belgeyi not edin veya yazdırın.",
+      "avis.step1.title": "1. Teslimat tarihini seçin",
+      "avis.step1.text": "Takvimden uygun bir iş günü seçin.",
+      "avis.month.prev": "Önceki ay",
+      "avis.month.next": "Sonraki ay",
+      "avis.loading": "Uygunluk yükleniyor …",
+      "avis.loadError": "Uygunluk bilgisi yüklenemedi. Lütfen sayfayı yenileyin. Şu anda rezervasyon yapılamıyor.",
+      "avis.legend.free": "Müsait",
+      "avis.legend.limited": "Yalnızca 20 palet altı",
+      "avis.hint.text": "Sayı, o gün 20 palet ve üzeri kaç teslimatın zaten rezerve edildiğini gösterir (üçten). 20 palet altındaki teslimatlar istediğiniz zaman rezerve edilebilir.",
+      "avis.hint.limited": "20 altı",
+      "avis.status.free": "müsait",
+      "avis.status.limited": "yalnızca 20 palet altı teslimatlar",
+      "avis.status.weekend": "kapalı",
+      "avis.status.past": "geçmiş",
+      "avis.status.unavailable": "mevcut değil",
+      "avis.aria.day": "{datum}: {status}, {max} büyük teslimattan {gross} tanesi dolu",
+      "avis.selected": "Seçilen: {datum}",
+      "avis.none": "Henüz bir gün seçilmedi.",
+      "avis.next": "2. adıma geç",
+      "avis.step2.title": "2. Sevkiyat bilgilerini girin",
+      "avis.step2.chosen": "Seçilen tarih:",
+      "avis.required": "Zorunlu alan",
+      "avis.field.company": "Nakliye firması",
+      "avis.field.email": "Sorular için e-posta adresi",
+      "avis.field.palettes": "Palet sayısı",
+      "avis.field.be": "BE numarası / referans",
+      "avis.field.file": "Teslimat irsaliyesi (isteğe bağlı)",
+      "avis.field.file.help": "PDF, JPG veya PNG, en fazla 10 MB.",
+      "avis.palett.hint.full": "Bu gün 20 palet ve üzeri teslimatlar için üç yerin tamamı dolu. Lütfen başka bir gün veya 20 palet altı bir sayı seçin.",
+      "avis.palett.hint.max3": "20 palet ve üzeri teslimatlar günde üçle sınırlıdır.",
+      "avis.back": "Geri",
+      "avis.submit": "Bağlayıcı olarak rezerve et",
+      "avis.submitting": "Rezervasyon yapılıyor …",
+      "avis.err.company": "Lütfen nakliye firmasını girin (2 ila 100 karakter).",
+      "avis.err.email": "Lütfen geçerli bir e-posta adresi girin.",
+      "avis.err.palettes": "Palet sayısı 1 ile 200 arasında olmalıdır.",
+      "avis.err.be": "Lütfen bir BE numarası veya referans girin.",
+      "avis.err.fullDay": "Bu gün 20 palet ve üzeri teslimatlar için tüm yerler dolu.",
+      "avis.err.fileType": "Teslimat irsaliyesi PDF, JPG veya PNG olmalıdır.",
+      "avis.err.fileSize": "Teslimat irsaliyesi 10 MB'den büyük.",
+      "avis.err.generic": "Rezervasyon kaydedilemedi. Lütfen tekrar deneyin.",
+      "avis.beleg.title": "Rezervasyon onaylandı",
+      "avis.beleg.text": "Teslimatınız kaydedildi. Lütfen rezervasyon numarasını not edin veya yazdırın.",
+      "avis.beleg.heading": "Teslimat belgesi",
+      "avis.beleg.bookingNo": "Rezervasyon numarası",
+      "avis.beleg.date": "Teslimat tarihi",
+      "avis.beleg.company": "Nakliye firması",
+      "avis.beleg.pallets": "Palet",
+      "avis.beleg.warning": "Rezervasyonunuz kaydedildi, ancak teslimat irsaliyesi yüklenemedi. Lütfen +49 911 30039794 numaralı telefondan bizi arayın veya irsaliyeyi teslimata getirin.",
+      "avis.beleg.question": "Rezervasyonla ilgili sorular veya değişiklikler:",
+      "avis.beleg.print": "Yazdır",
+      "avis.beleg.new": "Yeni rezervasyon"
+    },
+    uk: {
+      "banner.urlaub": "Важлива інформація: З 21.12.2026 по 08.01.2027 ми зачинені на корпоративну відпустку. Прийом товарів відновиться 11.01.2027.",
+      "rules.4": "Під час корпоративної відпустки (21.12.2026 - 08.01.2027) прийом товарів залишається закритим.",
+      "avis.info.5": "З 21.12.2026 по 08.01.2027 прийом товарів закритий через корпоративну відпустку.",
+      "avis.urlaub": "Корпоративна відпустка",
+      "hero.title": "Прийом товарів",
+      "hero.lead": "Щоб робота біля нашої рампи проходила без збоїв, просимо всіх партнерів дотримуватися наших правил доставки та реєструвати кожну доставку через нашу цифрову систему попереднього повідомлення.",
+      "hero.cta": "Повідомити про доставку",
+      "zeiten.aria": "Години роботи",
+      "zeiten.regular.label": "Звичайне розвантаження",
+      "zeiten.regular.days": "Понеділок – четвер",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Скорочене розвантаження",
+      "zeiten.short.days": "П'ятниця",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Важлива примітка",
+      "zeiten.note.days": "Повідомляти заздалегідь",
+      "zeiten.note.text": "Будь ласка, своєчасно реєструйте кожну доставку через портал бронювання.",
+      "steps.title": "Як відбувається доставка",
+      "steps.1.title": "Оберіть дату",
+      "steps.1.text": "У порталі бронювання оберіть доступний робочий день. Календар показує, скільки місць для доставок від 20 палет ще вільні того дня.",
+      "steps.2.title": "Введіть дані доставки",
+      "steps.2.text": "Вкажіть транспортну компанію, адресу електронної пошти, кількість палет та номер BE або посилання. Накладну можна завантажити за бажанням.",
+      "steps.3.title": "Збережіть підтвердження",
+      "steps.3.text": "Після бронювання ви отримаєте номер бронювання. Запишіть або роздрукуйте його та тримайте напоготові для доставки.",
+      "rules.title": "Важливі правила",
+      "rules.1": "Прийом товарів відбувається лише з понеділка по п'ятницю. Бронюється день, а не година.",
+      "rules.2": "Доставки менше 20 палет можна бронювати в будь-який час.",
+      "rules.3": "Доставки від 20 палет обмежені трьома на день.",
+      "rules.5": "Накладні можна завантажувати у форматах PDF, JPG або PNG, розміром до 10 МБ.",
+      "feedback.title": "Допоможіть нам стати кращими!",
+      "feedback.text": "Ми повністю з нуля розробили для вас наш цифровий портал бронювання. Помітили щось у процесі, що ми могли б зробити простішим або кращим? Ми будемо раді кожній пропозиції!",
+      "feedback.open": "Надіслати пропозицію",
+      "feedback.submit": "Надіслати пропозицію",
+      "feedback.sending": "Надсилання...",
+      "feedback.close": "Закрити",
+      "feedback.modal.title": "Ідеї для сайту?",
+      "feedback.modal.text.index": "Чи помітили ви щось у нашому новому порталі бронювання, що ми могли б ще покращити? Ми будемо раді вашим пропозиціям!",
+      "feedback.modal.text.booking": "Чи помітили ви щось під час бронювання, що ми могли б покращити? Ми будемо раді вашим пропозиціям!",
+      "feedback.form.name": "Компанія / ім'я",
+      "feedback.form.email": "Ваша електронна пошта (для можливих уточнень)",
+      "feedback.form.message": "Ваша пропозиція",
+      "feedback.form.placeholder": "Що ми могли б зробити краще на сайті?",
+      "feedback.success": "Дякуємо за ваші пропозиції!",
+      "feedback.error": "На жаль, пропозицію не вдалося зберегти. Будь ласка, спробуйте пізніше або зателефонуйте нам: +49 911 30039794.",
+      "contact.title": "Контакти",
+      "contact.queries": "Питання щодо прийому товарів",
+      "contact.phone": "Телефон:",
+      "contact.email": "E-mail:",
+      "footer.admin": "Адміністрування",
+      "footer.legal": "Правова інформація",
+      "meta.title.avis": "Портал бронювання | Darula Transporte",
+      "meta.description.avis": "Повідомте про доставку Darula Transporte & Logistik: оберіть дату доставки та зареєструйте її.",
+      "avis.seitentitel": "Портал повідомлень про доставку",
+      "avis.info.summary": "Важлива інформація перед бронюванням",
+      "avis.info.1": "Ви бронюєте день, а не годину. Розвантаження: з понеділка по четвер з 07:00 до 14:30, у п'ятницю з 07:00 до 12:00.",
+      "avis.info.2": "Будь ласка, підготуйте: транспортну компанію, адресу електронної пошти, кількість палет та номер BE або посилання.",
+      "avis.info.3": "Накладна необов'язкова. Дозволені формати: PDF, JPG та PNG до 10 МБ.",
+      "avis.info.4": "Доставки менше 20 палет можна бронювати в будь-який час. Доставки від 20 палет обмежені трьома на день.",
+      "avis.info.6": "Після бронювання ви отримаєте номер бронювання. Лист-підтвердження не надсилається. Будь ласка, запишіть або роздрукуйте підтвердження.",
+      "avis.step1.title": "1. Оберіть дату доставки",
+      "avis.step1.text": "Оберіть доступний робочий день у календарі.",
+      "avis.month.prev": "Попередній місяць",
+      "avis.month.next": "Наступний місяць",
+      "avis.loading": "Завантаження доступності …",
+      "avis.loadError": "Не вдалося завантажити доступність. Будь ласка, оновіть сторінку. Бронювання наразі неможливе.",
+      "avis.legend.free": "Вільно",
+      "avis.legend.limited": "Лише до 20 палет",
+      "avis.hint.text": "Число показує, скільки доставок від 20 палет уже заброньовано на цей день (із трьох). Доставки менше 20 палет можна бронювати в будь-який час.",
+      "avis.hint.limited": "до 20",
+      "avis.status.free": "доступно",
+      "avis.status.limited": "лише доставки до 20 палет",
+      "avis.status.weekend": "зачинено",
+      "avis.status.past": "минуло",
+      "avis.status.unavailable": "недоступно",
+      "avis.aria.day": "{datum}: {status}, заброньовано {gross} з {max} великих доставок",
+      "avis.selected": "Обрано: {datum}",
+      "avis.none": "День ще не обрано.",
+      "avis.next": "Перейти до кроку 2",
+      "avis.step2.title": "2. Введіть дані відправлення",
+      "avis.step2.chosen": "Обрана дата:",
+      "avis.required": "Обов'язкове поле",
+      "avis.field.company": "Транспортна компанія",
+      "avis.field.email": "Електронна пошта для уточнень",
+      "avis.field.palettes": "Кількість палет",
+      "avis.field.be": "Номер BE / посилання",
+      "avis.field.file": "Накладна (необов'язково)",
+      "avis.field.file.help": "PDF, JPG або PNG, максимум 10 МБ.",
+      "avis.palett.hint.full": "Усі три місця для доставок від 20 палет на цей день зайняті. Оберіть інший день або кількість менше 20 палет.",
+      "avis.palett.hint.max3": "Доставки від 20 палет обмежені трьома на день.",
+      "avis.back": "Назад",
+      "avis.submit": "Забронювати (обов'язково)",
+      "avis.submitting": "Бронювання …",
+      "avis.err.company": "Вкажіть транспортну компанію (від 2 до 100 символів).",
+      "avis.err.email": "Вкажіть коректну адресу електронної пошти.",
+      "avis.err.palettes": "Кількість палет має бути від 1 до 200.",
+      "avis.err.be": "Вкажіть номер BE або посилання.",
+      "avis.err.fullDay": "Усі місця для доставок від 20 палет на цей день зайняті.",
+      "avis.err.fileType": "Накладна має бути файлом PDF, JPG або PNG.",
+      "avis.err.fileSize": "Накладна більша за 10 МБ.",
+      "avis.err.generic": "Не вдалося зберегти бронювання. Будь ласка, спробуйте ще раз.",
+      "avis.beleg.title": "Бронювання підтверджено",
+      "avis.beleg.text": "Вашу доставку зареєстровано. Будь ласка, запишіть або роздрукуйте номер бронювання.",
+      "avis.beleg.heading": "Підтвердження доставки",
+      "avis.beleg.bookingNo": "Номер бронювання",
+      "avis.beleg.date": "Дата доставки",
+      "avis.beleg.company": "Транспортна компанія",
+      "avis.beleg.pallets": "Палети",
+      "avis.beleg.warning": "Бронювання збережено, але накладну не вдалося завантажити. Будь ласка, зателефонуйте нам за номером +49 911 30039794 або принесіть накладну під час доставки.",
+      "avis.beleg.question": "Питання або зміни до бронювання:",
+      "avis.beleg.print": "Друк",
+      "avis.beleg.new": "Нове бронювання"
+    },
+    bg: {
+      "banner.urlaub": "Важна информация: От 21.12.2026 до 08.01.2027 г. излизаме във фирмена отпуска. Приемането на стоки ще се възобнови на 11.01.2027 г.",
+      "rules.4": "По време на фирмената отпуска (21.12.2026 - 08.01.2027) приемането на стоки остава затворено.",
+      "avis.info.5": "От 21.12.2026 до 08.01.2027 приемането на стоки е затворено поради фирмена отпуска.",
+      "avis.urlaub": "Фирмена отпуска",
+      "hero.title": "Приемане на стоки",
+      "hero.lead": "За да протича безпроблемно работата при нашата рампа, молим всички партньори да спазват нашите правила за доставка и да регистрират всяка доставка чрез нашата дигитална система за предварително известяване.",
+      "hero.cta": "Съобщете за доставка",
+      "zeiten.aria": "Работно време",
+      "zeiten.regular.label": "Редовно разтоварване",
+      "zeiten.regular.days": "Понеделник до четвъртък",
+      "zeiten.regular.time": "07:00 – 14:30",
+      "zeiten.short.label": "Съкратено разтоварване",
+      "zeiten.short.days": "Петък",
+      "zeiten.short.time": "07:00 – 12:00",
+      "zeiten.note.label": "Важна забележка",
+      "zeiten.note.days": "Съобщавайте предварително",
+      "zeiten.note.text": "Моля, регистрирайте всяка доставка навреме чрез портала за резервации.",
+      "steps.title": "Как протича доставката",
+      "steps.1.title": "Изберете дата",
+      "steps.1.text": "Изберете в портала за резервации свободен работен ден. Календарът показва колко места за доставки от 20 палета или повече са все още свободни за деня.",
+      "steps.2.title": "Въведете данните за доставката",
+      "steps.2.text": "Посочете спедиторската фирма, имейл адреса, броя палети и номера BE или референцията. Товарителницата можете да качите по желание.",
+      "steps.3.title": "Запазете потвърждението",
+      "steps.3.text": "След резервацията получавате номер на резервация. Запишете го или го отпечатайте и го дръжте под ръка за доставката.",
+      "rules.title": "Важни правила",
+      "rules.1": "Приемането на стоки се извършва само от понеделник до петък. Резервира се ден, а не час.",
+      "rules.2": "Доставки под 20 палета могат да се резервират по всяко време.",
+      "rules.3": "Доставките от 20 палета нагоре са ограничени до три на ден.",
+      "rules.5": "Товарителници могат да се качват като PDF, JPG или PNG, до 10 MB.",
+      "feedback.title": "Помогнете ни да се подобрим!",
+      "feedback.text": "Разработихме за вас изцяло нов дигитален портал за резервации. Забелязвате ли нещо в процеса, което бихме могли да направим по-просто или по-добро? Всяко предложение е добре дошло!",
+      "feedback.open": "Изпратете предложение",
+      "feedback.submit": "Изпрати предложение",
+      "feedback.sending": "Изпраща се...",
+      "feedback.close": "Затвори",
+      "feedback.modal.title": "Идеи за уебсайта?",
+      "feedback.modal.text.index": "Забелязвате ли нещо в новия ни портал за резервации, което бихме могли да подобрим? Очакваме вашите предложения!",
+      "feedback.modal.text.booking": "Забелязахте ли нещо по време на резервацията, което бихме могли да подобрим? Очакваме вашите предложения!",
+      "feedback.form.name": "Фирма / име",
+      "feedback.form.email": "Вашият имейл (за евентуални въпроси)",
+      "feedback.form.message": "Вашето предложение",
+      "feedback.form.placeholder": "Какво бихме могли да направим по-добре в уебсайта?",
+      "feedback.success": "Благодарим ви за предложенията!",
+      "feedback.error": "За съжаление предложението не можа да бъде запазено. Моля, опитайте отново по-късно или ни се обадете: +49 911 30039794.",
+      "contact.title": "Контакт",
+      "contact.queries": "Въпроси относно приемането на стоки",
+      "contact.phone": "Телефон:",
+      "contact.email": "Имейл:",
+      "footer.admin": "Администрация",
+      "footer.legal": "Правна информация",
+      "meta.title.avis": "Портал за резервации | Darula Transporte",
+      "meta.description.avis": "Съобщете за доставка до Darula Transporte & Logistik: изберете дата за доставката и регистрирайте доставката.",
+      "avis.seitentitel": "Портал за съобщаване на доставки",
+      "avis.info.summary": "Важна информация преди резервация",
+      "avis.info.1": "Резервирате ден, а не час. Разтоварване: понеделник до четвъртък от 07:00 до 14:30, петък от 07:00 до 12:00.",
+      "avis.info.2": "Моля, подгответе: спедиторска фирма, имейл адрес, брой палети и номер BE или референция.",
+      "avis.info.3": "Товарителницата е по желание. Допустими формати: PDF, JPG и PNG до 10 MB.",
+      "avis.info.4": "Доставки под 20 палета могат да се резервират по всяко време. Доставките от 20 палета нагоре са ограничени до три на ден.",
+      "avis.info.6": "След резервацията получавате номер на резервация. Потвърдителен имейл не се изпраща. Моля, запишете или отпечатайте потвърждението.",
+      "avis.step1.title": "1. Изберете дата за доставка",
+      "avis.step1.text": "Изберете свободен работен ден от календара.",
+      "avis.month.prev": "Предишен месец",
+      "avis.month.next": "Следващ месец",
+      "avis.loading": "Наличността се зарежда …",
+      "avis.loadError": "Наличността не можа да се зареди. Моля, презаредете страницата. В момента резервации не са възможни.",
+      "avis.legend.free": "Свободно",
+      "avis.legend.limited": "Само под 20 палета",
+      "avis.hint.text": "Числото показва колко доставки от 20 палета или повече са вече резервирани за деня (от три). Доставки под 20 палета могат да се резервират по всяко време.",
+      "avis.hint.limited": "под 20",
+      "avis.status.free": "свободен",
+      "avis.status.limited": "само доставки под 20 палета",
+      "avis.status.weekend": "затворено",
+      "avis.status.past": "минало",
+      "avis.status.unavailable": "недостъпно",
+      "avis.aria.day": "{datum}: {status}, заети {gross} от {max} големи доставки",
+      "avis.selected": "Избрано: {datum}",
+      "avis.none": "Все още не е избран ден.",
+      "avis.next": "Към стъпка 2",
+      "avis.step2.title": "2. Въведете данни за пратката",
+      "avis.step2.chosen": "Избрана дата:",
+      "avis.required": "Задължително поле",
+      "avis.field.company": "Спедиторска фирма",
+      "avis.field.email": "Имейл адрес за въпроси",
+      "avis.field.palettes": "Брой палети",
+      "avis.field.be": "Номер BE / референция",
+      "avis.field.file": "Товарителница (по желание)",
+      "avis.field.file.help": "PDF, JPG или PNG, максимум 10 MB.",
+      "avis.palett.hint.full": "Всички три места за доставки от 20 палета или повече са заети за този ден. Моля, изберете друг ден или брой под 20 палета.",
+      "avis.palett.hint.max3": "Доставките от 20 палета нагоре са ограничени до три на ден.",
+      "avis.back": "Назад",
+      "avis.submit": "Резервирай (задължително)",
+      "avis.submitting": "Резервира се …",
+      "avis.err.company": "Моля, въведете спедиторската фирма (от 2 до 100 знака).",
+      "avis.err.email": "Моля, въведете валиден имейл адрес.",
+      "avis.err.palettes": "Броят палети трябва да е между 1 и 200.",
+      "avis.err.be": "Моля, въведете номер BE или референция.",
+      "avis.err.fullDay": "Всички места за доставки от 20 палета или повече са заети за този ден.",
+      "avis.err.fileType": "Товарителницата трябва да е PDF, JPG или PNG.",
+      "avis.err.fileSize": "Товарителницата е по-голяма от 10 MB.",
+      "avis.err.generic": "Резервацията не можа да бъде запазена. Моля, опитайте отново.",
+      "avis.beleg.title": "Резервацията е потвърдена",
+      "avis.beleg.text": "Вашата доставка е регистрирана. Моля, запишете или отпечатайте номера на резервацията.",
+      "avis.beleg.heading": "Документ за доставка",
+      "avis.beleg.bookingNo": "Номер на резервация",
+      "avis.beleg.date": "Дата на доставка",
+      "avis.beleg.company": "Спедиторска фирма",
+      "avis.beleg.pallets": "Палети",
+      "avis.beleg.warning": "Резервацията е запазена, но товарителницата не можа да бъде качена. Моля, обадете ни се на +49 911 30039794 или донесете товарителницата при доставката.",
+      "avis.beleg.question": "Въпроси или промени по резервацията:",
+      "avis.beleg.print": "Печат",
+      "avis.beleg.new": "Нова резервация"
+    }
+  };
+
+  function gespeicherteSprache() {
+    try {
+      const wert = window.localStorage.getItem(SPEICHER_SCHLUESSEL);
+      return Object.prototype.hasOwnProperty.call(SPRACHEN, wert) ? wert : null;
+    } catch (fehler) {
+      return null;
+    }
+  }
+
+  let aktuelle = gespeicherteSprache() || STANDARD;
+  document.documentElement.lang = aktuelle;
+
+  function t(schluessel, werte) {
+    let text = (TEXTE[aktuelle] || {})[schluessel];
+    if (text === undefined) text = TEXTE[STANDARD][schluessel];
+    if (text === undefined) {
+      console.warn(`Übersetzungsschlüssel fehlt: ${schluessel}`);
+      return schluessel;
+    }
+    if (werte) {
+      text = text.replace(/\{(\w+)\}/g, (platzhalter, name) =>
+        Object.prototype.hasOwnProperty.call(werte, name) ? String(werte[name]) : platzhalter
+      );
+    }
+    return text;
+  }
+
+  function uebersetzeSeite(wurzel = document) {
+    wurzel.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    wurzel.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      el.setAttribute("placeholder", t(el.dataset.i18nPlaceholder));
+    });
+    wurzel.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+      el.setAttribute("aria-label", t(el.dataset.i18nAriaLabel));
+    });
+    wurzel.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      el.setAttribute("title", t(el.dataset.i18nTitle));
+    });
+    wurzel.querySelectorAll("[data-i18n-content]").forEach((el) => {
+      el.setAttribute("content", t(el.dataset.i18nContent));
+    });
+    document.documentElement.lang = aktuelle;
+  }
+
+  function setzeSprache(code) {
+    if (!Object.prototype.hasOwnProperty.call(SPRACHEN, code)) return;
+    aktuelle = code;
+    try {
+      window.localStorage.setItem(SPEICHER_SCHLUESSEL, code);
+    } catch (fehler) {}
+    uebersetzeSeite();
+    document.dispatchEvent(new CustomEvent("i18n:change", { detail: { sprache: code } }));
+  }
+
+  const locale = () => SPRACHEN[aktuelle].locale;
+
+  function formatDatum(isoDatum) {
+    const [jahr, monat, tag] = isoDatum.split("-").map(Number);
+    return new Intl.DateTimeFormat(locale(), {
+      timeZone: "UTC", day: "2-digit", month: "2-digit", year: "numeric"
+    }).format(new Date(Date.UTC(jahr, monat - 1, tag)));
+  }
+
+  function formatMonat(jahr, monat) {
+    return new Intl.DateTimeFormat(locale(), {
+      timeZone: "UTC", month: "long", year: "numeric"
+    }).format(new Date(Date.UTC(jahr, monat, 1)));
+  }
+
+  function formatZeitpunkt(zeitpunkt) {
+    return new Date(zeitpunkt).toLocaleDateString(locale(), { timeZone: "Europe/Berlin" });
+  }
+
+  function mountSwitcher(auswahl) {
+    auswahl.replaceChildren();
+    for (const [code, info] of Object.entries(SPRACHEN)) {
+      const option = document.createElement("option");
+      option.value = code;
+      option.lang = code;
+      option.textContent = `${info.flagge} ${info.name}`;
+      auswahl.append(option);
+    }
+    auswahl.value = aktuelle;
+    auswahl.addEventListener("change", () => setzeSprache(auswahl.value));
+    document.addEventListener("i18n:change", () => { auswahl.value = aktuelle; });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => uebersetzeSeite());
+
+  window.I18n = {
+    t, setzeSprache, aktuelleSprache: () => aktuelle, locale, formatDatum,
+    formatMonat, formatZeitpunkt, mountSwitcher, uebersetze: uebersetzeSeite, SPRACHEN, TEXTE
+  };
+})();
